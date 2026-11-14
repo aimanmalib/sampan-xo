@@ -1,0 +1,16 @@
+{
+  "network": "chipnet",
+  "addressPrefix": "bchtest",
+  "fundingDerivationPath": "m/44'/1'/0'/0/0",
+  "accounts": ["maker", "taker"],
+  "electrumServers": [
+    { "host": "chipnet.imaginary.cash", "port": 50004, "transport": "wss" },
+    { "host": "chipnet.bch.ninja", "port": 50004, "transport": "wss" }
+  ],
+  "explorers": [
+    "https://chipnet.chaingraph.cash/tx/",
+    "https://chipnet.imaginary.cash/tx/"
+  ],
+  "faucets": ["https://tbch.googol.cash/", "https://chipnet.bch.ninja/"],
+  "minimumFundingSatoshis": 100000
+}
