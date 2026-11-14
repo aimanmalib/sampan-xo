@@ -29,6 +29,8 @@ export interface SwapConfig {
   offeredSatoshis: number;
   /** Decimal string of test token units the maker asks for. */
   wantedAmount: string;
+  /** Longest wait for Engine.stop() before a script exits anyway. */
+  engineStopTimeoutSeconds: number;
 }
 
 /** The fungible test token used as the wanted token. Created outside XO by `scripts/mint-test-token.ts`. */
@@ -65,8 +67,8 @@ export const loadConfig = (path: string = defaultConfigPath): ChipnetConfig => {
     throw new Error(`config ${path}: testToken.category must be null or 64 lowercase hex characters`);
   }
   const swap = raw.swap;
-  if (!swap || typeof swap.engineDatabasePath !== 'string' || !(swap.offeredSatoshis > 0) || !/^[1-9]\d*$/.test(String(swap.wantedAmount))) {
-    throw new Error(`config ${path}: swap needs engineDatabasePath, a positive offeredSatoshis and a positive decimal wantedAmount`);
+  if (!swap || typeof swap.engineDatabasePath !== 'string' || !(swap.offeredSatoshis > 0) || !/^[1-9]\d*$/.test(String(swap.wantedAmount)) || !(swap.engineStopTimeoutSeconds > 0)) {
+    throw new Error(`config ${path}: swap needs engineDatabasePath, a positive offeredSatoshis, a positive decimal wantedAmount and a positive engineStopTimeoutSeconds`);
   }
   return raw as ChipnetConfig;
 };

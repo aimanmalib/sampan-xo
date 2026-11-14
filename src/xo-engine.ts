@@ -64,6 +64,20 @@ export const startAccountEngine = async (account: AccountName, mnemonic: string,
   return { engine, walletTemplateIdentifier, swapTemplateIdentifier: swap.templateIdentifier };
 };
 
+/**
+ * Stops the engine, waiting at most swap.engineStopTimeoutSeconds. Engine.stop() was seen to never settle in some
+ * runs (after the work was stored), which kept the process alive; callers exit the process after this.
+ */
+export const stopAccountEngine = async ({ engine }: AccountEngine, config: ChipnetConfig): Promise<void> => {
+  let timer: NodeJS.Timeout | undefined;
+  const timeout = new Promise<'timeout'>((resolveTimeout) => {
+    timer = setTimeout(() => resolveTimeout('timeout'), config.swap.engineStopTimeoutSeconds * 1000);
+  });
+  const outcome = await Promise.race([engine.stop().then(() => 'stopped' as const), timeout]);
+  clearTimeout(timer);
+  if (outcome === 'timeout') console.error(`note: Engine.stop() did not settle within ${config.swap.engineStopTimeoutSeconds} s`);
+};
+
 /** Token-aware chipnet cash address of a locking bytecode given as hex. */
 export const lockingBytecodeToAddress = (lockingBytecodeHex: string, prefix: string): string => {
   const result = lockingBytecodeToCashAddress({ bytecode: hexToBin(lockingBytecodeHex), prefix: prefix as 'bchtest', tokenSupport: true });

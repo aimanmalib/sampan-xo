@@ -12,7 +12,7 @@ import { loadConfig } from '../src/config.js';
 import { planDeposit } from '../src/deposit.js';
 import { broadcastEverywhere, connectChipnet, listUnspent } from '../src/electrum.js';
 import { readMnemonic } from '../src/env.js';
-import { lockingBytecodeToAddress, startAccountEngine } from '../src/xo-engine.js';
+import { lockingBytecodeToAddress, startAccountEngine, stopAccountEngine } from '../src/xo-engine.js';
 
 const envPath = fileURLToPath(new URL('../.env', import.meta.url));
 const config = loadConfig();
@@ -24,12 +24,12 @@ if (account !== 'maker' && account !== 'taker') {
 const mnemonic = readMnemonic(account, envPath);
 const from = deriveFundingKey(mnemonic, config);
 
-const { engine } = await startAccountEngine(account, mnemonic, config);
+const started = await startAccountEngine(account, mnemonic, config);
 let engineLockingBytecode: string;
 try {
-  engineLockingBytecode = await engine.generateLockingBytecodeFromDefaultPolicy('receive');
+  engineLockingBytecode = await started.engine.generateLockingBytecodeFromDefaultPolicy('receive');
 } finally {
-  await engine.stop().catch((error: unknown) => console.error(`engine stop: ${String(error)}`));
+  await stopAccountEngine(started, config);
 }
 
 const client = await connectChipnet(config);
@@ -45,3 +45,4 @@ console.log(`deposit ${account} to ${lockingBytecodeToAddress(engineLockingBytec
 console.log(`txid ${plan.txid} inputs ${utxos.length} fee ${plan.feeSatoshis} change ${plan.changeSatoshis} size ${plan.hex.length / 2}`);
 if (flag === '--dry-run') process.exit(0);
 for (const line of await broadcastEverywhere(config, plan.hex)) console.log(line);
+process.exit(0);

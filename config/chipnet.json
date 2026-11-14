@@ -24,6 +24,7 @@
   "swap": {
     "engineDatabasePath": ".xo",
     "offeredSatoshis": 20000,
-    "wantedAmount": "1000"
+    "wantedAmount": "1000",
+    "engineStopTimeoutSeconds": 20
   }
 }
