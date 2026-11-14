@@ -34,3 +34,19 @@ describe('config', () => {
     expect(() => loadConfig(write({ ...loadConfig(), fundingDerivationPath: '44/1/0' }))).toThrow(/fundingDerivationPath/);
   });
 });
+
+describe('test token config', () => {
+  it('rejects a token amount that is not a positive decimal string', () => {
+    const base = loadConfig();
+    expect(() => loadConfig(write({ ...base, testToken: { ...base.testToken, tokenAmount: '0' } }))).toThrow(/tokenAmount/);
+    expect(() => loadConfig(write({ ...base, testToken: { ...base.testToken, tokenAmount: 1.5 } }))).toThrow(/tokenAmount/);
+  });
+
+  it('accepts a null category or 64 hex characters, nothing else', () => {
+    const base = loadConfig();
+    const withCategory = (category: unknown) => write({ ...base, testToken: { ...base.testToken, category } });
+    expect(loadConfig(withCategory(null)).testToken.category).toBeNull();
+    expect(loadConfig(withCategory('ab'.repeat(32))).testToken.category).toBe('ab'.repeat(32));
+    expect(() => loadConfig(withCategory('AB'.repeat(32)))).toThrow(/category/);
+  });
+});

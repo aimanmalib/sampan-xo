@@ -30,8 +30,13 @@ Status: work in progress. The template, the offline tests and the chipnet runs a
 npm ci
 npx tsx scripts/wallets.ts generate   # creates .env (mode 0600) with a maker and a taker test phrase; prints addresses only
 npx tsx scripts/wallets.ts balance    # chipnet balance of both funding addresses
+npx tsx scripts/mint-test-token.ts fund   # maker sends coins to the taker for fees
+npx tsx scripts/mint-test-token.ts mint   # maker creates a fungible test token and sends it to the taker
 bash scripts/gerbang-ujian.sh         # offline checks: typecheck and unit tests, no network
 ```
+
+Both token commands accept `--dry-run`. After `mint`, put the printed category into `testToken.category` in
+`config/chipnet.json`. Every chipnet transaction is listed in [docs/CHIPNET-RUNS.md](docs/CHIPNET-RUNS.md).
 
 Chipnet coins come from a public chipnet faucet such as https://chipnet.bch.ninja/ or https://tbch.googol.cash/.
 Settings that may change (Electrum servers, derivation path, explorers, amounts) live in `config/chipnet.json`.

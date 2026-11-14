@@ -12,5 +12,13 @@
     "https://chipnet.imaginary.cash/tx/"
   ],
   "faucets": ["https://tbch.googol.cash/", "https://chipnet.bch.ninja/"],
-  "minimumFundingSatoshis": 100000
+  "minimumFundingSatoshis": 100000,
+  "testToken": {
+    "feeRateSatoshisPerByte": 1,
+    "dustSatoshis": 546,
+    "takerFundingSatoshis": 100000,
+    "tokenOutputSatoshis": 1000,
+    "tokenAmount": "1000000",
+    "category": "008eebd7502376715a8ffc87f6b6341cbe284c27237ea0204eaee167603ff95a"
+  }
 }

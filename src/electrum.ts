@@ -1,5 +1,6 @@
 import { ElectrumClient } from '@electrum-cash/network';
 import type { ChipnetConfig } from './config.js';
+import type { Utxo } from './spend.js';
 
 export interface AddressBalance {
   confirmed: number;
@@ -34,4 +35,54 @@ export const getBalance = async (client: ElectrumClient<never>, address: string)
   if (result instanceof Error) throw result;
   const { confirmed, unconfirmed } = result as { confirmed: number; unconfirmed: number };
   return { confirmed: Number(confirmed), unconfirmed: Number(unconfirmed) };
+};
+
+interface ElectrumUnspent {
+  tx_hash: string;
+  tx_pos: number;
+  value: number;
+  token_data?: { category: string; amount: string; nft?: unknown };
+}
+
+/** Lists the unspent outputs of a cash address, confirmed and in the mempool. */
+export const listUnspent = async (client: ElectrumClient<never>, address: string): Promise<Utxo[]> => {
+  const result = await client.request('blockchain.address.listunspent', address, 'include_tokens');
+  if (result instanceof Error) throw result;
+  return (result as ElectrumUnspent[]).map((u) => ({
+    txid: u.tx_hash,
+    vout: u.tx_pos,
+    satoshis: BigInt(u.value),
+    ...(u.token_data ? { token: { ...u.token_data, amount: BigInt(u.token_data.amount) } } : {}),
+  }));
+};
+
+/** Broadcasts a raw transaction and returns the txid the server reports. */
+export const broadcast = async (client: ElectrumClient<never>, hex: string): Promise<string> => {
+  const result = await client.request('blockchain.transaction.broadcast', hex);
+  if (result instanceof Error) throw result;
+  return String(result);
+};
+
+/**
+ * Sends a raw transaction to every configured server and returns one line per server.
+ * Throws when no server accepted it.
+ */
+export const broadcastEverywhere = async (config: ChipnetConfig, hex: string): Promise<string[]> => {
+  const lines: string[] = [];
+  let accepted = 0;
+  for (const server of config.electrumServers) {
+    try {
+      const client = await connectChipnet({ ...config, electrumServers: [server] });
+      try {
+        lines.push(`${server.host}: accepted ${await broadcast(client, hex)}`);
+        accepted += 1;
+      } finally {
+        await client.disconnect();
+      }
+    } catch (error) {
+      lines.push(`${server.host}: ${String(error)}`);
+    }
+  }
+  if (accepted === 0) throw new Error(`no server accepted the transaction:\n${lines.join('\n')}`);
+  return lines;
 };
