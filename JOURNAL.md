@@ -42,3 +42,13 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
   with txid `f65672d9e319859cfad06d27c2c1ff97ce37dc028f2f29923f8b10e018252ba3` and a network fee of 123 sat.
 - The page wording is "Larger requests take longer to process". At 18:14 Electrum still answered
   `No such mempool or blockchain transaction` for that txid and the balance was 0.
+
+## 2026-11-14 18:25 Scaffold: faucet coins seen
+
+- At 18:24 `chipnet.imaginary.cash` still answered `No such mempool or blockchain transaction` for txid
+  `f65672d9e319859cfad06d27c2c1ff97ce37dc028f2f29923f8b10e018252ba3`, while `chipnet.bch.ninja` (same tip, height 332342)
+  returned it from its mempool. The two chipnet servers did not share that mempool transaction for at least 11 minutes.
+- `chipnet.bch.ninja` at 18:25: maker funding address `confirmed=0 unconfirmed=500000`. Output 1 of the faucet transaction
+  pays 0.005 tBCH to `bchtest:qplqcy49n873423fq8dhu0hlmmv0k0e6tushym5fpk`.
+- Time lost on the faucet step: about 15 minutes, most of it waiting for the coins to appear on the first configured server.
+- Next: confirm the coins once mined, then read the XO template types and the `wrapped_cash` template before writing Swap Intent.
