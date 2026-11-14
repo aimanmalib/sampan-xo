@@ -238,3 +238,11 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
 - Small points met while scripting: Escape does not close the modals (the "Cancel" button does), and the notifications
   panel stays open over the navigation until closed.
 - Time: about 15 minutes, most of it finding the right buttons by reading the page.
+
+## 2026-11-14 20:26 Facts list for the entrant
+
+- A list of facts taken from this journal (versions, what worked, verbatim errors, missing documentation, time lost,
+  chipnet txids) and the debug tool steps from the README were handed to the entrant, together with copies of
+  `template/swap-intent.json`, `invitations/run2-cancel.json` and `invitations/run1-fill.json`. It is a list, not a
+  draft; the entrant writes the feedback in FEEDBACK.md by hand.
+- No answer from the XO team has been noted yet, so nothing is quoted here.
