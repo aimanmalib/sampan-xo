@@ -1,0 +1,29 @@
+{
+  "name": "swap-intent-xo-template",
+  "version": "0.1.0",
+  "description": "Swap Intent: an XO template where a maker locks BCH against a wanted CashToken amount. Chipnet only.",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "gate": "bash scripts/gerbang-ujian.sh",
+    "wallets": "tsx scripts/wallets.ts"
+  },
+  "dependencies": {
+    "@bitauth/libauth": "3.1.0-next.8",
+    "@electrum-cash/network": "4.4.8",
+    "@xo-cash/engine": "0.1.1-next.18029697917",
+    "@xo-cash/templates": "0.0.12"
+  },
+  "devDependencies": {
+    "@types/node": "22.20.5",
+    "tsx": "4.23.15",
+    "typescript": "5.9.3",
+    "vitest": "3.2.7"
+  }
+}
