@@ -28,17 +28,23 @@ export const readOpenTransactionHash = (open: XOInvitation): string => {
   return hash;
 };
 
+/** Finds the still unspent offer coin of an open invitation in this account's engine. */
+export const findOfferCoin = async ({ engine, swapTemplateIdentifier }: AccountEngine, open: XOInvitation) => {
+  const openHash = readOpenTransactionHash(open);
+  const offer = (await engine.listUnspentOutputs()).find(
+    (utxo) => utxo.outpointTransactionHash === openHash && utxo.templateIdentifier === swapTemplateIdentifier,
+  );
+  if (offer === undefined) throw new Error(`no unspent offer from ${openHash} in this engine`);
+  return offer;
+};
+
 /**
  * fill, maker part one: starts the fill invitation with the offer coin at input 0 and the offer variables, so the
  * taker can build the payment. The maker takes no role in fill; it only supplies the coin it can unlock.
  */
 export const startFill = async (account: AccountEngine, open: XOInvitation): Promise<XOInvitation> => {
   const { engine, swapTemplateIdentifier: templateIdentifier } = account;
-  const openHash = readOpenTransactionHash(open);
-  const offer = (await engine.listUnspentOutputs()).find(
-    (utxo) => utxo.outpointTransactionHash === openHash && utxo.templateIdentifier === templateIdentifier,
-  );
-  if (offer === undefined) throw new Error(`no unspent offer from ${openHash} in the maker engine`);
+  const offer = await findOfferCoin(account, open);
   const created = await engine.createInvitation({ templateIdentifier, actionIdentifier: 'fill' });
   const stored = await engine.appendInvitation(created.invitation.invitationIdentifier, {
     templateIdentifier,

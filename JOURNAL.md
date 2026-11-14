@@ -197,3 +197,20 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
   `f6d0359759159ac189383ea76155d2bc7dad63d153c67f95ca9162df6ab0a7a2`. All five were seen by both servers and opened on
   https://chipnet.imaginary.cash/tx/ at 19:42 (unconfirmed).
 - Time: about 40 minutes from the first engine call to the run1 fill broadcast (19:05 to 19:38).
+
+## 2026-11-14 19:58 Chipnet: open -> cancel through the XO engine
+
+- Tried: a `cancel` step in `scripts/run.ts`, run by the maker engine that opened the offer. `cancelOffer` finds the
+  offer coin in `listUnspentOutputs` by the open transaction hash and template, creates a `cancel` invitation, and
+  appends as `maker`: the four offer variables read from the saved open invitation, `cancelInput` at input 0 and
+  `refundOutput` at output 0. Then it signs its own inputs and executes.
+- The engine found `makerKey` for the offer script on its own (it stored the secret at open); nothing had to be
+  generated again, and `listMissingRequirements` was empty after signing. No `addChangeToInvitation` call: the refund
+  output is the template's `refundSatoshis` (offered satoshis less the `cancelFeeSatoshis` constant, 500).
+- `npx tsx scripts/run.ts cancel run2 --dry-run` built `8472ca5d…e110` without errors; the real run at 19:56 broadcast
+  the same txid with no engine error (the late reservation error seen on open did not occur here).
+- Chipnet: run2 open `66b0a6d5cb7b263e960bfa4ed9d9c8ec3952501dc4d7ae3f8a22edcaa2768d85`, run2 cancel
+  `8472ca5d982bff800fa471f0811b5c9a3af597c96b8dd0e73d555a7ed44de110` (one output, 19,500 sat). Both seen by
+  chipnet.imaginary.cash and chipnet.bch.ninja, and the cancel opened on https://chipnet.imaginary.cash/tx/ at 19:57
+  (unconfirmed). chipnet.chaingraph.cash answered HTTP 403 to a scripted request.
+- Time: about 5 minutes from writing the step to the broadcast.

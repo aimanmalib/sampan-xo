@@ -1,0 +1,99 @@
+{
+  "invitationIdentifier": "f65a2398dce78eaa5d4f904ed7d38f08",
+  "templateIdentifier": "c4f2cf9439468e95f8a43852b2c874d336ebb082652467766ed4cf03275aa456",
+  "actionIdentifier": "cancel",
+  "createdAtTimestamp": 1794686204450,
+  "commits": [
+    {
+      "commitIdentifier": "ba0ec9c2be916f39887b9d2a11b98d4c",
+      "createdAtTimestamp": 1794686204450,
+      "data": {},
+      "expiresAtTimestamp": 1794704204450,
+      "signature": "0667dfc43c74a12004bb544d804dd42ec5ee585fd17d4ac7a0a7459cb89bfd7954b5b8ba7dc0c2e1fa8a51286a61dcd38d720e35b65778096d9a4eb2826ad879",
+      "entityIdentifier": "tpubDFK2w8YoDECLyphPzUpz6aUQKYn5HmYBhTwJm7VZKUT5Gd6fiNQZWtjaJGaYygPxMn4uNaiLNLRFEfAYcKceu6xhH8mBY4NHSvcnGjeCAVL"
+    },
+    {
+      "commitIdentifier": "6683afc0c011a497b2104836591dd262",
+      "previousCommitIdentifier": "ba0ec9c2be916f39887b9d2a11b98d4c",
+      "createdAtTimestamp": 1794686204658,
+      "data": {
+        "variables": [
+          {
+            "variableIdentifier": "offeredSatoshis",
+            "value": "<bigint: 20000n>",
+            "roleIdentifier": "maker"
+          },
+          {
+            "variableIdentifier": "wantedCategory",
+            "value": "008eebd7502376715a8ffc87f6b6341cbe284c27237ea0204eaee167603ff95a",
+            "roleIdentifier": "maker"
+          },
+          {
+            "variableIdentifier": "wantedAmount",
+            "value": "<bigint: 1000n>",
+            "roleIdentifier": "maker"
+          },
+          {
+            "variableIdentifier": "makerLockingScript",
+            "value": "76a9144607e59c87f70fa4fd74e136dbce6fc8ab08335d88ac",
+            "roleIdentifier": "maker"
+          }
+        ],
+        "inputs": [
+          {
+            "inputIdentifier": "cancelInput",
+            "transactionIndex": 0,
+            "outpointTransactionHash": "<uint8array: 66b0a6d5cb7b263e960bfa4ed9d9c8ec3952501dc4d7ae3f8a22edcaa2768d85>",
+            "outpointIndex": 0,
+            "sequenceNumber": 0,
+            "roleIdentifier": "maker"
+          }
+        ],
+        "outputs": [
+          {
+            "outputIdentifier": "refundOutput",
+            "transactionIndex": 0,
+            "roleIdentifier": "maker",
+            "lockingBytecode": "<uint8array: 76a9144607e59c87f70fa4fd74e136dbce6fc8ab08335d88ac>"
+          }
+        ],
+        "roleIdentifier": "maker"
+      },
+      "expiresAtTimestamp": 1794704204657,
+      "signature": "330ef096b9093a5c31c162c4c8ea90517efca3df7bee5a31e09b04ab152dec4c9ed77177c6ad152bb95d7dabd003215efd17319b4f1859705b548ef00c592843",
+      "entityIdentifier": "tpubDFK2w8YoDECLyphPzUpz6aUQKYn5HmYBhTwJm7VZKUT5Gd6fiNQZWtjaJGaYygPxMn4uNaiLNLRFEfAYcKceu6xhH8mBY4NHSvcnGjeCAVL"
+    },
+    {
+      "commitIdentifier": "f86e47cf01ef3013383fe7d01a0f04ab",
+      "previousCommitIdentifier": "6683afc0c011a497b2104836591dd262",
+      "createdAtTimestamp": 1794686205349,
+      "data": {
+        "inputs": [
+          {
+            "mergesWith": {
+              "commitIdentifier": "6683afc0c011a497b2104836591dd262",
+              "itemIndex": 0
+            },
+            "unlockingBytecode": "<uint8array: 41d273df632df130ad857685fb74405dcfb4a25ffca1713de30413a24560979b039a46edc4be920386a7b4aa27eab3e1f9180804076c17f211a77837c3dff0b507412103641e38df1d499ea9acfd52652a338a3c3a6df9f507c276b831b6d0e64295d1fe004c6463c0cd1976a9144607e59c87f70fa4fd74e136dbce6fc8ab08335d88ac88c0d1bc20008eebd7502376715a8ffc87f6b6341cbe284c27237ea0204eaee167603ff95a88c0d302e803a26776a9142ad983140daa7ada16429e418a2e63776fbc9efe88ac68>"
+          }
+        ]
+      },
+      "expiresAtTimestamp": 1794704205349,
+      "signature": "667ca4cbb8f355011bc3ba409763f59482dd421c09ba91fffaaf60c9f6fffc02baf59e456e8df4f2e51decc494f0023d6be24cfc7f840a58014f40165efa4438",
+      "entityIdentifier": "tpubDFK2w8YoDECLyphPzUpz6aUQKYn5HmYBhTwJm7VZKUT5Gd6fiNQZWtjaJGaYygPxMn4uNaiLNLRFEfAYcKceu6xhH8mBY4NHSvcnGjeCAVL"
+    }
+  ],
+  "result": {
+    "transactions": {
+      "cancelTransaction": {
+        "transactionHash": "8472ca5d982bff800fa471f0811b5c9a3af597c96b8dd0e73d555a7ed44de110",
+        "createdAtTimestamp": 1794686205577,
+        "createdByEntityIdentifier": "tpubDFK2w8YoDECLyphPzUpz6aUQKYn5HmYBhTwJm7VZKUT5Gd6fiNQZWtjaJGaYygPxMn4uNaiLNLRFEfAYcKceu6xhH8mBY4NHSvcnGjeCAVL",
+        "createdBySignature": "ff68177d1bdef5433ed88a9c09e8a64097238353ffa3b2e38724b3a12b59a58afe4706210f9848b286d8c39b80c3638f1897b9eac23f97b01a1f4a9eb0cf0a56",
+        "broadcastedAtTimestamp": 1794686207051,
+        "broadcastedByEntityIdentifier": "tpubDFK2w8YoDECLyphPzUpz6aUQKYn5HmYBhTwJm7VZKUT5Gd6fiNQZWtjaJGaYygPxMn4uNaiLNLRFEfAYcKceu6xhH8mBY4NHSvcnGjeCAVL",
+        "broadcastedBySignature": "53bb06cdb036107927ccdc3bbcd8592d2e75b247254296d644b0c17989e2166c309aa38cb061e39861795e4fdd1d0dcc9fa44ce1b9eb833f5f959fa431416a14"
+      }
+    }
+  }
+}

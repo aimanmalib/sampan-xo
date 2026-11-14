@@ -15,6 +15,7 @@ opened on a public chipnet explorer (https://chipnet.imaginary.cash/tx/). Invita
 | 2026-11-14 19:38 | run1 | fill | 326ee1c18edae7a42317c062237028150145d6f8e8cd5579baa3653e094d6862 | invitations/run1-fill.json | ok |
 | 2026-11-14 19:40 | run3 | open | c96a928911e301a808859080fbd842004ab47e79992f63023110a5f3884388ce | invitations/run3-open.json | ok |
 | 2026-11-14 19:41 | run3 | fill | f6d0359759159ac189383ea76155d2bc7dad63d153c67f95ca9162df6ab0a7a2 | invitations/run3-fill.json | ok |
+| 2026-11-14 19:56 | run2 | cancel | 8472ca5d982bff800fa471f0811b5c9a3af597c96b8dd0e73d555a7ed44de110 | invitations/run2-cancel.json | ok |
 
-run2 is an offer left open for the cancel run. The fill steps in between are saved as `<run>-fill-start.json` (maker adds
+run2 is the open -> cancel run: the offer opened at 19:30 was cancelled by the maker at 19:56. The fill steps in between are saved as `<run>-fill-start.json` (maker adds
 the offer coin) and `<run>-fill-taken.json` (taker adds the payment and signs).
