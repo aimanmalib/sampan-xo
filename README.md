@@ -15,34 +15,97 @@ Swap Intent is an XO template with two roles:
 The offer is enforced by the locking script, not by either party: a fill is valid only if the output at the same index as the
 offer input pays the maker's locking bytecode, carries the wanted token category, and carries at least the wanted token amount.
 
-Status: work in progress. The template, the offline tests and open -> fill on chipnet are done; cancel is next. The
+Status: the template, the offline tests and both chipnet flows (open -> fill and open -> cancel) are done. The
 [build journal](JOURNAL.md) records each step with timestamps.
+
+```mermaid
+sequenceDiagram
+    participant M as maker
+    participant O as offer output (P2SH32)
+    participant T as taker
+    M->>O: open: lock offeredSatoshis, state wantedCategory and wantedAmount
+    alt fill
+        T->>M: output at the offer's index: wantedAmount tokens of wantedCategory
+        O->>T: offeredSatoshis
+    else cancel
+        M->>O: maker signature
+        O->>M: offeredSatoshis less cancelFeeSatoshis
+    end
+```
+
+Template variables:
+
+| Variable | Set by | Meaning |
+| --- | --- | --- |
+| `offeredSatoshis` | maker on `open` | BCH locked in the offer; the taker receives all of it on fill |
+| `wantedCategory` | maker on `open` | CashToken category the maker wants, in explorer byte order |
+| `wantedAmount` | maker on `open` | minimum fungible token amount the maker wants |
+| `makerLockingScript` | maker on `open` | where the tokens (on fill) or the refund (on cancel) go |
+| `makerKey` | generated on `open` | key whose signature is the only way to cancel |
+| `takerLockingScript` | taker on `fill` | where the taker receives the offered satoshis |
+
+The template source is [template/swap-intent.ts](template/swap-intent.ts); the same template as JSON for import into
+XO tools is [template/swap-intent.json](template/swap-intent.json).
 
 ## Requirements
 
 - Node.js 22 (see `.nvmrc`) and npm.
-- Package versions are pinned exactly in `package.json` and `package-lock.json`.
+- Package versions are pinned exactly in `package.json` and `package-lock.json`. The ones that matter:
+  `@xo-cash/engine` 0.1.1-next.18029697917, `@xo-cash/templates` 0.0.12, `@xo-cash/types` 0.0.8,
+  `@xo-cash/utils` 0.0.10, `@bitauth/libauth` 3.1.0-next.8, `@electrum-cash/network` 4.4.8, `typescript` 5.9.3,
+  `tsx` 4.23.15, `vitest` 3.2.7.
 - Chipnet only. Nothing in this repository targets mainnet.
 
-## Setup
+## Setup, step by step
 
-```sh
-npm ci
-npx tsx scripts/wallets.ts generate   # creates .env (mode 0600) with a maker and a taker test phrase; prints addresses only
-npx tsx scripts/wallets.ts balance    # chipnet balance of both funding addresses
-npx tsx scripts/mint-test-token.ts fund   # maker sends coins to the taker for fees
-npx tsx scripts/mint-test-token.ts mint   # maker creates a fungible test token and sends it to the taker
-npx tsx scripts/deposit.ts maker      # moves the maker's coins into its XO engine wallet
-npx tsx scripts/deposit.ts taker      # moves the taker's coins and test tokens into its XO engine wallet
-npx tsx scripts/run.ts fill run1      # open -> fill on chipnet through the XO engine, one process per step
-bash scripts/gerbang-ujian.sh         # offline checks: typecheck and unit tests, no network
-```
+1. Install and run the offline checks (typecheck and unit tests, no network):
 
-Both token commands accept `--dry-run`. After `mint`, put the printed category into `testToken.category` in
-`config/chipnet.json`. Every chipnet transaction is listed in [docs/CHIPNET-RUNS.md](docs/CHIPNET-RUNS.md).
+   ```sh
+   npm ci
+   npm test
+   ```
 
-Chipnet coins come from a public chipnet faucet such as https://chipnet.bch.ninja/ or https://tbch.googol.cash/.
-Settings that may change (Electrum servers, derivation path, explorers, amounts) live in `config/chipnet.json`.
+2. Create two chipnet test wallets. This writes `.env` (mode 0600; the variable names are in `.env.example`) with a
+   maker and a taker phrase and prints the two funding addresses only. Never put a mainnet phrase there.
+
+   ```sh
+   npx tsx scripts/wallets.ts generate
+   ```
+
+3. Get chipnet coins for the maker address from a public chipnet faucet such as https://chipnet.bch.ninja/ or
+   https://tbch.googol.cash/ (100,000 satoshis is enough), then check:
+
+   ```sh
+   npx tsx scripts/wallets.ts balance
+   ```
+
+4. Send the taker coins for fees and create a fungible test token for it (outside XO, with libauth). After `mint`,
+   put the printed category into `testToken.category` in `config/chipnet.json`.
+
+   ```sh
+   npx tsx scripts/mint-test-token.ts fund
+   npx tsx scripts/mint-test-token.ts mint
+   ```
+
+5. Move each account's coins (and the taker's test tokens) into its XO engine wallet:
+
+   ```sh
+   npx tsx scripts/deposit.ts maker
+   npx tsx scripts/deposit.ts taker
+   ```
+
+6. Run open -> fill, then a second offer with open -> cancel (next section):
+
+   ```sh
+   npx tsx scripts/run.ts fill run1
+   npx tsx scripts/run.ts open run2
+   npx tsx scripts/run.ts cancel run2
+   ```
+
+The token, deposit and run commands accept `--dry-run` (build and check without broadcasting), and
+`npx tsx scripts/run.ts --help` prints the run steps. Settings that may change (Electrum servers, derivation path,
+explorers, amounts) live in `config/chipnet.json`. Every chipnet transaction is listed in
+[docs/CHIPNET-RUNS.md](docs/CHIPNET-RUNS.md).
 
 ## Chipnet runs
 
@@ -60,7 +123,7 @@ its own process and the accounts exchange only invitation files:
 instead, `npx tsx scripts/run.ts cancel <run>` (maker, same engine as `open`) spends the offer back to the maker's
 locking script, less the template's `cancelFeeSatoshis`.
 
-Every step accepts `--dry-run` (build and check without broadcasting). Transactions so far:
+Every step accepts `--dry-run` (build and check without broadcasting). The chipnet transactions:
 
 | Run | Action | Txid |
 | --- | --- | --- |
@@ -88,6 +151,19 @@ disposable account there; no funds are needed to view.
    to leave without accepting.
 4. "Inspect", choose `chipnet` and paste a txid from the table above. The script debugger steps through each input;
    the offer input shows the redeem script with the fill and cancel branches.
+
+## Known limits
+
+- The covenant checks only the output at the same index as the offer input. One offer is filled as a whole; there are
+  no partial fills.
+- The fill path needs no signature, so anyone who sees an open offer can fill it; the first valid transaction wins.
+- Offers do not expire. An offer stays open until it is filled or the maker cancels it.
+- Through the XO engine in this repository, a fill is interactive: only the maker's engine tracks the offer coin, so the
+  maker adds the offer input (`fill-start`) and its unlocking bytecode (`fill-finish`) around the taker's step.
+- The cancel fee is a fixed template constant (`cancelFeeSatoshis`, 500 satoshis).
+- `Engine.stop()` did not always settle during the chipnet runs, so the scripts wait at most
+  `swap.engineStopTimeoutSeconds` for it and then exit.
+- Chipnet test wallets only. The code has not been reviewed for use with real funds.
 
 ## AI disclosure
 
