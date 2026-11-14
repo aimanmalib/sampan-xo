@@ -20,5 +20,10 @@
     "tokenOutputSatoshis": 1000,
     "tokenAmount": "1000000",
     "category": "008eebd7502376715a8ffc87f6b6341cbe284c27237ea0204eaee167603ff95a"
+  },
+  "swap": {
+    "engineDatabasePath": ".xo",
+    "offeredSatoshis": 20000,
+    "wantedAmount": "1000"
   }
 }

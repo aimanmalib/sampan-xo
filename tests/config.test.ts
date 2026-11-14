@@ -49,4 +49,11 @@ describe('test token config', () => {
     expect(loadConfig(withCategory('ab'.repeat(32))).testToken.category).toBe('ab'.repeat(32));
     expect(() => loadConfig(withCategory('AB'.repeat(32)))).toThrow(/category/);
   });
+
+  it('requires the swap run values', () => {
+    const shipped = loadConfig();
+    expect(shipped.swap.offeredSatoshis).toBeGreaterThan(0);
+    expect(() => loadConfig(write({ ...shipped, swap: undefined }))).toThrow(/swap needs/);
+    expect(() => loadConfig(write({ ...shipped, swap: { ...shipped.swap, wantedAmount: '-1' } }))).toThrow(/swap needs/);
+  });
 });

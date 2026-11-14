@@ -22,3 +22,6 @@ data/
 /docs/hantar/
 /dalaman/
 /state/
+
+# XO engine databases (hold wallet state; never commit)
+/.xo/

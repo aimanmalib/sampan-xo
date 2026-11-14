@@ -132,3 +132,31 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
   amount 1000000 and category `008eebd7502376715a8ffc87f6b6341cbe284c27237ea0204eaee167603ff95a`.
 - https://chipnet.chaingraph.cash/tx/ answered HTTP 403 to a plain request, so it was not used as the proof explorer.
 - Test token category recorded in `config/chipnet.json` (`testToken.category`).
+
+## 2026-11-14 19:05 Chipnet run setup: XO engine wallets
+
+- The XO engine derives its own keys, so the test coins and tokens at the plain P2PKH funding addresses are not
+  visible to it. `scripts/deposit.ts maker|taker` asks the engine for a receive locking bytecode (P2PKH wallet
+  template from `@xo-cash/templates` set as the change, receive and address policy) and moves every coin of the
+  funding address there. Token coins keep their own output.
+- `Engine.create` with `storageType: 'sqlite'` failed at start:
+  `TypeError: this[#storage].listScriptHashes is not a function` (from `State.listScriptHashes`, called by
+  `Engine.#monitorStoredScriptHashes`). The SQLite storage of `@xo-cash/state` 0.0.5 (the version the engine pins) has no
+  `listScriptHashes`; the IndexedDB storage has it. Way out: `storageType: 'indexeddb'`; in Node the package installs
+  its IndexedDB shim, which writes `.sqlite` files under `databasePath` (`.xo/`, ignored by git).
+- Several runs ended with `[AggregateError: All promises were rejected] { [errors]: [] }` and no stack, sometimes before
+  any output. Source: `@electrum-cash/application` runs background requests with `Promise.any` over its connected
+  servers; with no connected server (seen after `Engine.stop()`) the list is empty and the rejection is not awaited.
+  The engine also logs `Failed to synchronize block headers, will retry later: [AggregateError ...]`. Way out:
+  `src/xo-engine.ts` ignores only an `AggregateError` with an empty `errors` list and rethrows anything else.
+  Time lost: about 10 minutes, including one deposit that was broadcast but whose output was cut off by the crash.
+- The first taker deposit was rejected by both servers:
+  `mandatory-script-verify-flag-failed (Signature must be zero for failed CHECK(MULTI)SIG operation) (code 16)`.
+  Cause: the signer in `src/spend.ts` did not pass the token of the spent coin to libauth, and the BCH signing
+  serialization covers it. Fixed; `tests/deposit.test.ts` checks a token coin spend in the VM with the token on the
+  source output (red on the old signer with the NULLFAIL error, green after).
+- `buildSpend` now spends token coins only when the outputs carry the same amount per category (no burn), and still
+  refuses NFT coins.
+- Chipnet: maker deposit `95c68c23f1885c0b02646232610ece168357fc0c8a51a8a20e74517a037ca69d`, taker deposit
+  `dc91ae0b673d5569938578528eaf97b2fcb2f6d6ad3f2446c27bd1a0d6015e93`, both accepted by both servers and opened on
+  https://chipnet.imaginary.cash/tx/ (unconfirmed at 19:20).

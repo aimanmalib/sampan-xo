@@ -19,6 +19,16 @@ export interface ChipnetConfig {
   faucets: string[];
   minimumFundingSatoshis: number;
   testToken: TestTokenConfig;
+  swap: SwapConfig;
+}
+
+/** Values of the chipnet Swap Intent runs. */
+export interface SwapConfig {
+  /** Folder for the XO engine databases, relative to the repository root. One database per account. */
+  engineDatabasePath: string;
+  offeredSatoshis: number;
+  /** Decimal string of test token units the maker asks for. */
+  wantedAmount: string;
 }
 
 /** The fungible test token used as the wanted token. Created outside XO by `scripts/mint-test-token.ts`. */
@@ -53,6 +63,10 @@ export const loadConfig = (path: string = defaultConfigPath): ChipnetConfig => {
   }
   if (token.category !== null && !/^[0-9a-f]{64}$/.test(String(token.category))) {
     throw new Error(`config ${path}: testToken.category must be null or 64 lowercase hex characters`);
+  }
+  const swap = raw.swap;
+  if (!swap || typeof swap.engineDatabasePath !== 'string' || !(swap.offeredSatoshis > 0) || !/^[1-9]\d*$/.test(String(swap.wantedAmount))) {
+    throw new Error(`config ${path}: swap needs engineDatabasePath, a positive offeredSatoshis and a positive decimal wantedAmount`);
   }
   return raw as ChipnetConfig;
 };
