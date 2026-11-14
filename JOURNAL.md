@@ -52,3 +52,55 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
   pays 0.005 tBCH to `bchtest:qplqcy49n873423fq8dhu0hlmmv0k0e6tushym5fpk`.
 - Time lost on the faucet step: about 15 minutes, most of it waiting for the coins to appear on the first configured server.
 - Next: confirm the coins once mined, then read the XO template types and the `wrapped_cash` template before writing Swap Intent.
+
+## 2026-11-14 18:31 Template: reading the XO packages
+
+- Started the Swap Intent template. The fallback clock (fall back to a hash-locked gift if the token covenant cannot be
+  made to pass within 12 hours of work) starts here.
+- Read: the `XOTemplate` type in `@xo-cash/types` 0.0.8 (doc comments on every field), the bundled templates in
+  `@xo-cash/templates` 0.0.12 (`p2pkh`, `faucet_cash`, `wrapped_cash`, `experimental/multisig`), and the engine
+  compile path in `@xo-cash/engine` (`createLibauthCompilerForLockingScript`, `convertInvitationVariableValueForCompiler`).
+- The engine README says "See `playground/examples/receive-satoshis.js` for a full flow". The published package ships
+  only `dist/`, so that example is not in the installed package.
+- `Engine.importTemplate` calls `parseTemplate` from `@xo-cash/utils` and then writes to storage. `Engine.create`
+  opens Electrum connections before anything else, so the offline tests call `parseTemplate` directly. `@xo-cash/types`
+  0.0.8 and `@xo-cash/utils` 0.0.10 (the versions the engine pins) were added as direct, exact dependencies.
+- Not documented in the packages, found by reading the code:
+  - Lock type `p2sh` maps to libauth `p2sh32`; `p2s` is a bare script (the faucet template builds P2SH20 by hand).
+  - Invitation variable values are turned into bytes by type: integers become VM numbers, hex strings become raw bytes
+    with no byte reversal.
+  - The VM pushes token categories in transaction byte order (`token.category.slice().reverse()` in libauth
+    `pushTokenExtendedCategory`), while templates and explorers write categories in display order. A covenant that
+    compares a category variable with `OP_OUTPUTTOKENCATEGORY` must reverse one side (`OP_REVERSEBYTES`).
+  - A participant who does not hold a key gets the needed key results through invitation resolutions, named like
+    `makerKey.public_key` (error text in the engine: "expected an operation on a template key such as
+    someKey.public_key").
+  - The `conditions` field on actions is marked `@todo More work needs to be done on this field`.
+
+## 2026-11-14 18:43 Template: Swap Intent written, offline tests green
+
+- `template/swap-intent.ts`: roles `maker`, `taker`; start action `open` (maker); follow-up actions on the offer
+  locking script: `fill` (taker) and `cancel` (maker). Variables `offeredSatoshis`, `wantedCategory`, `wantedAmount`,
+  `makerLockingScript`, plus `takerLockingScript` and the key `makerKey`.
+- Offer script (P2SH32): `OP_IF` fill path: output at `OP_INPUTINDEX` must have bytecode `makerLockingScript`,
+  reversed category equal to `wantedCategory`, token amount `>= wantedAmount`. `OP_ELSE` cancel path: P2PKH style check
+  against `makerKey`. Fill unlocks with `OP_1`, cancel with `<signature> <public key> OP_0`.
+- Fees: the taker's own coins pay the token output (`tokenOutputSatoshis` 1000) and the fill fee. Cancel refunds
+  `offeredSatoshis - cancelFeeSatoshis` (500). Both are template constants.
+- `tests/swap-intent.test.ts`, 13 cases, libauth `createVirtualMachineBch2026` with standard rules:
+  parser accepts the template; the engine function `compileLockingBytecodeFromTemplateLockingScriptIdentifier`
+  produces the same offer bytecode as the test harness; fill passes with the exact and with a larger amount, and with
+  the offer at input 1 paid at output 1; fill fails for a smaller amount, another category, another recipient, another
+  output index; cancel passes with the maker key and fails with another key or with an unsigned spend.
+- Every rejection is checked to come from the VM evaluating the offer input, for example
+  `Unable to verify transaction: error in evaluating input index 0: Program failed an OP_VERIFY operation.` and, for the
+  wrong key, `... Program failed a signature verification with a non-null signature (violating the "NULLFAIL" rule).
+  Algorithm used: Schnorr.`
+- Sabotage check: removing the recipient check, the category check, or the amount check, replacing `OP_INPUTINDEX`
+  with `OP_0` in the recipient check, or removing `OP_CHECKSIG` each made exactly one test fail. The first version of
+  the tests missed the `OP_0` case because the offer was always input 0; the input 1 case was added for it.
+- The fill path passes in the VM, so the fallback template is not needed. Time: about 12 minutes
+  from the first read of the packages to green tests (18:31 to 18:43).
+- Open for the chipnet run: whether the taker's engine can build the `fill` spend on its own (it does not hold
+  `makerKey`; the redeem script needs `makerKey.public_key`), or whether the maker must start the `fill` invitation with
+  the offer input in it.
