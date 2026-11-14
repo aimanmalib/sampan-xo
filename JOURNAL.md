@@ -246,3 +246,15 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
   `template/swap-intent.json`, `invitations/run2-cancel.json` and `invitations/run1-fill.json`. It is a list, not a
   draft; the entrant writes the feedback in FEEDBACK.md by hand.
 - No answer from the XO team has been noted yet, so nothing is quoted here.
+
+## 2026-11-14 20:33 README and clean clone check
+
+- `npx tsx scripts/run.ts --help` printed the usage on stderr and exited 2, because any unknown first argument was
+  treated as an error. It now prints the usage on stdout and exits 0.
+- README rewritten for a reader starting from nothing: a sequence diagram of the two roles, the template variables and
+  who sets them, the pinned package versions, numbered steps from `npm ci` to the cancel run, the chipnet txids, the
+  debug tool steps and a list of known limits.
+- Clean clone check: `git archive HEAD` of commit 82c7f20 unpacked into a new temporary folder (removed afterwards),
+  then `npm ci` (311 packages, exit 0), `npm test` (9 files, 45 tests passed, exit 0) and
+  `npx tsx scripts/run.ts --help` (exit 0). No `.env` and no network were needed for these.
+- No answer from the XO team has been noted yet, so nothing is quoted here.
