@@ -214,3 +214,27 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
   chipnet.imaginary.cash and chipnet.bch.ninja, and the cancel opened on https://chipnet.imaginary.cash/tx/ at 19:57
   (unconfirmed). chipnet.chaingraph.cash answered HTTP 403 to a scripted request.
 - Time: about 5 minutes from writing the step to the broadcast.
+
+## 2026-11-14 20:12 XO debug tool: saved invitations and chipnet transactions
+
+- Tried: https://blaze.xo.cash/ in a scripted Chromium. The first screen asks for an account ("Create new account" or
+  "Use existing mnemonic", with the warning to use test or disposable wallets only). A new disposable chipnet account
+  was created in the browser for viewing; the project's chipnet phrases were not entered.
+- The tool has no file upload for templates; "Import Template" takes pasted JSON. The template exists in this repo as
+  TypeScript with bigint values, so `scripts/export-template.ts` now writes `template/swap-intent.json` with
+  `serializeTemplate` (bigints as `<bigint: 1000n>`). A test keeps the file equal to the TypeScript source and checks
+  that its identifier is the one named in every saved invitation. Pasting it gave
+  `Template imported: Swap Intent (c4f2cf9439468e95f8a43852b2c874d336ebb082652467766ed4cf03275aa456)`, listed as
+  "2 roles · 3 actions · 9 scripts".
+- "Join Invitation" says "The template must already be imported on this device." With the template imported,
+  "View invitation" accepted `run2-open.json` (action `open`, 5 commits, result `66b0a6d5…`), `run2-cancel.json`
+  (action `cancel`, 3 commits, `cancelInput`, result `cancelTransaction` `8472ca5d…`), `run1-fill-start.json` (action
+  `fill`, 2 commits, 4 variables, 1 input, no result yet) and `run1-fill.json` (action `fill`, 8 commits, taker role on
+  commits 3 and 4, result `326ee1c1…`). Nothing was rejected. "Accept invitation" was not used.
+- "Inspect" with network `chipnet` fetched each txid on paste and reported `SUCCESS` for run2 open, run2 cancel and run1
+  fill. For the offer inputs it decodes the P2SH32 redeem script (`OP_IF … OP_OUTPUTTOKENCATEGORY OP_REVERSEBYTES
+  <category> OP_EQUALVERIFY … OP_ELSE OP_DUP OP_HASH160 … OP_CHECKSIG OP_ENDIF`) and steps it ("Step 1 of 30" for the
+  fill input), with stack, operation cost and signature check metrics.
+- Small points met while scripting: Escape does not close the modals (the "Cancel" button does), and the notifications
+  panel stays open over the navigation until closed.
+- Time: about 15 minutes, most of it finding the right buttons by reading the page.
