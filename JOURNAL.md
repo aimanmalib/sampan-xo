@@ -104,3 +104,31 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
 - Open for the chipnet run: whether the taker's engine can build the `fill` spend on its own (it does not hold
   `makerKey`; the redeem script needs `makerKey.public_key`), or whether the maker must start the `fill` invitation with
   the offer input in it.
+
+## 2026-11-14 18:52 Chipnet: faucet coins reach the second server
+
+- At 18:51 the faucet transaction `f65672d9e319859cfad06d27c2c1ff97ce37dc028f2f29923f8b10e018252ba3` was still only in the
+  mempool of `chipnet.bch.ninja` (maker unconfirmed 500,000 sat there, 0 on `chipnet.imaginary.cash`). Both servers had the
+  same tip, height 332344. `chipnet.imaginary.cash` answered `blockchain.transaction.get` with
+  `daemon error: DaemonError({'code': -5, 'message': 'No such mempool or blockchain transaction. Use gettransaction for wallet transactions.'})`.
+- The transaction and its two unconfirmed ancestors (3 transactions) were fetched from `chipnet.bch.ninja` and broadcast,
+  oldest first, to `chipnet.imaginary.cash`. All three were accepted. The faucet output then showed on the
+  `chipnet.imaginary.cash` explorer page as unconfirmed.
+- Way out kept in the code: transactions from this repository are broadcast to every configured server, not one.
+
+## 2026-11-14 18:58 Test token: fund and mint on chipnet (outside XO)
+
+- `src/spend.ts` builds and signs P2PKH spends with libauth (`generateTransaction`, the `walletTemplateP2pkhNonHd`
+  compiler) and refuses to spend coins that carry tokens, so a setup step cannot burn tokens by accident.
+- `src/test-token.ts`: `fund` spends the maker's plain coins, pays `takerFundingSatoshis` to the taker and puts the maker
+  change at output 0; `mint` spends that output 0 coin as a token genesis, so the category is the fund txid. The token
+  output (1,000 sat, 1,000,000 fungible units, no NFT) goes to the taker; change goes back to the maker.
+- `tests/test-token.test.ts`, 6 cases, checks both transactions in the BCH 2026 VM with standard rules, plus a genesis
+  with a wrong category, which the VM rejects. Sabotage: setting a fixed wrong category in `planMint`, or moving the fund
+  change to output 1, each made exactly one test fail.
+- Chipnet, 18:56 to 18:57: fund `008eebd7502376715a8ffc87f6b6341cbe284c27237ea0204eaee167603ff95a` (219 bytes, fee 219 sat),
+  mint `6f2d6fc236659c342ed5cae76219a777d7fda0fef04d26a4f85198cafa512883` (258 bytes, fee 258 sat). Both servers accepted
+  both. Both pages opened on https://chipnet.imaginary.cash/tx/ as unconfirmed; the mint page shows the fungible token
+  amount 1000000 and category `008eebd7502376715a8ffc87f6b6341cbe284c27237ea0204eaee167603ff95a`.
+- https://chipnet.chaingraph.cash/tx/ answered HTTP 403 to a plain request, so it was not used as the proof explorer.
+- Test token category recorded in `config/chipnet.json` (`testToken.category`).
