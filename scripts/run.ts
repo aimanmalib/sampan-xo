@@ -9,6 +9,7 @@
  *   npx tsx scripts/run.ts fill-finish <run>   maker completes the offer input, broadcasts -> <run>-fill.json
  *   npx tsx scripts/run.ts fill        <run>   the four steps above, each in its own process
  *   npx tsx scripts/run.ts cancel      <run>   maker spends its open offer back            -> <run>-cancel.json
+ *   npx tsx scripts/run.ts --help              prints the usage line
  *
  * Add --dry-run to build and check without broadcasting; the step's invitation is then archived so its coins are
  * released, and only the steps before the broadcast write their file.
@@ -58,9 +59,15 @@ if (step === 'fill' && run !== undefined && flag === undefined) {
   process.exit(0);
 }
 
+const usage = `usage: run.ts ${Object.keys(steps).join('|')} <run> [--dry-run]  or  run.ts fill <run>`;
+if (step === '--help' || step === '-h') {
+  console.log(usage);
+  process.exit(0);
+}
+
 const selected = step === undefined ? undefined : steps[step];
 if (selected === undefined || run === undefined || (flag !== undefined && flag !== '--dry-run')) {
-  console.error(`usage: run.ts ${Object.keys(steps).join('|')} <run> [--dry-run]  or  run.ts fill <run>`);
+  console.error(usage);
   process.exit(2);
 }
 
