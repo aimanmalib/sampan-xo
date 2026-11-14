@@ -1,0 +1,261 @@
+import type { XOTemplate } from '@xo-cash/types';
+
+/**
+ * Swap Intent: a maker locks BCH and states the fungible CashToken amount they want for it.
+ *
+ * - `open` (maker): funds one offer output locked by `offerLockingScript`.
+ * - `fill` (taker): spends the offer. The covenant only checks the output at the same index as the offer input:
+ *   it must pay the maker's locking script at least `wantedAmount` tokens of category `wantedCategory`.
+ *   Whoever fills keeps the offered BCH. No signature is needed on this path.
+ * - `cancel` (maker): spends the offer back with the maker's signature.
+ *
+ * The offer script is wrapped as pay to script hash 32 by the `p2sh` locking type.
+ * Token categories are written in the usual display byte order (as shown by block explorers). The VM pushes
+ * categories in transaction byte order, so the covenant reverses them before comparing.
+ */
+export const swapIntentTemplate = {
+  $schema: 'https://libauth.org/schemas/wallet-template-v0.schema.json',
+  name: 'Swap Intent',
+  description:
+    'Lock BCH in an offer that anyone can fill by paying the maker a stated amount of one fungible CashToken. ' +
+    'The maker can cancel the offer at any time before it is filled.',
+  icon: 'swap',
+  version: '1',
+  supported: ['BCH_2023_05', 'BCH_2024_05', 'BCH_2025_05', 'BCH_2026_05'],
+  roles: {
+    maker: {
+      name: 'Maker',
+      description: 'Locks BCH in the offer, names the token and amount wanted, and can cancel until the offer is filled.',
+      icon: 'user',
+    },
+    taker: {
+      name: 'Taker',
+      description: 'Fills the offer by paying the wanted tokens to the maker and receives the offered BCH.',
+      icon: 'user',
+    },
+  },
+  start: [{ action: 'open', role: 'maker', generate: ['makerKey'] }],
+  actions: {
+    open: {
+      name: 'Open offer',
+      description: 'Lock $(<offeredSatoshis>) satoshis in an offer asking for $(<wantedAmount>) tokens of one category.',
+      icon: 'swap',
+      roles: {
+        maker: {
+          name: 'Open offer',
+          description: 'Generate the cancel key, fund the offer and state the wanted token category and amount.',
+          icon: 'user',
+          generate: ['makerKey'],
+          requirements: {
+            secrets: ['makerKey'],
+            variables: ['offeredSatoshis', 'wantedCategory', 'wantedAmount', 'makerLockingScript'],
+          },
+        },
+      },
+      requirements: { participants: [{ role: 'maker', slots: { min: 1, max: 1 } }] },
+      transaction: 'openTransaction',
+    },
+    fill: {
+      name: 'Fill offer',
+      description: 'Pay $(<wantedAmount>) tokens to the maker and take the $(<offeredSatoshis>) offered satoshis.',
+      icon: 'swap',
+      roles: {
+        taker: {
+          name: 'Fill offer',
+          description: 'Provide the wanted tokens and the locking script that receives the offered satoshis.',
+          icon: 'user',
+          requirements: { variables: ['takerLockingScript'] },
+        },
+      },
+      requirements: { participants: [{ role: 'taker', slots: { min: 1, max: 1 } }] },
+      transaction: 'fillTransaction',
+    },
+    cancel: {
+      name: 'Cancel offer',
+      description: 'Return the $(<offeredSatoshis>) offered satoshis to the maker, less the cancel fee.',
+      icon: 'cancel',
+      roles: {
+        maker: {
+          name: 'Cancel offer',
+          description: 'Sign with the key generated when the offer was opened.',
+          icon: 'user',
+          requirements: { secrets: ['makerKey'] },
+        },
+      },
+      requirements: { participants: [{ role: 'maker', slots: { min: 1, max: 1 } }] },
+      transaction: 'cancelTransaction',
+    },
+  },
+  transactions: {
+    openTransaction: {
+      name: 'Offer opened',
+      description: '$(<offeredSatoshis>) satoshis locked in an offer for $(<wantedAmount>) tokens.',
+      icon: 'swap',
+      inputs: [],
+      outputs: [{ output: 'offerOutput' }],
+      version: 2,
+      locktime: 0,
+      composable: true,
+    },
+    fillTransaction: {
+      name: 'Offer filled',
+      description: '$(<wantedAmount>) tokens paid to the maker for $(<offeredSatoshis>) satoshis.',
+      icon: 'swap',
+      inputs: [{ input: 'fillInput', inputIndex: 0 }],
+      outputs: [
+        { output: 'makerPaymentOutput', outputIndex: 0 },
+        { output: 'takerPayoutOutput' },
+      ],
+      version: 2,
+      locktime: 0,
+      composable: true,
+    },
+    cancelTransaction: {
+      name: 'Offer cancelled',
+      description: 'The offer was cancelled and its satoshis returned to the maker.',
+      icon: 'cancel',
+      inputs: [{ input: 'cancelInput', inputIndex: 0 }],
+      outputs: [{ output: 'refundOutput', outputIndex: 0 }],
+      version: 2,
+      locktime: 0,
+      composable: false,
+    },
+  },
+  inputs: {
+    fillInput: {
+      name: 'Offer',
+      description: 'The open offer being filled. Holds $(<offeredSatoshis>) satoshis and no tokens.',
+      icon: 'swap',
+      valueSatoshis: '$(<offeredSatoshis>)',
+      token: null,
+      unlockingScript: 'fillUnlockingBytecode',
+    },
+    cancelInput: {
+      name: 'Offer',
+      description: 'The open offer being cancelled. Holds $(<offeredSatoshis>) satoshis and no tokens.',
+      icon: 'cancel',
+      valueSatoshis: '$(<offeredSatoshis>)',
+      token: null,
+      unlockingScript: 'cancelUnlockingBytecode',
+    },
+  },
+  outputs: {
+    offerOutput: {
+      name: 'Offer',
+      description: '$(<offeredSatoshis>) satoshis waiting for $(<wantedAmount>) tokens.',
+      icon: 'swap',
+      lockingScript: 'offerLockingScript',
+      valueSatoshis: '$(<offeredSatoshis>)',
+      token: null,
+    },
+    makerPaymentOutput: {
+      name: 'Payment to maker',
+      description: '$(<wantedAmount>) tokens paid to the maker. Must sit at the same index as the offer input.',
+      icon: 'receive',
+      lockingScript: '$(<makerLockingScript>)',
+      valueSatoshis: '$(<tokenOutputSatoshis>)',
+      token: { category: '$(<wantedCategory>)', amount: '$(<wantedAmount>)', nft: null },
+      roles: { taker: { relevant: false } },
+    },
+    takerPayoutOutput: {
+      name: 'Payout to taker',
+      description: 'The $(<offeredSatoshis>) offered satoshis, received by the taker.',
+      icon: 'receive',
+      lockingScript: '$(<takerLockingScript>)',
+      valueSatoshis: '$(<offeredSatoshis>)',
+      token: null,
+      roles: { maker: { relevant: false } },
+    },
+    refundOutput: {
+      name: 'Refund to maker',
+      description: 'The offered satoshis returned to the maker, less the cancel fee.',
+      icon: 'receive',
+      lockingScript: '$(<makerLockingScript>)',
+      valueSatoshis: '$(refundSatoshis)',
+      token: null,
+    },
+  },
+  lockingScripts: {
+    offerLockingScript: {
+      name: 'Swap offer',
+      description:
+        'Pays out to anyone who sends the wanted tokens to the maker at the same output index, ' +
+        'or back to the maker with the maker signature.',
+      icon: 'swap',
+      lockingType: 'p2sh',
+      lockingBytecode: 'offerLockingBytecode',
+      state: { variables: ['offeredSatoshis', 'wantedCategory', 'wantedAmount', 'makerLockingScript'] },
+      selectable: false,
+      roles: {
+        maker: {
+          state: { secrets: ['makerKey'] },
+          actions: [{ action: 'cancel', role: 'maker', secrets: [{ makerKey: null }] }],
+          balance: { satoshis: true, fungibleTokens: 0n, nonfungibleTokens: 0 },
+          selectable: false,
+        },
+        taker: {
+          actions: [{ action: 'fill', role: 'taker' }],
+          balance: { satoshis: 0n, fungibleTokens: 0n, nonfungibleTokens: 0 },
+          selectable: false,
+        },
+      },
+    },
+  },
+  scripts: {
+    refundSatoshis: '<offeredSatoshis> <cancelFeeSatoshis> OP_SUB',
+    enforcePaysMaker: 'OP_INPUTINDEX OP_OUTPUTBYTECODE <makerLockingScript> OP_EQUALVERIFY',
+    enforceWantedCategory: 'OP_INPUTINDEX OP_OUTPUTTOKENCATEGORY OP_REVERSEBYTES <wantedCategory> OP_EQUALVERIFY',
+    enforceWantedAmount: 'OP_INPUTINDEX OP_OUTPUTTOKENAMOUNT <wantedAmount> OP_GREATERTHANOREQUAL',
+    fillPath: 'enforcePaysMaker enforceWantedCategory enforceWantedAmount',
+    cancelPath: 'OP_DUP OP_HASH160 <$(<makerKey.public_key> OP_HASH160)> OP_EQUALVERIFY OP_CHECKSIG',
+    offerLockingBytecode: 'OP_IF fillPath OP_ELSE cancelPath OP_ENDIF',
+    fillUnlockingBytecode: 'OP_1',
+    cancelUnlockingBytecode: '<makerKey.schnorr_signature.all_outputs> <makerKey.public_key> OP_0',
+  },
+  constants: {
+    tokenOutputSatoshis: {
+      name: 'Token output satoshis',
+      description: 'Satoshis carried by the token output paid to the maker. Paid by the taker.',
+      type: 'satoshis',
+      value: 1000n,
+    },
+    cancelFeeSatoshis: {
+      name: 'Cancel fee',
+      description: 'Satoshis kept back from the refund to pay the network fee of the cancel transaction.',
+      type: 'satoshis',
+      value: 500n,
+    },
+  },
+  variables: {
+    makerKey: {
+      name: 'Maker key',
+      description: 'Private key generated by the maker when the offer is opened. Only it can cancel the offer.',
+      type: 'private_key',
+    },
+    offeredSatoshis: {
+      name: 'Offered satoshis',
+      description: 'Satoshis the maker locks in the offer. The taker receives all of them on fill.',
+      type: 'satoshis',
+    },
+    wantedCategory: {
+      name: 'Wanted token category',
+      description: 'Category of the fungible CashToken the maker wants, in display byte order (as block explorers show it).',
+      type: 'token_category',
+    },
+    wantedAmount: {
+      name: 'Wanted token amount',
+      description: 'Smallest amount of the wanted token the maker accepts. Paying more is allowed.',
+      type: 'token_amount',
+    },
+    makerLockingScript: {
+      name: 'Maker receiving locking script',
+      description: 'Where the maker receives the wanted tokens on fill and the refund on cancel.',
+      type: 'locking_script',
+    },
+    takerLockingScript: {
+      name: 'Taker receiving locking script',
+      description: 'Where the taker receives the offered satoshis on fill.',
+      type: 'locking_script',
+    },
+  },
+} satisfies XOTemplate;
