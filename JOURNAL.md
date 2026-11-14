@@ -160,3 +160,40 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
 - Chipnet: maker deposit `95c68c23f1885c0b02646232610ece168357fc0c8a51a8a20e74517a037ca69d`, taker deposit
   `dc91ae0b673d5569938578528eaf97b2fcb2f6d6ad3f2446c27bd1a0d6015e93`, both accepted by both servers and opened on
   https://chipnet.imaginary.cash/tx/ (unconfirmed at 19:20).
+
+## 2026-11-14 19:44 Chipnet: open -> fill through the XO engine
+
+- `open` (maker) works as the engine types describe it: `createInvitation` with the template's `open` start entry as
+  the intent (this generates `makerKey`), `appendInvitation` with the four offer variables and the `offerOutput`, one
+  plain coin from `listSpendableUnspentOutputs` as input, `addChangeToInvitation`, `signInvitation` for each index from
+  `listOwnInputIndexes`, then `executeAction`. `listMissingRequirements` was the most useful call while working this
+  out: it names the outputs, role variables and unsigned inputs still owed. A dry run (`broadcastTransaction: false`)
+  leaves the coin reserved by the invitation; `archiveInvitation` releases it.
+- The first two real `open` runs each ended with an error, and each had broadcast:
+  `UnspentOutputNotFoundInStoreError: Unspent output "95c68c23f1885c0b02646232610ece168357fc0c8a51a8a20e74517a037ca69d:0" not found in store`
+  from `IndexedDBStorage.executeBulkUnspentOutputReservation`, called by `clearInvitationUnspentOutputReservations`
+  in the `finally` of `executeAction`. The broadcast and the broadcast result on the invitation are done before that
+  step; the spent coin had already left the store. The second run, started after the first "failure", opened a second
+  offer from the first one's change. Both offers are kept: run1 (filled) and run2 (left open for the cancel run).
+  Way out: `finishAction` builds the transaction first, and accepts exactly this error only when the stored invitation
+  carries the broadcast result for that transaction hash. Suggestion for the engine: do not let the reservation
+  cleanup after a successful broadcast throw, or report the broadcast txid with the error.
+- `Engine.stop()` did not settle in some runs, so the process never ended (two runs killed by a timeout after their
+  work was stored). `stopAccountEngine` waits at most `swap.engineStopTimeoutSeconds`, then the script exits.
+- Answer to the question left open at X1, as found here: the taker cannot spend the offer coin on its own. The engine
+  compiles an input only for a coin this account tracks (`InputUnspentOutputUnavailableError` otherwise), and only
+  the maker's engine tracks the offer script hash and holds `makerKey`. So `fill` takes three hand-offs: the maker
+  starts the `fill` invitation with the offer coin at input 0 and the offer variables (no role); the taker accepts it
+  as `taker`, adds `takerLockingScript`, `makerPaymentOutput` at index 0, `takerPayoutOutput`, a token coin and a plain
+  coin, change, and signs its two inputs; the maker loads it with `updateInvitation`, signs input 0 (the engine
+  compiles `OP_1` plus the redeem script) and broadcasts. No engine error on this path. The docs do not describe this
+  hand-off; it was found by reading the engine's compile path in the published source maps.
+- Fee and change were left to the engine: `addChangeToInvitation` on the taker side added a token change output
+  (999,000 units) and a plain change output.
+- Chipnet: run1 open `74fb6c7b5299ec2be0e0b4832ab4c4bd6837f8904505fe0905b932c0c77c3b99`, run1 fill
+  `326ee1c18edae7a42317c062237028150145d6f8e8cd5579baa3653e094d6862` (outputs: 1,000 sat with 1,000 test tokens to the
+  maker at index 0, 20,000 sat to the taker, token change, plain change). Then `scripts/run.ts fill run3` ran all four
+  steps in one command: open `c96a928911e301a808859080fbd842004ab47e79992f63023110a5f3884388ce`, fill
+  `f6d0359759159ac189383ea76155d2bc7dad63d153c67f95ca9162df6ab0a7a2`. All five were seen by both servers and opened on
+  https://chipnet.imaginary.cash/tx/ at 19:42 (unconfirmed).
+- Time: about 40 minutes from the first engine call to the run1 fill broadcast (19:05 to 19:38).
