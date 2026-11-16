@@ -48,6 +48,12 @@ and runs it on chipnet. The Swap Intent template in the same repository is a sep
 - **Output count equals input count.** The engine adds change outputs by itself. When the counts do not match, the converter's
   inputs and outputs are arranged (token and BCH in one input and one output, or the engine's options for change) so that they
   match. The covenant is not loosened to suit the engine.
+- **Shape of convert.** Input 0 is the landing coin and input 1 one token coin of the converter. Output 0 pays the owner
+  `ceil(landedSatoshis * rateNum / rateDen)` tokens, computed in the template; output 1 pays the converter the landed
+  satoshis and the rest of its token coin in one output. The converter states its coin's satoshis and tokens and the fee as
+  variables, so the counts match without engine change outputs.
+- **The 1000 satoshi giveBack limit is a literal** in the script, as in the original. The engine does not pass template
+  constants when it compiles a locking script, so a constant there fails to compile.
 - **giveBack and the relative lock.** The landing input in `giveBack` has `sequenceNumber` set from `returnAfter` in a version 2
   transaction, the pattern the faucet template in `@xo-cash/templates` 0.0.12 uses with `OP_CHECKSEQUENCEVERIFY`. The engine
   does not wait for the lock, so the run script checks the coin's age first and refuses with a clear message. The owner receives

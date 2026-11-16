@@ -279,3 +279,47 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
 - Starting two engines in one Node process fails with
   `Error: Cannot configure storage for cache after it has been initialized.` (from `@electrum-cash/application`), so each
   account is read in its own process, as the run scripts already do.
+
+## 2026-11-16 09:12 Migrate to XO: Landing template and VM tests
+
+- `template/landing.ts`: roles `payer` and `converter`; start action `land` (payer); follow-up actions on the landing
+  locking script: `convert` (converter) and `giveBack` (payer, no key needed). `resources` links to the original
+  `contracts/landing.cash`. Exported with the Swap Intent template by `scripts/export-template.ts` to `template/landing.json`
+  (the Swap Intent JSON came out byte for byte the same).
+- The locking script is `landing.cash` in CashASM, one script per `require`: `OP_INPUTINDEX OP_0 OP_NUMEQUALVERIFY`, then
+  `OP_IF` convert (`OP_TXOUTPUTCOUNT OP_TXINPUTCOUNT OP_NUMEQUALVERIFY`, owner bytecode at output 0, reversed category at
+  output 0, `tokenAmount * rateDen >= utxoValue * rateNum`) `OP_ELSE` giveBack (`<returnAfter> OP_CHECKSEQUENCEVERIFY OP_DROP`,
+  one input and one output, owner bytecode, empty category, `value >= utxoValue - 1000`). Unlocking: `OP_1` convert, `OP_0`
+  giveBack. P2SH32 through the `p2sh` locking type.
+- Convert shape chosen so the output count equals the input count without engine change outputs: input 0 landing coin,
+  input 1 one converter token coin; output 0 owner tokens, output 1 converter payout carrying the landed satoshis plus the
+  rest of the token coin (BCH and tokens in one output). The converter states its coin's satoshis and tokens and the fee as
+  variables; the template computes the payout. The owner amount is `ceil(landed * rateNum / rateDen)`, computed in CashASM.
+- Errors on the way:
+  - The engine function `compileLockingBytecodeFromTemplateLockingScriptIdentifier` failed with
+    `Compilation error in resolved script "giveBackPath": [1, 69] Compilation error in resolved script "enforceReturnedValue": [1, 40] Unknown identifier "giveBackMaxFeeSatoshis".`
+    The engine does not pass template `constants` when it compiles a locking script (the Swap Intent template uses a
+    constant only in an output value, which works). Way out: the literal `<1000>` in the script, as in the original.
+  - A computed script used inside another as `$(convertTokenAmount)` gave
+    `The locking bytecode completed with a non-empty control stack. Remaining control stack depth: 1.`: `$( )` inserts the
+    result as raw bytes (100 = 0x64 = `OP_NOTIF`), not as a push. Way out: reference the script by name (inlined), or `<$( )>`.
+- `tests/landing-template.test.ts` (7) and `tests/landing-covenant.test.ts` (16), libauth `createVirtualMachineBch2026` with
+  standard rules: parser, follow-up actions, engine and harness compile the same P2SH32 bytecode, computed amounts; convert
+  passes at the exact and the rounded up minimum, fails one unit below, to another owner, with another category, with the
+  category bytes reversed, with an extra output, with the landing coin at input 1; a P2SH owner works; giveBack fails with
+  sequence 5 and with the final sequence, passes at 6 and 20, passes with 1000 kept and fails with 1001, fails with two
+  outputs, to another address, and with a token output.
+- Verbatim rejections, for example: one unit below the rate
+  `Unable to verify transaction: error in evaluating input index 0: Unsuccessful evaluation: completed with a non-truthy value on top of the stack. Top stack item: "".`;
+  sequence 5
+  `... Program called an OP_CHECKSEQUENCEVERIFY operation that requires a sequence number greater than the input's sequence number. Sequence number: 5; required sequence number: 6.`
+- Sabotage, one change at a time: rate check replaced by `OP_1` made 2 tests fail; category check removed 2; CSV removed 2;
+  input index check removed 1; output count check removed 1; `<1000>` changed to `<1001>` 1. Removing the no-token check
+  made no test fail: with one input and no token on the landing coin, a token output is already refused by consensus
+  (`Transaction violates token validation: the transaction creates new fungible tokens for a category without a matching genesis input.`).
+  The check is kept because the original has it.
+- The relative lock is checked only against the input sequence number in these tests; the VM does not know the coin's age.
+  The chipnet run checks the age.
+- `tests/template-json.test.ts` now checks each template's JSON, and matches saved invitations to a template by file name
+  prefix (`run` for Swap Intent, `landing` for Landing). Swap Intent tests unchanged and green.
+- Time: about 10 minutes from the first template line to green tests (09:05 to 09:12).
