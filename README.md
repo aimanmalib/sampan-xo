@@ -1,6 +1,7 @@
 # Swap Intent: an XO template for CashTokens swaps on chipnet
 
-An entry for the "Build with XO" bounty at BCH BLAZE 2026.
+An entry for the "Build with XO" bounty at BCH BLAZE 2026. The same repository also holds the "Migrate to XO" entry:
+the Sampan landing contract as an XO template, see [Migrate to XO](#migrate-to-xo).
 
 Build journal, written by the AI coding agent while it worked. The feedback in FEEDBACK.md was written by the entrant, by hand.
 
@@ -164,6 +165,132 @@ disposable account there; no funds are needed to view.
 - `Engine.stop()` did not always settle during the chipnet runs, so the scripts wait at most
   `swap.engineStopTimeoutSeconds` for it and then exit.
 - Chipnet test wallets only. The code has not been reviewed for use with real funds.
+
+## Migrate to XO
+
+A second entry in this repository, for the "Migrate to XO" bounty at BCH BLAZE 2026: the landing address contract of
+Sampan, ported to an XO template named "Landing" and run on chipnet with two follow-up actions.
+
+- Original project: https://sampan.sasateguh.com, source https://github.com/aimanmalib/sampan, contract
+  `contracts/landing.cash` (CashScript, P2SH20). Sampan runs it on mainnet; nothing here touches that deployment.
+- XO implementation: [template/landing.ts](template/landing.ts), exported for XO tools as
+  [template/landing.json](template/landing.json); run script [scripts/landing-run.ts](scripts/landing-run.ts); saved
+  invitations `invitations/landing*.json`; design record [docs/decisions/0001-migrate-landing.md](docs/decisions/0001-migrate-landing.md).
+
+The original contract: anyone pays BCH to the landing address, and the coin can then leave only to the owner, either
+converted to tokens at or above a minimum rate (`convert`) or returned as BCH once it is a few blocks old (`giveBack`).
+No key of the service is needed for either path. The XO template keeps those rules in its locking script.
+
+| Original (`contracts/landing.cash`) | XO template "Landing" |
+| --- | --- |
+| pay BCH to the contract address from any wallet | start action `land`, role `payer` |
+| function `convert` | follow-up action `convert` on the landing output, role `converter` adds the token input |
+| function `giveBack` | follow-up action `giveBack` on the landing output; no key, the runs use the payer |
+| constructor `ownerLock` | variable `ownerLockingScript` |
+| constructor `tokenCategory` | variable `tokenCategory` (explorer byte order, reversed inside the script) |
+| constructor `rateNum`, `rateDen` | variables `rateNum`, `rateDen` |
+| constructor `returnAfter` | variable `returnAfter`, carried as the sequence number of the `giveBack` input |
+
+The rules enforced by the landing locking script, as in the original:
+
+- `convert`: the landing coin is input 0, there are as many outputs as inputs, output 0 pays `ownerLockingScript` and
+  carries fungible tokens of `tokenCategory`, and `tokenAmount * rateDen >= landedValue * rateNum`.
+- `giveBack`: the landing coin is input 0 and at least `returnAfter` blocks old (`OP_CHECKSEQUENCEVERIFY`), one input and
+  one output, output 0 pays `ownerLockingScript` with no token and at least the landed value less 1000 satoshis.
+
+```mermaid
+sequenceDiagram
+    participant P as payer
+    participant L as landing output (P2SH32)
+    participant C as converter
+    participant O as owner
+    P->>L: land: landedSatoshis
+    alt convert (any time)
+        C->>O: output 0: at least landedSatoshis * rateNum / rateDen tokens
+        L->>C: output 1: landedSatoshis
+    else giveBack (returnAfter blocks later)
+        L->>O: output 0: landedSatoshis less the fee, no token
+    end
+```
+
+### Differences from the original
+
+- **P2SH32 instead of P2SH20.** The template uses the XO `p2sh` locking type, which is P2SH32, so the landing address
+  differs from the one Sampan computes for the same parameters. The rules are the same.
+- **A `converter` role instead of a Cauldron pool.** Chipnet has no Sampan token and no pool for it. The fungible test
+  token minted for the Swap Intent runs (`testToken.category` in `config/chipnet.json`) stands in, and the `taker`
+  account, which holds it, adds the token input and receives the landed BCH. The contract never checked who provides the
+  other inputs, so this changes the counterparty, not the rules.
+- **The output count is fixed by the template.** The converter states its token coin's satoshis and tokens and the fee
+  as variables, so `convert` has two inputs and two outputs and the engine adds no change output.
+- The values used on chipnet live in `config/chipnet.json` under `landing`: 10000 landed satoshis, rate 1/100 (100 test
+  token units for 10000 satoshis), `returnAfter` 6 as in Sampan, a 500 satoshi giveBack fee.
+
+### Chipnet runs (Landing)
+
+| Run | Action | Txid |
+| --- | --- | --- |
+| landing1 | land | [78832800...a894](https://chipnet.imaginary.cash/tx/7883280023308e712beb1a51f5f9ba050dd740b7a8099fcf14e18a98437ca894) |
+| landing1 | convert | [7a9b82e8...d056](https://chipnet.imaginary.cash/tx/7a9b82e8159b01bcf53e5c556f90d568a32961a4aef7551d119454bc7461d056) |
+| landing2 | land | [a0e6da27...ce47](https://chipnet.imaginary.cash/tx/a0e6da274c8c5881bfc5c0c103c4d64f1612d1d69b79aeac876fea165ffdce47) |
+| landing2 | giveBack | [de837976...19dd](https://chipnet.imaginary.cash/tx/de83797632b64d4725fcd47ec9325fc49dc36cddf30fdd7d301137d01d1819dd) |
+
+All four ran through the XO engine. In landing1 the owner received 100 test token units at output 0 of the convert
+transaction. In landing2 the owner received 9500 satoshis with no token. The first giveBack attempts were refused by
+the chipnet nodes as `non-BIP68-final` until about an hour after the land coin was mined; the refusals are rows in
+[docs/CHIPNET-RUNS.md](docs/CHIPNET-RUNS.md) and the measurements are in the [journal](JOURNAL.md).
+
+### Reproduce the invitations
+
+After steps 1 to 5 of the setup above (wallets, chipnet coins for the maker, test token and deposits):
+
+1. Add the owner account. This appends `OWNER_MNEMONIC` to `.env` and refuses to replace a phrase that is already set.
+   Put the printed token-aware owner address into `landing.ownerAddress` in `config/chipnet.json`.
+
+   ```sh
+   npx tsx scripts/wallets.ts add
+   npx tsx scripts/wallets.ts addresses
+   ```
+
+2. Land and convert (the three convert steps run as separate processes, payer and converter exchange invitation files):
+
+   ```sh
+   npx tsx scripts/landing-run.ts land landing1
+   npx tsx scripts/landing-run.ts convert landing1
+   ```
+
+3. Land a second coin, wait until it is `landing.returnAfter` blocks old, then return it to the owner. The giveBack
+   step reads the coin's age from chipnet Electrum first and refuses a coin that is too young.
+
+   ```sh
+   npx tsx scripts/landing-run.ts land landing2
+   npx tsx scripts/landing-run.ts giveBack landing2
+   ```
+
+Each step writes `invitations/<run>-<step>.json` and accepts `--dry-run`; `npx tsx scripts/landing-run.ts --help`
+prints the steps. The offline tests for the template (convert and giveBack paths, each covenant check failing on its
+own) are `tests/landing-*.test.ts` and run with `npm test`.
+
+### Open the Landing invitations in the XO debug tool
+
+Follow "Open a saved invitation in the XO debug tool" above with the Landing files:
+
+1. "Import Template" with the contents of [template/landing.json](template/landing.json). The tool reports
+   `Template imported: Landing (03fad653...3515)`, "2 roles · 3 actions · 18 scripts". Regenerate the file with
+   `npx tsx scripts/export-template.ts` after changing `template/landing.ts`.
+2. "Join Invitation" with any `invitations/landing*.json`, then "View invitation". `landing1-convert.json` shows the
+   `convert` action with its six commits and the broadcast result; `landing2-giveBack.json` shows `giveBack`.
+3. "Inspect" on `chipnet` with the convert or giveBack txid above steps through the landing input and decodes its
+   P2SH32 redeem script with both branches.
+
+### Known limits (Landing)
+
+- The engine does not wait for the relative lock and does not check a coin's age before it broadcasts; the run script
+  does that check, and a node may still refuse the transaction for a while after it passes (see the journal).
+- A broadcast that fails keeps the coin reserved by its invitation in the engine; the invitation has to be archived
+  before the step can run again.
+- Each `convert` or `giveBack` spends one landed coin, at input 0, as in the original.
+- Chipnet test wallets and a test token only. The code has not been reviewed for use with real funds.
 
 ## AI disclosure
 
