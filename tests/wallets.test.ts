@@ -1,10 +1,10 @@
-import { existsSync, mkdtempSync, readFileSync, rmSync, statSync } from 'node:fs';
+import { existsSync, mkdtempSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 import { deriveFundingKey } from '../src/accounts.js';
 import { loadConfig } from '../src/config.js';
-import { mnemonicVariable, parseEnv, writeNewEnvFile } from '../src/env.js';
+import { appendEnvVariables, mnemonicVariable, parseEnv, writeNewEnvFile } from '../src/env.js';
 
 // Standard BIP39 test vector phrase; it is public and holds nothing.
 const testPhrase = 'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about';
@@ -46,5 +46,26 @@ describe('.env handling', () => {
     expect(statSync(path).mode & 0o777).toBe(0o600);
     expect(parseEnv(readFileSync(path, 'utf8')).MAKER_MNEMONIC).toBe(testPhrase);
     expect(() => writeNewEnvFile(path, { MAKER_MNEMONIC: 'x' })).toThrow(/refusing to overwrite/);
+  });
+
+  it('appends a new phrase and keeps every existing line byte for byte', () => {
+    const path = join(tempDir(), '.env');
+    const before = `# comment\nMAKER_MNEMONIC=${testPhrase}\nTAKER_MNEMONIC="${testPhrase}"`;
+    writeFileSync(path, before, { mode: 0o644 });
+    appendEnvVariables(path, { OWNER_MNEMONIC: 'legal winner thank year' });
+    const after = readFileSync(path, 'utf8');
+    expect(after.startsWith(before + '\n')).toBe(true);
+    expect(parseEnv(after)).toEqual({ MAKER_MNEMONIC: testPhrase, TAKER_MNEMONIC: testPhrase, OWNER_MNEMONIC: 'legal winner thank year' });
+    expect(statSync(path).mode & 0o777).toBe(0o600);
+    expect(mnemonicVariable('owner')).toBe('OWNER_MNEMONIC');
+  });
+
+  it('refuses to append a name that is already set and leaves the file unchanged', () => {
+    const path = join(tempDir(), '.env');
+    writeNewEnvFile(path, { MAKER_MNEMONIC: testPhrase });
+    const before = readFileSync(path, 'utf8');
+    expect(() => appendEnvVariables(path, { MAKER_MNEMONIC: 'x', OWNER_MNEMONIC: 'y' })).toThrow(/already sets MAKER_MNEMONIC/);
+    expect(readFileSync(path, 'utf8')).toBe(before);
+    expect(() => appendEnvVariables(join(tempDir(), 'missing.env'), { OWNER_MNEMONIC: 'y' })).toThrow(/does not exist/);
   });
 });

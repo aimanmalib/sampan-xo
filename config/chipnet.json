@@ -2,7 +2,7 @@
   "network": "chipnet",
   "addressPrefix": "bchtest",
   "fundingDerivationPath": "m/44'/1'/0'/0/0",
-  "accounts": ["maker", "taker"],
+  "accounts": ["maker", "taker", "owner"],
   "electrumServers": [
     { "host": "chipnet.imaginary.cash", "port": 50004, "transport": "wss" },
     { "host": "chipnet.bch.ninja", "port": 50004, "transport": "wss" }
@@ -26,5 +26,13 @@
     "offeredSatoshis": 20000,
     "wantedAmount": "1000",
     "engineStopTimeoutSeconds": 20
+  },
+  "landing": {
+    "ownerAddress": "bchtest:zz4rr7mn324zdkeav5v3gpqvlf3jx9u68q0vhr6hgz",
+    "landedSatoshis": 10000,
+    "rateNum": 1,
+    "rateDen": 100,
+    "returnAfter": 6,
+    "giveBackFeeSatoshis": 500
   }
 }

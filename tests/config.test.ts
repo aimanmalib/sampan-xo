@@ -57,3 +57,25 @@ describe('test token config', () => {
     expect(() => loadConfig(write({ ...shipped, swap: { ...shipped.swap, wantedAmount: '-1' } }))).toThrow(/swap needs/);
   });
 });
+
+describe('landing config', () => {
+  it('ships the landing values with a six block return age', () => {
+    const { landing, accounts } = loadConfig();
+    expect(accounts).toEqual(['maker', 'taker', 'owner']);
+    expect(landing.returnAfter).toBe(6);
+    expect(landing.giveBackFeeSatoshis).toBeLessThanOrEqual(1000);
+    expect(landing.ownerAddress === null || landing.ownerAddress.startsWith('bchtest:')).toBe(true);
+  });
+
+  it('rejects missing or invalid landing values', () => {
+    const base = loadConfig();
+    const withLanding = (patch: Record<string, unknown>) => write({ ...base, landing: { ...base.landing, ...patch } });
+    expect(() => loadConfig(write({ ...base, landing: undefined }))).toThrow(/landing section/);
+    expect(() => loadConfig(withLanding({ rateDen: 0 }))).toThrow(/landing.rateDen/);
+    expect(() => loadConfig(withLanding({ landedSatoshis: 1.5 }))).toThrow(/landing.landedSatoshis/);
+    expect(() => loadConfig(withLanding({ returnAfter: 70000 }))).toThrow(/16 bits/);
+    expect(() => loadConfig(withLanding({ giveBackFeeSatoshis: 1001 }))).toThrow(/0 to 1000/);
+    expect(() => loadConfig(withLanding({ ownerAddress: 'bitcoincash:qq' }))).toThrow(/ownerAddress/);
+    expect(loadConfig(withLanding({ ownerAddress: null })).landing.ownerAddress).toBeNull();
+  });
+});
