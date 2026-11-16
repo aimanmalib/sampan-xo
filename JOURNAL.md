@@ -431,3 +431,13 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
   (`0xe803`) inline, and steps it ("Step 1 of 60").
 - Screenshots `xo-migrate-*` (11) were kept as evidence outside the repository.
 - Time: about 10 minutes; the Swap Intent script from 2026-11-14 worked with the file names changed.
+
+## 2026-11-16 10:36 Migrate to XO: README section and clean clone check
+
+- README: new section "Migrate to XO" (links to the original project and contract, map of the original functions to the
+  template's actions, the covenant rules, a sequence diagram, differences from the original, the four Landing txids, the
+  commands to make the invitations again, how to open them in the XO debug tool, known limits). The Swap Intent sections
+  are unchanged.
+- Clean clone: `git archive HEAD` into a new temporary directory, `npm ci` (311 packages, rc 0), `npm test` (13 files,
+  86 tests passed), `npx tsx scripts/landing-run.ts --help` (rc 0, prints the usage line). The directory was removed.
+- Style check of the README text: no finding that is not already in the earlier README.
