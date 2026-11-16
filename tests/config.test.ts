@@ -75,6 +75,7 @@ describe('landing config', () => {
     expect(() => loadConfig(withLanding({ landedSatoshis: 1.5 }))).toThrow(/landing.landedSatoshis/);
     expect(() => loadConfig(withLanding({ returnAfter: 70000 }))).toThrow(/16 bits/);
     expect(() => loadConfig(withLanding({ giveBackFeeSatoshis: 1001 }))).toThrow(/0 to 1000/);
+    expect(() => loadConfig(withLanding({ convertFeeSatoshis: 0 }))).toThrow(/landing.convertFeeSatoshis/);
     expect(() => loadConfig(withLanding({ ownerAddress: 'bitcoincash:qq' }))).toThrow(/ownerAddress/);
     expect(loadConfig(withLanding({ ownerAddress: null })).landing.ownerAddress).toBeNull();
   });

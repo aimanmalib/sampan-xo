@@ -37,6 +37,8 @@ export interface LandingConfig {
   returnAfter: number;
   /** Satoshis kept as fee by `giveBack`; the contract allows at most 1000. */
   giveBackFeeSatoshis: number;
+  /** Satoshis the converter leaves for the network fee of `convert`. */
+  convertFeeSatoshis: number;
 }
 
 /** Values of the chipnet Swap Intent runs. */
@@ -98,7 +100,7 @@ const checkLanding = (landing: Partial<LandingConfig> | undefined, path: string)
   if (landing.ownerAddress !== null && !/^bchtest:[qpzr][0-9a-z]{41,}$/.test(String(landing.ownerAddress))) {
     throw new Error(`config ${path}: landing.ownerAddress must be null or a bchtest address`);
   }
-  for (const key of ['landedSatoshis', 'rateNum', 'rateDen', 'returnAfter'] as const) {
+  for (const key of ['landedSatoshis', 'rateNum', 'rateDen', 'returnAfter', 'convertFeeSatoshis'] as const) {
     if (!positiveInteger(landing[key])) throw new Error(`config ${path}: landing.${key} must be a positive integer`);
   }
   // BIP68 block-based relative locks carry the age in the low 16 bits of the sequence number.

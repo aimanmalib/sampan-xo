@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { hexToBin, lockingBytecodeToCashAddress } from '@bitauth/libauth';
 import { Engine, XO_SUPPORTED_NETWORKS } from '@xo-cash/engine';
 import { p2pkhTemplate } from '@xo-cash/templates';
+import { landingTemplate } from '../template/landing.js';
 import { swapIntentTemplate } from '../template/swap-intent.js';
 import type { AccountName, ChipnetConfig } from './config.js';
 
@@ -13,6 +14,7 @@ export interface AccountEngine {
   engine: Engine;
   walletTemplateIdentifier: string;
   swapTemplateIdentifier: string;
+  landingTemplateIdentifier: string;
 }
 
 /**
@@ -39,7 +41,7 @@ const installRejectionGuard = (): void => {
 
 /**
  * Starts the XO engine of one account on chipnet, with the P2PKH wallet template as its change, receive and address
- * policy and the Swap Intent template imported.
+ * policy and the Swap Intent and Landing templates imported.
  * Storage is the engine's IndexedDB store (a file per account under swap.engineDatabasePath). The SQLite store of
  * @xo-cash/state 0.0.5 has no listScriptHashes, which Engine.create calls, so it cannot start the engine.
  */
@@ -61,7 +63,8 @@ export const startAccountEngine = async (account: AccountName, mnemonic: string,
     address: { templateIdentifier: walletTemplateIdentifier },
   });
   const swap = await engine.importTemplate(swapIntentTemplate);
-  return { engine, walletTemplateIdentifier, swapTemplateIdentifier: swap.templateIdentifier };
+  const landing = await engine.importTemplate(landingTemplate);
+  return { engine, walletTemplateIdentifier, swapTemplateIdentifier: swap.templateIdentifier, landingTemplateIdentifier: landing.templateIdentifier };
 };
 
 /**

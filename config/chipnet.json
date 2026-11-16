@@ -33,6 +33,7 @@
     "rateNum": 1,
     "rateDen": 100,
     "returnAfter": 6,
-    "giveBackFeeSatoshis": 500
+    "giveBackFeeSatoshis": 500,
+    "convertFeeSatoshis": 1000
   }
 }
