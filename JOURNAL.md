@@ -404,3 +404,30 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
   with no token to `bchtest:qz4rr7mn324zdkeav5v3gpqvlf3jx9u68qgxya53h3` (the owner address in its non-token form).
   `land -> giveBack` ran through the XO engine with the covenant unchanged. About 55 minutes from the first refusal to the
   broadcast, most of it waiting on the nodes.
+
+## 2026-11-16 10:40 Migrate to XO: Landing template and runs in the XO debug tool
+
+- Tried: https://blaze.xo.cash/ in a scripted Chromium with a new disposable chipnet account (the project's phrases were
+  not entered), the same steps as the Swap Intent check on 2026-11-14.
+- "Import Template" with the pasted `template/landing.json` gave
+  `Template imported: Landing (03fad65372a2941104b9256de44ed263452ea26e26b4a6bef39b9d44d20e3515)`, listed as
+  "2 roles · 3 actions · 18 scripts" with the template description. The identifier is the one in every `landing*`
+  invitation file.
+- "Join Invitation" then "View invitation" accepted all six saved files; nothing was rejected:
+  - `landing1-land.json`: action `land`, 4 commits (payer role on commits 1 and 2), result `landTransaction` `78832800…`.
+  - `landing1-convert-start.json`: action `convert`, 2 commits, 6 variables (`landedSatoshis` 10000, `ownerLockingScript`,
+    `tokenCategory`, `rateNum` 1, `rateDen` 100, `returnAfter` 6), input `convertInput` at transaction index 0, no result.
+  - `landing1-convert-taken.json`: 5 commits, converter role on commits 3 and 4, commit 5 adds the converter's unlocking
+    bytecode for input 1, no result.
+  - `landing1-convert.json`: 6 commits, commit 6 extends commit 2 `convertInput`, result `convertTransaction` `7a9b82e8…`.
+  - `landing2-land.json`: action `land`, 4 commits, result `a0e6da27…`.
+  - `landing2-giveBack.json`: action `giveBack`, 4 commits (payer role on commit 3), commit 4 extends `giveBackInput`,
+    result `giveBackTransaction` `de837976…`.
+  The page shows each commit's expiry (5 hours after creation) and the entity public keys; "Accept invitation" was not used.
+- "Inspect" with network `chipnet` fetched each txid on paste and reported `SUCCESS` for landing1 land, landing1 convert
+  and landing2 giveBack. For the landing input of convert (scriptSig `OP_1`, 10000 sats) and of giveBack (scriptSig
+  `OP_0`) it decodes the P2SH32 redeem script, `OP_INPUTINDEX OP_0 OP_NUMEQUALVERIFY OP_IF … OP_ELSE OP_6
+  OP_CHECKSEQUENCEVERIFY OP_DROP … OP_ENDIF`, with the owner bytecode, the reversed category and the 1000 sat fee limit
+  (`0xe803`) inline, and steps it ("Step 1 of 60").
+- Screenshots `xo-migrate-*` (11) were kept as evidence outside the repository.
+- Time: about 10 minutes; the Swap Intent script from 2026-11-14 worked with the file names changed.
