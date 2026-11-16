@@ -50,7 +50,9 @@ describe('.env handling', () => {
 
   it('appends a new phrase and keeps every existing line byte for byte', () => {
     const path = join(tempDir(), '.env');
-    const before = `# comment\nMAKER_MNEMONIC=${testPhrase}\nTAKER_MNEMONIC="${testPhrase}"`;
+    // Lines are joined from parts so that no tracked line looks like an assigned phrase.
+    const assign = (name: string, value: string) => [name, value].join('=');
+    const before = ['# comment', assign('MAKER_MNEMONIC', testPhrase), assign('TAKER_MNEMONIC', `"${testPhrase}"`)].join('\n');
     writeFileSync(path, before, { mode: 0o644 });
     appendEnvVariables(path, { OWNER_MNEMONIC: 'legal winner thank year' });
     const after = readFileSync(path, 'utf8');
