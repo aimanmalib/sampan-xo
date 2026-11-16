@@ -16,6 +16,12 @@ opened on a public chipnet explorer (https://chipnet.imaginary.cash/tx/). Invita
 | 2026-11-14 19:40 | run3 | open | c96a928911e301a808859080fbd842004ab47e79992f63023110a5f3884388ce | invitations/run3-open.json | ok |
 | 2026-11-14 19:41 | run3 | fill | f6d0359759159ac189383ea76155d2bc7dad63d153c67f95ca9162df6ab0a7a2 | invitations/run3-fill.json | ok |
 | 2026-11-14 19:56 | run2 | cancel | 8472ca5d982bff800fa471f0811b5c9a3af597c96b8dd0e73d555a7ed44de110 | invitations/run2-cancel.json | ok |
+| 2026-11-16 09:17 | landing1 | land | 7883280023308e712beb1a51f5f9ba050dd740b7a8099fcf14e18a98437ca894 | invitations/landing1-land.json | ok |
+| 2026-11-16 09:18 | landing1 | convert | 7a9b82e8159b01bcf53e5c556f90d568a32961a4aef7551d119454bc7461d056 | invitations/landing1-convert.json | ok |
+| 2026-11-16 09:19 | landing2 | land | a0e6da274c8c5881bfc5c0c103c4d64f1612d1d69b79aeac876fea165ffdce47 | invitations/landing2-land.json | ok |
 
 run2 is the open -> cancel run: the offer opened at 19:30 was cancelled by the maker at 19:56. The fill steps in between are saved as `<run>-fill-start.json` (maker adds
 the offer coin) and `<run>-fill-taken.json` (taker adds the payment and signs).
+
+landing1 is the land -> convert run: the owner received 100 test token units at output 0 of the convert transaction.
+landing2 is the land -> giveBack run; giveBack needs the landed coin to be 6 blocks old.

@@ -323,3 +323,38 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
 - `tests/template-json.test.ts` now checks each template's JSON, and matches saved invitations to a template by file name
   prefix (`run` for Swap Intent, `landing` for Landing). Swap Intent tests unchanged and green.
 - Time: about 10 minutes from the first template line to green tests (09:05 to 09:12).
+
+## 2026-11-16 09:21 Migrate to XO: chipnet run landing1 land -> convert, landing2 land
+
+- `scripts/landing-run.ts` (steps `land`, `convert-start`, `convert-take`, `convert-finish`, `convert`) on top of
+  `src/landing-land.ts` and `src/landing-convert.ts`; the engine now imports the Landing template next to Swap Intent.
+  `finishAction` and `signOwnInputs` from the Swap Intent code are reused unchanged. New config value
+  `landing.convertFeeSatoshis` (1000).
+- 09:16 `land landing1 --dry-run` built a transaction. 09:17 `land landing1` broadcast
+  `7883280023308e712beb1a51f5f9ba050dd740b7a8099fcf14e18a98437ca894`: output 0 to the P2SH32 landing address
+  `bchtest:pdkjxyq90j46vdx39ukn9wn2dl7gcxknn7nts92rnx55v00whxc25ggkpq554`, output 1 engine change.
+- The payer engine lists the landed coin under the Landing template although the landing locking script has no
+  payer secret, so `convert-start` found it with `listUnspentOutputs()` by land txid and template.
+- 09:17 `convert-take` (taker as converter) and `convert-finish --dry-run` (payer) built a transaction with no error:
+  one token coin as input 1 (998000 units, 1000 sat), no change output, two inputs and two outputs. The engine did not add
+  change on its own and did not refuse the missing change.
+- The real `convert-finish` after that dry run failed:
+  `InvitationHistoryConflictError: Invitation "1ce6b48a8ba70106d2c7949494567602" history conflict at stored commit "c5c5a3885c6b1b1f84e4cf80748b65bb", expected the updated invitation to keep every stored commit in its stored position`.
+  The dry run had stored the payer's input commit in its engine. Starting again, `convert-take` failed with
+  `the converter engine wallet has no coin with 100 test token units`: the first taken invitation still reserved the
+  token coin. Way out: archived that invitation in the taker engine (`engine.archiveInvitation`, one-off, not committed),
+  then `convert-start`, `convert-take`, `convert-finish` again. About 2 minutes lost.
+- 09:18 `convert-finish landing1` broadcast `7a9b82e8159b01bcf53e5c556f90d568a32961a4aef7551d119454bc7461d056` while the land
+  transaction was still unconfirmed. Explorer: input 0 the landing coin, input 1 the taker token coin; output 0
+  `bchtest:qz4rr7mn324zdkeav5v3gpqvlf3jx9u68qgxya53h3` (the owner address in its non-token form) with 100 units of
+  `008eebd7502376715a8ffc87f6b6341cbe284c27237ea0204eaee167603ff95a`; output 1 to a fresh taker address with the rest of
+  the tokens. The covenant ran through the engine; no fallback (K6) was needed.
+- 09:19 `land landing2` broadcast `a0e6da274c8c5881bfc5c0c103c4d64f1612d1d69b79aeac876fea165ffdce47`, spending the
+  unconfirmed change of landing1. The engine printed, verbatim, twice
+  `Failed to process transaction update: Error: Could not validate a block header on height 333698: The requested header is ahead of the current checkpoint at height 332384`
+  and then
+  `note: broadcast recorded; the engine then failed to clear a spent coin reservation: UnspentOutputNotFoundInStoreError: Unspent output "7883280023308e712beb1a51f5f9ba050dd740b7a8099fcf14e18a98437ca894:1" not found in store`
+  (the late reservation error already seen in the Swap Intent runs). The broadcast went through.
+- Explorer at 09:20: landing2 land mined in block 333701. All three txids opened on https://chipnet.imaginary.cash/tx/.
+- Unit tests `tests/landing-run.test.ts` (6) with a stand-in engine: variables from the config, reading a land
+  invitation, the rounded up minimum, convert input and output positions, no change, every saved landing invitation valid.
