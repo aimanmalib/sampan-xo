@@ -258,3 +258,24 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
   then `npm ci` (311 packages, exit 0), `npm test` (9 files, 45 tests passed, exit 0) and
   `npx tsx scripts/run.ts --help` (exit 0). No `.env` and no network were needed for these.
 - No answer from the XO team has been noted yet, so nothing is quoted here.
+
+## 2026-11-16 09:00 Migrate to XO: design, owner account, landing config
+
+- Second entry in this repository: the Sampan landing contract (`contracts/landing.cash`, CashScript 0.14, functions
+  `convert` and `giveBack`) ported to an XO template. Design recorded in `docs/decisions/0001-migrate-landing.md`.
+- Registry dist-tags at 08:56: `@xo-cash/engine` next is still `0.1.1-next.18029697917` (latest `0.0.1`), `@xo-cash/templates`
+  latest still `0.0.12`. No upgrade.
+- Relative locks in XO: `XOTemplateInput.sequenceNumber` takes a number or a CashASM string, and transactions take `version`
+  and `locktime`. The only published example is the faucet template in `@xo-cash/templates` 0.0.12
+  (`sequenceNumber: "$(<periodBlocks>)"` with `OP_CHECKSEQUENCEVERIFY OP_DROP`). The engine README does not mention sequence
+  numbers; the type declarations do.
+- A third account `owner` was added. `npm run wallets -- add` appended `OWNER_MNEMONIC` to `.env`; a hash of the existing
+  maker and taker lines was the same before and after, and the old file content is an exact prefix of the new one. The
+  file mode stayed 0600. Owner address: `bchtest:zz4rr7mn324zdkeav5v3gpqvlf3jx9u68q0vhr6hgz`.
+- Balances at 08:58. Plain funding addresses of maker, taker and owner: 0 satoshis (the coins were deposited into the
+  engine wallets on 2026-11-14). Engine wallets, read with `listUnspentOutputs()`: maker 4 confirmed outputs, 358638
+  satoshis in total, including two outputs of 1000 test token units each; taker 4 confirmed outputs, 136681 satoshis in
+  total, including one output with 998000 test token units. Enough for the landing runs without the faucet.
+- Starting two engines in one Node process fails with
+  `Error: Cannot configure storage for cache after it has been initialized.` (from `@electrum-cash/application`), so each
+  account is read in its own process, as the run scripts already do.
