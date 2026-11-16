@@ -358,3 +358,49 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
 - Explorer at 09:20: landing2 land mined in block 333701. All three txids opened on https://chipnet.imaginary.cash/tx/.
 - Unit tests `tests/landing-run.test.ts` (6) with a stand-in engine: variables from the config, reading a land
   invitation, the rounded up minimum, convert input and output positions, no change, every saved landing invitation valid.
+
+## 2026-11-16 09:26 Migrate to XO: landing2 giveBack
+- Added `src/landing-giveback.ts` and the `giveBack <run>` step of `scripts/landing-run.ts`. Before the engine starts, the
+  step reads the land transaction height (`blockchain.transaction.get_height`) and the tip (`blockchain.headers.get_tip`)
+  from chipnet Electrum and refuses a coin with fewer than `returnAfter` confirmations. The engine itself does not check
+  the age of a coin before building or broadcasting.
+- 09:27 tip 333708, land mined at 333701 (8 confirmations). `giveBack landing2` built version 2, locktime 0, one input
+  (`a0e6da27...:0`, sequence 6, unlocking script 139 bytes, no signature) and one output of 9500 sat to the owner, txid
+  `de83797632b64d4725fcd47ec9325fc49dc36cddf30fdd7d301137d01d1819dd`. `executeAction` failed, verbatim:
+  `Failed to broadcast transaction: Error: Failed to request 'blockchain.transaction.broadcast': the transaction was rejected by network rules.`
+  `non-BIP68-final (code 64)`.
+- A second run failed before building:
+  `UnspentOutputReservationExternalConflictError: Unspent output "a0e6da274c8c5881bfc5c0c103c4d64f1612d1d69b79aeac876fea165ffdce47:0" is already reserved by "bb101ae44c12976e29eab6a1ce7422a5"`.
+  The failed invitation keeps its reservation. Way out: `engine.archiveInvitation` on it (one-off, not committed), then the
+  step again, which built the same txid and got the same `non-BIP68-final (code 64)`.
+- The same bytes sent straight to both servers (`chipnet.imaginary.cash` Fulcrum 2.1.4, `chipnet.bch.ninja` Fulcrum 2.1.3
+  over Bitcoin Cash Node) were refused the same way. Both servers reported the coin unspent with `confirmed_height: 333701`
+  and the land transaction with 12 confirmations at tip 333712.
+- Probe: the same transaction with sequence 1 to 5 can never be accepted (the covenant's `6 OP_CHECKSEQUENCEVERIFY` fails),
+  so the error kind shows the age the node gives the coin. `script-csv` = node error
+  `non-mandatory-script-verify-flag (Locktime requirement not satisfied)` (age check passed), `bip68` = `non-BIP68-final`.
+
+  | Time (UTC) | Tip | seq 1 | seq 2 | seq 3 | seq 4 | seq 5 |
+  | --- | --- | --- | --- | --- | --- | --- |
+  | 09:31 | 333717 | script-csv | bip68 | bip68 | - | bip68 |
+  | 09:37 | 333720 | script-csv | script-csv | bip68 | bip68 | bip68 |
+  | 09:46 | 333729 | - | - | bip68 | bip68 | bip68 |
+  | 09:47 | 333730 | - | - | script-csv | bip68 | bip68 |
+  | 09:56 | 333740 | - | - | script-csv | script-csv | bip68 |
+
+  Chipnet mined a block about every 45 seconds in that window, while the age the nodes accept grew by one about every
+  4 to 10 blocks. By the BIP68 rule in Bitcoin Cash Node (`nCoinHeight + sequence - 1 < tip + 1`) a coin mined at 333701
+  passes sequence 6 from tip 333706. The cause was not found; the facts above are what was measured.
+- Sharper probe for sequence 6: the same transaction with the unlocking selector `OP_0` changed to `OP_1` (the convert
+  path, which fails here because the output carries no token). At 10:12 (tip 333754) it was still `non-BIP68-final`; at
+  10:18 (tip 333760) the node answered
+  `mandatory-script-verify-flag-failed (Script failed an OP_EQUALVERIFY operation) (code 16)`, so sequence 6 had passed.
+- 10:19 archived the second failed invitation (`f0707ad8...`, one-off) and ran `giveBack landing2` again. The engine
+  broadcast `de83797632b64d4725fcd47ec9325fc49dc36cddf30fdd7d301137d01d1819dd`, the same txid as the refused attempts. The
+  script then failed to save the file, verbatim: `Error: bad run or step name: landing2 giveBack`: `src/invitation-file.ts`
+  accepted only lower case steps. Fixed (camel case action names allowed, a test added) and the stored invitation, found in
+  the payer engine by its recorded broadcast of that txid, saved as `invitations/landing2-giveBack.json`.
+- Explorer and Electrum at 10:21: 1 confirmation, version 2, input `a0e6da27...:0` with sequence 6, one output of 9500 sat
+  with no token to `bchtest:qz4rr7mn324zdkeav5v3gpqvlf3jx9u68qgxya53h3` (the owner address in its non-token form).
+  `land -> giveBack` ran through the XO engine with the covenant unchanged. About 55 minutes from the first refusal to the
+  broadcast, most of it waiting on the nodes.

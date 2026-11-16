@@ -19,9 +19,13 @@ opened on a public chipnet explorer (https://chipnet.imaginary.cash/tx/). Invita
 | 2026-11-16 09:17 | landing1 | land | 7883280023308e712beb1a51f5f9ba050dd740b7a8099fcf14e18a98437ca894 | invitations/landing1-land.json | ok |
 | 2026-11-16 09:18 | landing1 | convert | 7a9b82e8159b01bcf53e5c556f90d568a32961a4aef7551d119454bc7461d056 | invitations/landing1-convert.json | ok |
 | 2026-11-16 09:19 | landing2 | land | a0e6da274c8c5881bfc5c0c103c4d64f1612d1d69b79aeac876fea165ffdce47 | invitations/landing2-land.json | ok |
+| 2026-11-16 09:27 | landing2 | giveBack | - (rejected: `non-BIP68-final (code 64)`; built txid de83797632b64d4725fcd47ec9325fc49dc36cddf30fdd7d301137d01d1819dd, land coin 8 blocks old) | - | fail |
+| 2026-11-16 10:19 | landing2 | giveBack | de83797632b64d4725fcd47ec9325fc49dc36cddf30fdd7d301137d01d1819dd | invitations/landing2-giveBack.json | ok |
 
 run2 is the open -> cancel run: the offer opened at 19:30 was cancelled by the maker at 19:56. The fill steps in between are saved as `<run>-fill-start.json` (maker adds
 the offer coin) and `<run>-fill-taken.json` (taker adds the payment and signs).
 
 landing1 is the land -> convert run: the owner received 100 test token units at output 0 of the convert transaction.
-landing2 is the land -> giveBack run; giveBack needs the landed coin to be 6 blocks old.
+landing2 is the land -> giveBack run: the owner received 9500 sat (10000 landed, 500 fee) as BCH with no token. The nodes refused
+the same transaction as `non-BIP68-final` from 09:27 until 10:18 although the land already had 8 confirmations by Electrum
+height at 09:25; see the journal.

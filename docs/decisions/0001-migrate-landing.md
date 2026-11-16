@@ -58,6 +58,9 @@ and runs it on chipnet. The Swap Intent template in the same repository is a sep
   transaction, the pattern the faucet template in `@xo-cash/templates` 0.0.12 uses with `OP_CHECKSEQUENCEVERIFY`. The engine
   does not wait for the lock, so the run script checks the coin's age first and refuses with a clear message. The owner receives
   `landedSatoshis - giveBackFeeSatoshis`; the fee is set in config and must be at most 1000.
+  The age check counts confirmations from Electrum heights. On 2026-11-16 the chipnet nodes refused a giveBack as
+  `non-BIP68-final` well after that count was reached (journal, 09:26 entry), so passing the check does not promise the node
+  takes the transaction; a refused run is recorded as `fail` and repeated later, the covenant unchanged.
 - **Fallback.** If `convert` cannot be broadcast through the engine after sustained work, the `convert` transaction is built with
   libauth from the same template (the `land` invitation stays an XO invitation) and the reason is recorded here and in the
   journal with the verbatim error. `land` followed by `giveBack` runs through the engine in any case.
