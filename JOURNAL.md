@@ -405,7 +405,7 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
   `land -> giveBack` ran through the XO engine with the covenant unchanged. About 55 minutes from the first refusal to the
   broadcast, most of it waiting on the nodes.
 
-## 2026-11-16 10:40 Migrate to XO: Landing template and runs in the XO debug tool
+## 2026-11-16 10:29 Migrate to XO: Landing template and runs in the XO debug tool
 
 - Tried: https://blaze.xo.cash/ in a scripted Chromium with a new disposable chipnet account (the project's phrases were
   not entered), the same steps as the Swap Intent check on 2026-11-14.
