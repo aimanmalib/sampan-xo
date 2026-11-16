@@ -2,59 +2,9 @@ import { readdirSync, readFileSync } from 'node:fs';
 import type { XOInvitation } from '@xo-cash/types';
 import { deserializeInvitation } from '@xo-cash/utils';
 import { describe, expect, it } from 'vitest';
-import { loadConfig } from '../src/config.js';
 import { minimumTokenAmount, readLandingVariables, readLandTransactionHash, startConvert, takeConvert } from '../src/landing-convert.js';
 import { landingVariableIdentifiers, landingVariables, ownerLockingScriptHex } from '../src/landing-land.js';
-import type { AccountEngine } from '../src/xo-engine.js';
-
-const config = loadConfig();
-const hash = 'ab'.repeat(32);
-
-const landInvitation = (extra: Partial<XOInvitation> = {}): XOInvitation =>
-  ({
-    invitationIdentifier: 'land1',
-    commits: [
-      { data: { variables: landingVariables(config).slice(0, 3).map((v) => ({ ...v, roleIdentifier: 'payer' })) } },
-      { data: { variables: [...landingVariables(config).slice(3), { variableIdentifier: 'other', value: 1n }] } },
-    ],
-    result: { transactions: { landTransaction: { transactionHash: hash, broadcastedAtTimestamp: 2 } } },
-    ...extra,
-  }) as unknown as XOInvitation;
-
-type Utxo = { outpointTransactionHash: string; outpointIndex: number; templateIdentifier: string; valueSatoshis: number; tokenCategory?: string; tokenAmount?: string; tokenNftCapability?: string };
-
-/** A stand-in engine recording what the convert steps append and sign. */
-const fakeAccount = (utxos: Utxo[]) => {
-  const calls = { appended: [] as Record<string, unknown>[], signed: [] as number[], accepted: [] as unknown[] };
-  const account = {
-    landingTemplateIdentifier: 'landing',
-    engine: {
-      listUnspentOutputs: async () => utxos,
-      listSpendableUnspentOutputs: async () => utxos,
-      createInvitation: async () => ({ invitation: { invitationIdentifier: 'c1' } }),
-      acceptInvitation: async (_i: unknown, role: unknown) => (calls.accepted.push(role), { invitation: { invitationIdentifier: 'c1' } }),
-      appendInvitation: async (_id: string, params: Record<string, unknown>) => (calls.appended.push(params), { invitation: { invitationIdentifier: 'c1' } }),
-      generateLockingBytecodeFromDefaultPolicy: async () => '76a9',
-      listOwnInputIndexes: async () => [1],
-      signInvitation: async (_id: string, index: number) => void calls.signed.push(index),
-      getInvitation: async () => ({ invitation: { invitationIdentifier: 'c1' } }),
-      addChangeToInvitation: async () => {
-        throw new Error('convert must not add change');
-      },
-    },
-  } as unknown as AccountEngine;
-  return { account, calls };
-};
-
-const tokenCoin = (tokenAmount: string, extra: Partial<Utxo> = {}): Utxo => ({
-  outpointTransactionHash: 'cd'.repeat(32),
-  outpointIndex: 2,
-  templateIdentifier: 'wallet',
-  valueSatoshis: 1000,
-  tokenCategory: config.testToken.category!,
-  tokenAmount,
-  ...extra,
-});
+import { config, fakeAccount, hash, landInvitation, tokenCoin } from './support/landing-fake.js';
 
 describe('landing run steps', () => {
   it('commits the six landing variables from the config, the owner as locking bytecode', () => {

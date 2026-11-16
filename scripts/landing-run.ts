@@ -8,6 +8,8 @@
  *   npx tsx scripts/landing-run.ts convert-take   <run>   converter pays the owner tokens, signs   -> <run>-convert-taken.json
  *   npx tsx scripts/landing-run.ts convert-finish <run>   payer completes input 0, broadcasts      -> <run>-convert.json
  *   npx tsx scripts/landing-run.ts convert        <run>   the three convert steps, each in its own process
+ *   npx tsx scripts/landing-run.ts giveBack       <run>   payer returns the landed coin to the owner as BCH,
+ *                                                        once it is landing.returnAfter blocks old -> <run>-giveBack.json
  *   npx tsx scripts/landing-run.ts --help                 prints the usage line
  *
  * Add --dry-run to build and check without broadcasting; the step's invitation is then archived so its coins are
@@ -22,6 +24,7 @@ import { loadConfig, type AccountName } from '../src/config.js';
 import { readMnemonic } from '../src/env.js';
 import { loadInvitation, saveInvitation } from '../src/invitation-file.js';
 import { finishFollowUp, startConvert, takeConvert } from '../src/landing-convert.js';
+import { checkLandAge, giveBack } from '../src/landing-giveback.js';
 import { landCoin } from '../src/landing-land.js';
 import { startAccountEngine, stopAccountEngine, type AccountEngine } from '../src/xo-engine.js';
 
@@ -31,7 +34,14 @@ const [step, run, flag] = process.argv.slice(2);
 const broadcast = flag !== '--dry-run';
 
 type Outcome = { invitation: XOInvitation; transactionHash?: string };
-type Step = { account: AccountName; reads?: string; writes: string; act: (account: AccountEngine, previous?: XOInvitation) => Promise<Outcome> };
+type Step = {
+  account: AccountName;
+  reads?: string;
+  writes: string;
+  /** Runs before the engine starts; throws to stop the step. */
+  before?: (previous: XOInvitation) => Promise<void>;
+  act: (account: AccountEngine, previous?: XOInvitation) => Promise<Outcome>;
+};
 const steps: Record<string, Step> = {
   land: { account: 'maker', writes: 'land', act: (account) => landCoin(account, config, broadcast) },
   'convert-start': { account: 'maker', reads: 'land', writes: 'convert-start', act: async (account, land) => ({ invitation: await startConvert(account, land!) }) },
@@ -46,6 +56,7 @@ const steps: Record<string, Step> = {
     },
   },
   'convert-finish': { account: 'maker', reads: 'convert-taken', writes: 'convert', act: (account, taken) => finishFollowUp(account, taken!, broadcast) },
+  giveBack: { account: 'maker', reads: 'land', writes: 'giveBack', before: (land) => checkLandAge(land, config), act: (account, land) => giveBack(account, land!, config, broadcast) },
 };
 
 // The whole convert flow; each step is a separate process, as two separate parties would run it.
@@ -71,6 +82,7 @@ if (selected === undefined || run === undefined || !/^landing\d+$/.test(run) || 
 }
 
 const previous = selected.reads === undefined ? undefined : loadInvitation(run, selected.reads);
+if (previous !== undefined) await selected.before?.(previous);
 const account = await startAccountEngine(selected.account, readMnemonic(selected.account, envPath), config);
 try {
   const outcome = await selected.act(account, previous);

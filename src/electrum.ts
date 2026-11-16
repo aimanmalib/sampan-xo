@@ -86,3 +86,17 @@ export const broadcastEverywhere = async (config: ChipnetConfig, hex: string): P
   if (accepted === 0) throw new Error(`no server accepted the transaction:\n${lines.join('\n')}`);
   return lines;
 };
+
+/** Height of the chipnet chain tip the server follows. */
+export const getTipHeight = async (client: ElectrumClient<never>): Promise<number> => {
+  const result = await client.request('blockchain.headers.get_tip');
+  if (result instanceof Error) throw result;
+  return Number((result as { height: number }).height);
+};
+
+/** Height of the block that mined a transaction; 0 or below while it is still in the mempool (Fulcrum extension). */
+export const getTransactionHeight = async (client: ElectrumClient<never>, txid: string): Promise<number> => {
+  const result = await client.request('blockchain.transaction.get_height', txid);
+  if (result instanceof Error) throw result;
+  return Number(result ?? 0);
+};
