@@ -441,3 +441,10 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
 - Clean clone: `git archive HEAD` into a new temporary directory, `npm ci` (311 packages, rc 0), `npm test` (13 files,
   86 tests passed), `npx tsx scripts/landing-run.ts --help` (rc 0, prints the usage line). The directory was removed.
 - Style check of the README text: no finding that is not already in the earlier README.
+
+## 2026-11-16 11:05 Migrate to XO: facts list for the entrant
+
+- Collected the facts of the Migrate to XO entries above (versions, what worked, verbatim errors, time lost, gaps in the
+  engine documentation, the four txids) as a plain list for the entrant, with steps to open the Landing template and two
+  invitations in https://blaze.xo.cash/. No feedback text was drafted by the agent.
+- `FEEDBACK-MIGRATE.md` is not in the repository yet: the entrant's own feedback on the migration has not been written.
