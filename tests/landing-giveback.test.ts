@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { invitationPath } from '../src/invitation-file.js';
 import { assertOldEnough, confirmations, giveBack } from '../src/landing-giveback.js';
 import { config, fakeAccount, hash, landInvitation } from './support/landing-fake.js';
 
@@ -37,5 +38,11 @@ describe('landing giveBack step', () => {
     await giveBack(account, landInvitation(), config, false);
     expect(calls.executed).toEqual([{ broadcastTransaction: false }]);
     expect(calls.archived).toEqual(['c1']);
+  });
+
+  it('saves the giveBack invitation under its camel case action name, and still refuses paths', () => {
+    expect(invitationPath('landing2', 'giveBack')).toMatch(/invitations\/landing2-giveBack\.json$/);
+    expect(() => invitationPath('landing2', '../giveBack')).toThrow(/bad run or step/);
+    expect(() => invitationPath('landing2', 'Give')).toThrow(/bad run or step/);
   });
 });

@@ -6,9 +6,9 @@ import { deserializeInvitation, serializeInvitation } from '@xo-cash/utils';
 
 const invitationsFolder = fileURLToPath(new URL('../invitations/', import.meta.url));
 
-/** Path of a saved invitation: invitations/<run>-<step>.json. */
+/** Path of a saved invitation: invitations/<run>-<step>.json. A step may be an action name in camel case (giveBack). */
 export const invitationPath = (run: string, step: string): string => {
-  if (!/^[a-z0-9][a-z0-9-]*$/.test(run) || !/^[a-z-]+$/.test(step)) throw new Error(`bad run or step name: ${run} ${step}`);
+  if (!/^[a-z0-9][a-z0-9-]*$/.test(run) || !/^[a-z][a-zA-Z-]*$/.test(step)) throw new Error(`bad run or step name: ${run} ${step}`);
   return resolve(invitationsFolder, `${run}-${step}.json`);
 };
 
