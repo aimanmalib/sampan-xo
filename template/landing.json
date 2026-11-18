@@ -311,20 +311,14 @@
     "converterPayoutSatoshis": "<landedSatoshis> <converterCoinSatoshis> OP_ADD <tokenOutputSatoshis> OP_SUB <convertFeeSatoshis> OP_SUB",
     "converterPayoutTokens": "<converterCoinTokens> convertTokenAmount OP_SUB",
     "giveBackSatoshis": "<landedSatoshis> <giveBackFeeSatoshis> OP_SUB",
-    "enforceInputZero": "OP_INPUTINDEX OP_0 OP_NUMEQUALVERIFY",
-    "enforceOutputsMatchInputs": "OP_TXOUTPUTCOUNT OP_TXINPUTCOUNT OP_NUMEQUALVERIFY",
-    "enforcePaysOwner": "OP_0 OP_OUTPUTBYTECODE <ownerLockingScript> OP_EQUALVERIFY",
-    "enforceTokenCategory": "OP_0 OP_OUTPUTTOKENCATEGORY OP_REVERSEBYTES <tokenCategory> OP_EQUALVERIFY",
-    "enforceRate": "OP_0 OP_OUTPUTTOKENAMOUNT <rateDen> OP_MUL OP_0 OP_UTXOVALUE <rateNum> OP_MUL OP_GREATERTHANOREQUAL",
-    "enforceAge": "<returnAfter> OP_CHECKSEQUENCEVERIFY OP_DROP",
-    "enforceSingleInputOutput": "OP_TXINPUTCOUNT OP_1 OP_NUMEQUALVERIFY OP_TXOUTPUTCOUNT OP_1 OP_NUMEQUALVERIFY",
-    "enforceNoToken": "OP_0 OP_OUTPUTTOKENCATEGORY OP_0 OP_EQUALVERIFY",
-    "enforceReturnedValue": "OP_0 OP_OUTPUTVALUE OP_0 OP_UTXOVALUE <1000> OP_SUB OP_GREATERTHANOREQUAL",
-    "convertPath": "enforceOutputsMatchInputs enforcePaysOwner enforceTokenCategory enforceRate",
-    "giveBackPath": "enforceAge enforceSingleInputOutput enforcePaysOwner enforceNoToken enforceReturnedValue",
-    "landingLockingBytecode": "enforceInputZero OP_IF convertPath OP_ELSE giveBackPath OP_ENDIF",
-    "convertUnlockingBytecode": "OP_1",
-    "giveBackUnlockingBytecode": "OP_0"
+    "landingConstructorArguments": "<returnAfter> <rateDen> <rateNum> <$(<tokenCategory> OP_REVERSEBYTES)> <ownerLockingScript>",
+    "selectorIsConvert": "OP_5 OP_PICK OP_0 OP_NUMEQUAL",
+    "convertChecks": "OP_INPUTINDEX OP_0 OP_NUMEQUALVERIFY OP_TXOUTPUTCOUNT OP_TXINPUTCOUNT OP_NUMEQUALVERIFY OP_0 OP_OUTPUTBYTECODE OP_EQUALVERIFY OP_0 OP_OUTPUTTOKENCATEGORY OP_EQUALVERIFY OP_0 OP_OUTPUTTOKENAMOUNT OP_ROT OP_MUL OP_0 OP_UTXOVALUE OP_ROT OP_MUL OP_GREATERTHANOREQUAL OP_NIP OP_NIP",
+    "giveBackChecks": "OP_5 OP_ROLL OP_1 OP_NUMEQUALVERIFY OP_INPUTINDEX OP_0 OP_NUMEQUALVERIFY OP_4 OP_ROLL OP_CHECKSEQUENCEVERIFY OP_DROP OP_TXINPUTCOUNT OP_1 OP_NUMEQUALVERIFY OP_TXOUTPUTCOUNT OP_1 OP_NUMEQUALVERIFY OP_0 OP_OUTPUTBYTECODE OP_EQUALVERIFY OP_0 OP_OUTPUTTOKENCATEGORY OP_0 OP_EQUALVERIFY OP_0 OP_OUTPUTVALUE OP_0 OP_UTXOVALUE <1000> OP_SUB OP_GREATERTHANOREQUAL OP_NIP OP_NIP OP_NIP",
+    "landingContractBytecode": "selectorIsConvert OP_IF convertChecks OP_ELSE giveBackChecks OP_ENDIF",
+    "landingLockingBytecode": "landingConstructorArguments landingContractBytecode",
+    "convertUnlockingBytecode": "OP_0",
+    "giveBackUnlockingBytecode": "OP_1"
   },
   "constants": {
     "tokenOutputSatoshis": {

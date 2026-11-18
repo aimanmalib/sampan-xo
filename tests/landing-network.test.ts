@@ -68,7 +68,7 @@ describe('mainnet config', () => {
     expect(() => loadMainnetConfig(write({ ...shipped(), engineDatabasePath: '.xo' }))).toThrow(/engineDatabasePath/);
     expect(() => loadMainnetConfig(write({ ...shipped(), accounts: ['maker', 'owner'] }))).toThrow(/payer and owner/);
     expect(() => loadMainnetConfig(withLanding({ ownerAddress: 'bchtest:qq' }))).toThrow(/ownerAddress/);
-    expect(() => loadMainnetConfig(withLanding({ tokenCategory: 'AB'.repeat(32) }))).toThrow(/tokenCategory/);
+    expect(() => loadMainnetConfig(withLanding({ category: 'AB'.repeat(32) }))).toThrow(/category/);
     expect(() => loadMainnetConfig(withLanding({ returnAfter: 0 }))).toThrow(/returnAfter/);
     expect(loadMainnetConfig(withLanding({ ownerAddress: null, rateNum: 3 })).landing.rateNum).toBe(3);
   });

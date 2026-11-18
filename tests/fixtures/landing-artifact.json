@@ -1,0 +1,46 @@
+{
+  "contractName": "Landing",
+  "constructorInputs": [
+    { "name": "ownerLock", "type": "bytes" },
+    { "name": "tokenCategory", "type": "bytes32" },
+    { "name": "rateNum", "type": "int" },
+    { "name": "rateDen", "type": "int" },
+    { "name": "returnAfter", "type": "int" }
+  ],
+  "abi": [
+    { "name": "convert", "inputs": [] },
+    { "name": "giveBack", "inputs": [] }
+  ],
+  "bytecode": "OP_5 OP_PICK OP_0 OP_NUMEQUAL OP_IF OP_INPUTINDEX OP_0 OP_NUMEQUALVERIFY OP_TXOUTPUTCOUNT OP_TXINPUTCOUNT OP_NUMEQUALVERIFY OP_0 OP_OUTPUTBYTECODE OP_EQUALVERIFY OP_0 OP_OUTPUTTOKENCATEGORY OP_EQUALVERIFY OP_0 OP_OUTPUTTOKENAMOUNT OP_ROT OP_MUL OP_0 OP_UTXOVALUE OP_ROT OP_MUL OP_GREATERTHANOREQUAL OP_NIP OP_NIP OP_ELSE OP_5 OP_ROLL OP_1 OP_NUMEQUALVERIFY OP_INPUTINDEX OP_0 OP_NUMEQUALVERIFY OP_4 OP_ROLL OP_CHECKSEQUENCEVERIFY OP_DROP OP_TXINPUTCOUNT OP_1 OP_NUMEQUALVERIFY OP_TXOUTPUTCOUNT OP_1 OP_NUMEQUALVERIFY OP_0 OP_OUTPUTBYTECODE OP_EQUALVERIFY OP_0 OP_OUTPUTTOKENCATEGORY OP_0 OP_EQUALVERIFY OP_0 OP_OUTPUTVALUE OP_0 OP_UTXOVALUE e803 OP_SUB OP_GREATERTHANOREQUAL OP_NIP OP_NIP OP_NIP OP_ENDIF",
+  "source": "pragma cashscript ^0.14.0;\n\n// Landing address. Any BCH that reaches this contract can only leave it to the owner:\n// as fungible tokens of one category at a rate at or above the minimum (convert),\n// or, once the coin is returnAfter blocks old, as plain BCH (giveBack).\n// No key of the service is involved: anyone may finish either path.\ncontract Landing(\n    // Full locking bytecode of the owner's address (25 bytes P2PKH or 23 bytes P2SH), not a hash.\n    bytes ownerLock,\n    // Token category in transaction byte order (the reverse of the hex id shown by explorers).\n    bytes32 tokenCategory,\n    // Minimum token base units per rateDen satoshis.\n    int rateNum,\n    int rateDen,\n    // Relative age in blocks after which the BCH may be returned.\n    int returnAfter\n) {\n    function convert() {\n        require(this.activeInputIndex == 0);\n        // No extra outputs: output i pairs with input i (owner first, then the pools).\n        require(tx.outputs.length == tx.inputs.length);\n        require(tx.outputs[0].lockingBytecode == ownerLock);\n        // Fungible tokens only: an NFT would append a capability byte to the category.\n        require(tx.outputs[0].tokenCategory == tokenCategory);\n        require(tx.outputs[0].tokenAmount * rateDen >= tx.inputs[0].value * rateNum);\n    }\n\n    function giveBack() {\n        require(this.activeInputIndex == 0);\n        require(this.age >= returnAfter);\n        require(tx.inputs.length == 1);\n        require(tx.outputs.length == 1);\n        require(tx.outputs[0].lockingBytecode == ownerLock);\n        require(tx.outputs[0].tokenCategory == 0x);\n        require(tx.outputs[0].value >= tx.inputs[0].value - 1000);\n    }\n}\n",
+  "fingerprint": "ac97d3f7b61e2e437352b84e8ded2d381c223fb9baf30ba293bcd47eeca1c81e",
+  "debug": {
+    "bytecode": "5579009c63c0009dc4c39d00cd8800d18800d37b9500c67b95a2777767557a519dc0009d547ab275c3519dc4519d00cd8800d1008800cc00c602e80394a277777768",
+    "sourceMap": "18:4:26:5;;;;;19:16:19:37;:41::42;:8::44:1;21:16:21:33:0;:37::53;:8::55:1;22:27:22:28:0;:16::45:1;:8::60;24:27:24:28:0;:16::43:1;:8::62;25:27:25:28:0;:16::41:1;:44::51:0;:16:::1;:65::66:0;:55::73:1;:76::83:0;:55:::1;:8::85;18:23:26:5;;:4;28::36::0;;;;29:16:29:37;:41::42;:8::44:1;30:28:30:39:0;;:8::41:1;;31:16:31:32:0;:36::37;:8::39:1;32:16:32:33:0;:37::38;:8::40:1;33:27:33:28:0;:16::45:1;:8::60;34:27:34:28:0;:16::43:1;:47::49:0;:8::51:1;35:27:35:28:0;:16::35:1;:49::50:0;:39::57:1;:60::64:0;:39:::1;:8::66;28:24:36:5;;;7:0:37:1",
+    "logs": [],
+    "requires": [
+      { "ip": 12, "line": 19 },
+      { "ip": 15, "line": 21 },
+      { "ip": 18, "line": 22 },
+      { "ip": 21, "line": 24 },
+      { "ip": 31, "line": 25 },
+      { "ip": 40, "line": 29 },
+      { "ip": 43, "line": 30 },
+      { "ip": 47, "line": 31 },
+      { "ip": 50, "line": 32 },
+      { "ip": 53, "line": 33 },
+      { "ip": 57, "line": 34 },
+      { "ip": 65, "line": 35 }
+    ],
+    "sourceTags": "26:27:sc;60:62:sc"
+  },
+  "compiler": {
+    "name": "cashc",
+    "version": "0.14.0",
+    "options": {
+      "enforceFunctionParameterTypes": true,
+      "enforceLocktimeGuard": true
+    }
+  },
+  "updatedAt": "2026-11-15T17:16:24.251Z"
+}

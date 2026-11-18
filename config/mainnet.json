@@ -16,9 +16,9 @@
     "ownerAddress": "bitcoincash:zpclaehgrt7507sg2f0fnd3jq6txqwwsvg68lfmvpr",
     "landedSatoshis": 5000,
     "giveBackFeeSatoshis": 1000,
-    "tokenCategory": null,
-    "rateNum": null,
-    "rateDen": null,
-    "returnAfter": null
+    "category": "2469acc5afa4b10cb5b5c04afb89c3a3ffd61c5da9c01e26d00951cae2a02544",
+    "rateNum": 20000000,
+    "rateDen": 100000000,
+    "returnAfter": 6
   }
 }

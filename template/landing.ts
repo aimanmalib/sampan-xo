@@ -11,10 +11,12 @@ import type { XOTemplate } from '@xo-cash/types';
  * - `giveBack` (follow-up, anyone; the runs use the payer): once the coin is `returnAfter` blocks old, one input and one
  *   output paying the owner plain BCH, at most 1000 satoshis less than the landed value.
  *
- * Neither path needs a key: the scripts below are `landing.cash` written in CashASM, one `require` per line.
- * The landing script is wrapped as pay to script hash 32 by the `p2sh` locking type (Sampan uses P2SH20).
+ * Neither path needs a key. The landing script is the bytecode cashc 0.14.0 compiles from `landing.cash`, with the
+ * template variables in place of the constructor arguments, so its redeem bytecode is the same as a Sampan landing
+ * address with the same parameters. The unlocking scripts push the cashc function selector (0 convert, 1 giveBack).
+ * The `p2sh` locking type wraps it as pay to script hash 32; Sampan addresses use P2SH20 (docs/decisions/0002).
  * Token categories are written in display byte order (as block explorers show them) and reversed inside the script,
- * because the VM pushes categories in transaction byte order.
+ * because cashc takes the category in transaction byte order.
  */
 export const landingTemplate = {
   $schema: 'https://libauth.org/schemas/wallet-template-v0.schema.json',
@@ -218,30 +220,48 @@ export const landingTemplate = {
       '<landedSatoshis> <converterCoinSatoshis> OP_ADD <tokenOutputSatoshis> OP_SUB <convertFeeSatoshis> OP_SUB',
     converterPayoutTokens: '<converterCoinTokens> convertTokenAmount OP_SUB',
     giveBackSatoshis: '<landedSatoshis> <giveBackFeeSatoshis> OP_SUB',
-    // require(this.activeInputIndex == 0);
-    enforceInputZero: 'OP_INPUTINDEX OP_0 OP_NUMEQUALVERIFY',
-    // require(tx.outputs.length == tx.inputs.length);
-    enforceOutputsMatchInputs: 'OP_TXOUTPUTCOUNT OP_TXINPUTCOUNT OP_NUMEQUALVERIFY',
-    // require(tx.outputs[0].lockingBytecode == ownerLock);
-    enforcePaysOwner: 'OP_0 OP_OUTPUTBYTECODE <ownerLockingScript> OP_EQUALVERIFY',
-    // require(tx.outputs[0].tokenCategory == tokenCategory);
-    enforceTokenCategory: 'OP_0 OP_OUTPUTTOKENCATEGORY OP_REVERSEBYTES <tokenCategory> OP_EQUALVERIFY',
-    // require(tx.outputs[0].tokenAmount * rateDen >= tx.inputs[0].value * rateNum);
-    enforceRate: 'OP_0 OP_OUTPUTTOKENAMOUNT <rateDen> OP_MUL OP_0 OP_UTXOVALUE <rateNum> OP_MUL OP_GREATERTHANOREQUAL',
-    // require(this.age >= returnAfter);
-    enforceAge: '<returnAfter> OP_CHECKSEQUENCEVERIFY OP_DROP',
-    // require(tx.inputs.length == 1); require(tx.outputs.length == 1);
-    enforceSingleInputOutput: 'OP_TXINPUTCOUNT OP_1 OP_NUMEQUALVERIFY OP_TXOUTPUTCOUNT OP_1 OP_NUMEQUALVERIFY',
-    // require(tx.outputs[0].tokenCategory == 0x);
-    enforceNoToken: 'OP_0 OP_OUTPUTTOKENCATEGORY OP_0 OP_EQUALVERIFY',
-    // require(tx.outputs[0].value >= tx.inputs[0].value - 1000);
-    // A literal, as in the original: the engine does not pass template constants when it compiles a locking script.
-    enforceReturnedValue: 'OP_0 OP_OUTPUTVALUE OP_0 OP_UTXOVALUE <1000> OP_SUB OP_GREATERTHANOREQUAL',
-    convertPath: 'enforceOutputsMatchInputs enforcePaysOwner enforceTokenCategory enforceRate',
-    giveBackPath: 'enforceAge enforceSingleInputOutput enforcePaysOwner enforceNoToken enforceReturnedValue',
-    landingLockingBytecode: 'enforceInputZero OP_IF convertPath OP_ELSE giveBackPath OP_ENDIF',
-    convertUnlockingBytecode: 'OP_1',
-    giveBackUnlockingBytecode: 'OP_0',
+    // The landing script is the cashc 0.14.0 output for landing.cash: the constructor arguments pushed last parameter
+    // first, then the contract bytecode unchanged. For the same parameters it is byte for byte the redeem bytecode of a
+    // Sampan landing address (see scripts/check-bytecode.ts). cashc takes the category in transaction byte order, so the
+    // display order variable is reversed here. Stack after the pushes: selector returnAfter rateDen rateNum category owner.
+    landingConstructorArguments:
+      '<returnAfter> <rateDen> <rateNum> <$(<tokenCategory> OP_REVERSEBYTES)> <ownerLockingScript>',
+    // Function selector: 0 is convert, 1 is giveBack.
+    selectorIsConvert: 'OP_5 OP_PICK OP_0 OP_NUMEQUAL',
+    convertChecks:
+      // require(this.activeInputIndex == 0);
+      'OP_INPUTINDEX OP_0 OP_NUMEQUALVERIFY ' +
+      // require(tx.outputs.length == tx.inputs.length);
+      'OP_TXOUTPUTCOUNT OP_TXINPUTCOUNT OP_NUMEQUALVERIFY ' +
+      // require(tx.outputs[0].lockingBytecode == ownerLock);
+      'OP_0 OP_OUTPUTBYTECODE OP_EQUALVERIFY ' +
+      // require(tx.outputs[0].tokenCategory == tokenCategory);
+      'OP_0 OP_OUTPUTTOKENCATEGORY OP_EQUALVERIFY ' +
+      // require(tx.outputs[0].tokenAmount * rateDen >= tx.inputs[0].value * rateNum);
+      'OP_0 OP_OUTPUTTOKENAMOUNT OP_ROT OP_MUL OP_0 OP_UTXOVALUE OP_ROT OP_MUL OP_GREATERTHANOREQUAL ' +
+      // Drop returnAfter and the selector.
+      'OP_NIP OP_NIP',
+    giveBackChecks:
+      // The selector must be 1.
+      'OP_5 OP_ROLL OP_1 OP_NUMEQUALVERIFY ' +
+      // require(this.activeInputIndex == 0);
+      'OP_INPUTINDEX OP_0 OP_NUMEQUALVERIFY ' +
+      // require(this.age >= returnAfter);
+      'OP_4 OP_ROLL OP_CHECKSEQUENCEVERIFY OP_DROP ' +
+      // require(tx.inputs.length == 1); require(tx.outputs.length == 1);
+      'OP_TXINPUTCOUNT OP_1 OP_NUMEQUALVERIFY OP_TXOUTPUTCOUNT OP_1 OP_NUMEQUALVERIFY ' +
+      // require(tx.outputs[0].lockingBytecode == ownerLock);
+      'OP_0 OP_OUTPUTBYTECODE OP_EQUALVERIFY ' +
+      // require(tx.outputs[0].tokenCategory == 0x);
+      'OP_0 OP_OUTPUTTOKENCATEGORY OP_0 OP_EQUALVERIFY ' +
+      // require(tx.outputs[0].value >= tx.inputs[0].value - 1000); a literal, as in the original.
+      'OP_0 OP_OUTPUTVALUE OP_0 OP_UTXOVALUE <1000> OP_SUB OP_GREATERTHANOREQUAL ' +
+      // Drop the unused rateDen, rateNum and tokenCategory.
+      'OP_NIP OP_NIP OP_NIP',
+    landingContractBytecode: 'selectorIsConvert OP_IF convertChecks OP_ELSE giveBackChecks OP_ENDIF',
+    landingLockingBytecode: 'landingConstructorArguments landingContractBytecode',
+    convertUnlockingBytecode: 'OP_0',
+    giveBackUnlockingBytecode: 'OP_1',
   },
   constants: {
     tokenOutputSatoshis: {

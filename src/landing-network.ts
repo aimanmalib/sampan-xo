@@ -20,7 +20,7 @@ export interface MainnetLandingConfig {
   landedSatoshis: number;
   giveBackFeeSatoshis: number;
   /** Contract parameters read from the deployed Sampan landing contract; null until that fixture exists. */
-  tokenCategory: string | null;
+  category: string | null;
   rateNum: number | null;
   rateDen: number | null;
   returnAfter: number | null;
@@ -96,8 +96,8 @@ export const loadMainnetConfig = (path: string = configPathFor('mainnet')): Main
   if (!Number.isSafeInteger(fee) || fee! <= 0 || fee! > maxGiveBackFeeSatoshis) {
     throw new Error(`config ${path}: landing.giveBackFeeSatoshis must be from 1 to ${maxGiveBackFeeSatoshis}`);
   }
-  if (l.tokenCategory !== null && !/^[0-9a-f]{64}$/.test(String(l.tokenCategory))) {
-    throw new Error(`config ${path}: landing.tokenCategory must be null or 64 lowercase hex characters`);
+  if (l.category !== null && !/^[0-9a-f]{64}$/.test(String(l.category))) {
+    throw new Error(`config ${path}: landing.category must be null or 64 lowercase hex characters`);
   }
   for (const key of ['rateNum', 'rateDen', 'returnAfter'] as const) {
     if (!optionalPositive(l[key])) throw new Error(`config ${path}: landing.${key} must be null or a positive integer`);
