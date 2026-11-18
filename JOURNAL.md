@@ -716,3 +716,16 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
 - Reduced to 128 colours with Pillow; 12 files, largest 54 KB. Index in `docs/debug-tool/README.md`, section Landing.
 - The README's import step quoted the earlier template id `03fad653...3515` and "18 scripts"; corrected to the measured
   `e0e9b742...e03e` and "12 scripts".
+
+## 2026-11-18 21:00 UTC: README for the Landing entry, clean clone check
+
+- README `## Migrate to XO`: the chipnet table now lists landing3 and landing4 (byte-identical template `e0e9b742...e03e`)
+  first and landing1 and landing2 under "earlier hand-written script" (`03fad653...3515`), each row with its invitation
+  file. The reproduce steps use new run names (`landing5`, `landing6`) because `landing1` to `landing4` already have
+  saved invitations, add `npx tsx scripts/check-bytecode.ts --params config/chipnet.json`, and name the
+  `used-templates.ts --write` and `runs-table.ts --write` steps. The debug tool step points at `landing3-convert.json`
+  (6 commits) and `landing4-giveBack.json` (4 commits), counted from the files.
+- Clean clone: `git archive HEAD` (commit 4b14d5e) into an empty temporary folder, Node v22.23.5, npm 10.9.9.
+  `npm ci` rc 0 (311 packages, 43 s); `npm test` rc 0, 18 test files, 124 tests; `npx tsx scripts/check-bytecode.ts --json`
+  rc 0 with `identical: true`; `npx tsx scripts/landing-run.ts --help` rc 0. Folder removed afterwards.
+- `runs-table.ts --check` and `used-templates.ts --check` rc 0 on the working tree.
