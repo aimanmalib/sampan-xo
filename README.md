@@ -354,12 +354,16 @@ own) are `tests/landing-*.test.ts` and run with `npm test`.
 Follow "Open a saved invitation in the XO debug tool" above with the Landing files:
 
 1. "Import Template" with the contents of [template/landing.json](template/landing.json). The tool reports
-   `Template imported: Landing (03fad653...3515)`, "2 roles · 3 actions · 18 scripts". Regenerate the file with
+   Landing `e0e9b742...e03e`, "2 roles · 3 actions · 12 scripts" (the byte-identical template; landing1 and landing2
+   were made with the earlier `03fad653...3515`). Regenerate the file with
    `npx tsx scripts/export-template.ts` after changing `template/landing.ts`.
 2. "Join Invitation" with any `invitations/landing*.json`, then "View invitation". `landing1-convert.json` shows the
    `convert` action with its six commits and the broadcast result; `landing2-giveBack.json` shows `giveBack`.
 3. "Inspect" on `chipnet` with the convert or giveBack txid above steps through the landing input and decodes its
    P2SH32 redeem script with both branches.
+
+Screenshots of each step for the landing3 and landing4 invitations and transactions, all four with status SUCCESS in
+"Inspect", are in [docs/debug-tool/](docs/debug-tool/README.md#landing).
 
 ### Known limits (Landing)
 

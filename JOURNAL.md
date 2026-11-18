@@ -699,3 +699,20 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
   `Failed to process transaction update: Error: Could not validate a block header on height 337123: The requested header is ahead of the current checkpoint at height 332384`
   (same message for heights 333698, 333701, 336994, 337068, 337122). The broadcast succeeded regardless and the script
   exited 0.
+
+## 2026-11-18 20:45 Landing screenshots in the XO debug tool (docs/debug-tool/landing)
+
+- A Playwright script (Chromium, 1366 x 900) created a new disposable chipnet account on https://blaze.xo.cash/,
+  imported `template/landing.json` (listed as Landing `e0e9b742...e03e`, "2 roles · 3 actions · 12 scripts"), viewed
+  the six landing3 and landing4 invitations with "Join Invitation" then "View invitation" (not accepted), and ran
+  "Inspect" on `chipnet` for the four txids. All four inspections showed status SUCCESS; no FAIL text on the page.
+- First attempt: after viewing `landing3-land.json` and pressing "Cancel", the next three views failed with
+  `Locator.click: Timeout 10000ms exceeded.` while waiting for the "Home" button (the button was found but not
+  clickable). Reloading https://blaze.xo.cash/ before each invitation (the account stays in the browser) worked for
+  `landing3-convert-start.json`, `landing3-convert-taken.json` and `landing3-convert.json`. About 10 minutes lost,
+  most of it waiting for a browser slot.
+- The views show the tool's account extended public keys ("Entity", "Created by entity"), which are also in the
+  invitation files; no wallet phrase or account creation screen was kept.
+- Reduced to 128 colours with Pillow; 12 files, largest 54 KB. Index in `docs/debug-tool/README.md`, section Landing.
+- The README's import step quoted the earlier template id `03fad653...3515` and "18 scripts"; corrected to the measured
+  `e0e9b742...e03e` and "12 scripts".

@@ -49,3 +49,24 @@ inside the XO debug tool".
 | [browser1-07-update-with-final.png](swap-intent/browser1-07-update-with-final.png) | "Update invitation" with the maker's final commits | [invitations/browser1-fill.json](../../invitations/browser1-fill.json) |
 | [browser1-08-completed.png](swap-intent/browser1-08-completed.png) | Fill offer shown as COMPLETED | [invitations/browser1-fill.json](../../invitations/browser1-fill.json) |
 | [browser1-09-inspect-fill.png](swap-intent/browser1-09-inspect-fill.png) | "Inspect" of the fill transaction, status SUCCESS | [f92159229f9ec6b3b55feeb43ffc48cd67e297075d259671c8d6d41a71c118a6](https://chipnet.imaginary.cash/tx/f92159229f9ec6b3b55feeb43ffc48cd67e297075d259671c8d6d41a71c118a6) |
+
+## Landing
+
+Taken on 2026-11-18 with a fresh account: import [template/landing.json](../../template/landing.json) (the
+byte-identical template), then "Join Invitation" and "View invitation" (not accepted) for each invitation of the runs
+`landing3` (land, convert) and `landing4` (land, giveBack), then "Inspect" on `chipnet` for each transaction.
+
+| Image | What it shows | Invitation or txid |
+|---|---|---|
+| [01-import-template.png](landing/01-import-template.png) | Template JSON pasted into "Import Template" | [template/landing.json](../../template/landing.json) |
+| [02-templates.png](landing/02-templates.png) | Landing listed under "Templates" | - |
+| [03-view-landing3-land.png](landing/03-view-landing3-land.png) | "Join Invitation" review: template Landing, action, commits with roles | [invitations/landing3-land.json](../../invitations/landing3-land.json) |
+| [04-view-landing3-convert-start.png](landing/04-view-landing3-convert-start.png) | "Join Invitation" review: template Landing, action, commits with roles | [invitations/landing3-convert-start.json](../../invitations/landing3-convert-start.json) |
+| [05-view-landing3-convert-taken.png](landing/05-view-landing3-convert-taken.png) | "Join Invitation" review: template Landing, action, commits with roles | [invitations/landing3-convert-taken.json](../../invitations/landing3-convert-taken.json) |
+| [06-view-landing3-convert.png](landing/06-view-landing3-convert.png) | "Join Invitation" review: template Landing, action, commits with roles | [invitations/landing3-convert.json](../../invitations/landing3-convert.json) |
+| [07-view-landing4-land.png](landing/07-view-landing4-land.png) | "Join Invitation" review: template Landing, action, commits with roles | [invitations/landing4-land.json](../../invitations/landing4-land.json) |
+| [08-view-landing4-giveBack.png](landing/08-view-landing4-giveBack.png) | "Join Invitation" review: template Landing, action, commits with roles | [invitations/landing4-giveBack.json](../../invitations/landing4-giveBack.json) |
+| [09-inspect-landing3-land.png](landing/09-inspect-landing3-land.png) | "Inspect" script debugger, status SUCCESS | [af2ba18fd27ca75c6fa5422a73bf602900be6019850efa3d57877e01eae0c9db](https://chipnet.imaginary.cash/tx/af2ba18fd27ca75c6fa5422a73bf602900be6019850efa3d57877e01eae0c9db) |
+| [10-inspect-landing3-convert.png](landing/10-inspect-landing3-convert.png) | "Inspect" script debugger, status SUCCESS | [5c15f12c1e4fe868a5c0761c4592b019c07d71106e3faba99a00c8e240dfabe1](https://chipnet.imaginary.cash/tx/5c15f12c1e4fe868a5c0761c4592b019c07d71106e3faba99a00c8e240dfabe1) |
+| [11-inspect-landing4-land.png](landing/11-inspect-landing4-land.png) | "Inspect" script debugger, status SUCCESS | [faa1a8abb2dc2c80052d118413ebf6d2190f0b99ea7b1cbd736fca3d9ab781f2](https://chipnet.imaginary.cash/tx/faa1a8abb2dc2c80052d118413ebf6d2190f0b99ea7b1cbd736fca3d9ab781f2) |
+| [12-inspect-landing4-giveBack.png](landing/12-inspect-landing4-giveBack.png) | "Inspect" script debugger, status SUCCESS | [84db84e9a1bc8d6f959432eddb91d52b368ffd1872722cf87723e717c273164d](https://chipnet.imaginary.cash/tx/84db84e9a1bc8d6f959432eddb91d52b368ffd1872722cf87723e717c273164d) |
