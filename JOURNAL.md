@@ -674,3 +674,12 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
   (join, outputs, inputs, sign, update, completed, inspect). Account creation, settings and receive screens left out.
   Reduced to 128 colours with Pillow; largest file 131 KB. Index with image, content and invitation or txid in
   `docs/debug-tool/README.md`.
+
+## 2026-11-18 20:08 Facts list for the entrant, updated
+
+- Added the facts of the 18 Nov entries above (browser1 run inside the debug tool, template/used, README runs table,
+  debug tool screenshots) to the entrant's facts list: what the tool allowed and refused, verbatim errors, time lost.
+  Handed over with `invitations/browser1-fill-start.json`, `browser1-fill-taken.json`, `browser1-fill.json` and steps
+  to view them and inspect the fill txid in https://blaze.xo.cash/ with a new disposable account. It is a list, not a
+  draft; no feedback text was written by the agent.
+- `FEEDBACK.md` is not in the repository yet: the entrant's own feedback has not been written.
