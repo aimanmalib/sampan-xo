@@ -748,3 +748,11 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
   (18:04, 19:12, 19:28, 20:44, 20:58, 21:20), and the mainnet balance line now quotes a new measurement taken at
   21:24 UTC with the same result (payer and owner 0). From here on each heading time is read from `date -u` when the
   entry is written.
+
+## 2026-11-18 21:31 UTC: Mainnet funding requested
+
+- Requested 7000 sat from a shared test wallet to the mainnet payer address
+  `bitcoincash:qzqhpy3rzuzmfj0ylnpky8zfvd8xhpz8xuxssgdcnh`, for one land (5000 sat) then giveBack run. The 2000 sat above
+  the landed amount covers the deposit into the engine wallet, the land fee and the engine change output.
+- The request is accepted and queued, not yet paid: status read right after the request is "waiting". No mainnet
+  transaction has been made. The run starts once the coins arrive.
