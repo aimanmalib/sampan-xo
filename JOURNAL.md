@@ -449,7 +449,7 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
   invitations in https://blaze.xo.cash/. No feedback text was drafted by the agent.
 - `FEEDBACK-MIGRATE.md` is not in the repository yet: the entrant's own feedback on the migration has not been written.
 
-## 2026-11-18 18:10 Taker part of a fill done inside the XO debug tool (run browser1)
+## 2026-11-18 18:04 Taker part of a fill done inside the XO debug tool (run browser1)
 
 - Goal: one Swap Intent invitation joined, signed and paid from inside https://blaze.xo.cash/, not only viewed. A new
   disposable chipnet account was created in the tool (scripted Chromium with a kept browser profile, so the account
@@ -614,7 +614,7 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
   land. The failed invitation was archived in the payer engine at once (one-off, not committed) so it does not keep the
   land coin reserved for the next attempt. Next attempt after 20:05.
 
-## 2026-11-18 19:15 Exact template of every saved invitation (template/used)
+## 2026-11-18 19:12 Exact template of every saved invitation (template/used)
 
 - Tried: find how the engine names a template. Neither the engine README nor the type declarations say how
   `templateIdentifier` is computed; the source of `@xo-cash/utils` 0.0.10 (`generateTemplateIdentifier`) does it:
@@ -643,7 +643,7 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
 - Tests: "holds no private-key-shaped value" and "accepts a redacted file only against an original that hashes to its
   name" were both red with the previous stored file and are green now.
 
-## 2026-11-18 19:30 README table of runs, invitations and templates
+## 2026-11-18 19:28 README table of runs, invitations and templates
 
 - Added `scripts/runs-table.ts` (`--write`, `--check`, `--help`), `src/runs-table.ts` and `tests/runs-table.test.ts`.
   The table sits between `<!-- runs-table:start -->` and `<!-- runs-table:end -->` in the new README section
@@ -700,7 +700,7 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
   (same message for heights 333698, 333701, 336994, 337068, 337122). The broadcast succeeded regardless and the script
   exited 0.
 
-## 2026-11-18 20:45 Landing screenshots in the XO debug tool (docs/debug-tool/landing)
+## 2026-11-18 20:44 Landing screenshots in the XO debug tool (docs/debug-tool/landing)
 
 - A Playwright script (Chromium, 1366 x 900) created a new disposable chipnet account on https://blaze.xo.cash/,
   imported `template/landing.json` (listed as Landing `e0e9b742...e03e`, "2 roles · 3 actions · 12 scripts"), viewed
@@ -717,7 +717,7 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
 - The README's import step quoted the earlier template id `03fad653...3515` and "18 scripts"; corrected to the measured
   `e0e9b742...e03e` and "12 scripts".
 
-## 2026-11-18 21:00 UTC: README for the Landing entry, clean clone check
+## 2026-11-18 20:58 UTC: README for the Landing entry, clean clone check
 
 - README `## Migrate to XO`: the chipnet table now lists landing3 and landing4 (byte-identical template `e0e9b742...e03e`)
   first and landing1 and landing2 under "earlier hand-written script" (`03fad653...3515`), each row with its invitation
@@ -730,7 +730,7 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
   rc 0 with `identical: true`; `npx tsx scripts/landing-run.ts --help` rc 0. Folder removed afterwards.
 - `runs-table.ts --check` and `used-templates.ts --check` rc 0 on the working tree.
 
-## 2026-11-18 21:25 UTC: Facts list for the entrant, Landing part updated
+## 2026-11-18 21:20 UTC: Facts list for the entrant, Landing part updated
 
 - Added the facts of the 18 Nov Landing entries (byte-identical template, landing3 and landing4 runs, exact template
   of every invitation, debug tool screenshots, README and clean clone) to the entrant's facts list: what worked, what
@@ -738,4 +738,13 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
   written by the agent.
 - `FEEDBACK-MIGRATE.md` is not in the repository yet: the entrant's own migration feedback has not been written.
 - The mainnet run has not started: no mainnet funds have been requested yet, both mainnet addresses still hold 0.
-  Measured 21:27 with `npx tsx scripts/wallets.ts balance --network mainnet`: payer and owner `confirmed=0 unconfirmed=0`.
+  Measured at 21:24 UTC (`date -u` before and after the command) with `npx tsx scripts/wallets.ts balance --network mainnet`:
+  payer and owner `confirmed=0 unconfirmed=0`.
+
+## 2026-11-18 21:25 UTC: Journal timestamps corrected
+
+- Six entry headings of 18 Nov carried a minute later than the commit that added them (for example "21:25" on an entry
+  committed at 21:20:38, and a balance "measured 21:27" committed at 21:20:57). The headings now carry the commit minute
+  (18:04, 19:12, 19:28, 20:44, 20:58, 21:20), and the mainnet balance line now quotes a new measurement taken at
+  21:24 UTC with the same result (payer and owner 0). From here on each heading time is read from `date -u` when the
+  entry is written.
