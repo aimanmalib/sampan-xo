@@ -642,3 +642,18 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
   export hashes to the file name. The other three stored templates had no such value and are unchanged.
 - Tests: "holds no private-key-shaped value" and "accepts a redacted file only against an original that hashes to its
   name" were both red with the previous stored file and are green now.
+
+## 2026-11-18 19:30 README table of runs, invitations and templates
+
+- Added `scripts/runs-table.ts` (`--write`, `--check`, `--help`), `src/runs-table.ts` and `tests/runs-table.test.ts`.
+  The table sits between `<!-- runs-table:start -->` and `<!-- runs-table:end -->` in the new README section
+  "Runs, invitations and templates". One line per `ok` row of `docs/CHIPNET-RUNS.md` that names an invitation:
+  network, full txid linked to https://chipnet.imaginary.cash/tx/, invitation file, `template/used/<id>.json`.
+  `docs/MAINNET-RUNS.md` is read too once it exists. The runs lists and explorers are in `config/chipnet.json`
+  (`runsTable.sources`).
+- 17 rows written (run1 to run3, browser1, landing1 to landing4); setup rows without an invitation and failed rows
+  are left out. The older short txid table in "Chipnet runs" is kept.
+- A missing invitation, an invitation without a 64 hex `templateIdentifier`, or a missing `template/used/<id>.json`
+  stops `--write` with the invitation's name.
+- Regression: with the previous README, "puts the full txid, the invitation and template/used/<id> on one line" and
+  "README holds exactly what --write would write" were red; green with the table.

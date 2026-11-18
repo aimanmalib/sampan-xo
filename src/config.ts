@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
+import type { RunsSource } from './runs-table.js';
 
 /** maker and taker run the Swap Intent; for the Landing template maker pays, taker converts, owner only receives. */
 export type AccountName = 'maker' | 'taker' | 'owner';
@@ -22,6 +23,12 @@ export interface ChipnetConfig {
   testToken: TestTokenConfig;
   swap: SwapConfig;
   landing: LandingConfig;
+  runsTable: RunsTableConfig;
+}
+
+/** Runs lists whose `ok` rows with an invitation form the README table (scripts/runs-table.ts). */
+export interface RunsTableConfig {
+  sources: RunsSource[];
 }
 
 /** Values of the chipnet Landing runs (the Sampan landing address ported to XO). The token is `testToken.category`. */
@@ -90,6 +97,10 @@ export const loadConfig = (path: string = defaultConfigPath): ChipnetConfig => {
     throw new Error(`config ${path}: swap needs engineDatabasePath, a positive offeredSatoshis, a positive decimal wantedAmount and a positive engineStopTimeoutSeconds`);
   }
   checkLanding(raw.landing, path);
+  const sources = raw.runsTable?.sources;
+  if (!Array.isArray(sources) || sources.length === 0 || !sources.every((s) => typeof s.runs === 'string' && typeof s.network === 'string' && /^https:\/\//.test(String(s.explorer)))) {
+    throw new Error(`config ${path}: runsTable.sources must list runs files with a network and an https explorer`);
+  }
   return raw as ChipnetConfig;
 };
 

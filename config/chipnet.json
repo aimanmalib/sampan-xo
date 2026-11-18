@@ -35,5 +35,11 @@
     "returnAfter": 6,
     "giveBackFeeSatoshis": 500,
     "convertFeeSatoshis": 1000
+  },
+  "runsTable": {
+    "sources": [
+      { "runs": "docs/CHIPNET-RUNS.md", "network": "chipnet", "explorer": "https://chipnet.imaginary.cash/tx/" },
+      { "runs": "docs/MAINNET-RUNS.md", "network": "mainnet", "explorer": "https://blockchair.com/bitcoin-cash/transaction/" }
+    ]
   }
 }
