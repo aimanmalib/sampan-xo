@@ -738,3 +738,4 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
   written by the agent.
 - `FEEDBACK-MIGRATE.md` is not in the repository yet: the entrant's own migration feedback has not been written.
 - The mainnet run has not started: no mainnet funds have been requested yet, both mainnet addresses still hold 0.
+  Measured 21:27 with `npx tsx scripts/wallets.ts balance --network mainnet`: payer and owner `confirmed=0 unconfirmed=0`.
