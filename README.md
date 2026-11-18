@@ -134,6 +134,8 @@ Every step accepts `--dry-run` (build and check without broadcasting). The chipn
 | run2 | cancel | [8472ca5d...e110](https://chipnet.imaginary.cash/tx/8472ca5d982bff800fa471f0811b5c9a3af597c96b8dd0e73d555a7ed44de110) |
 | run3 | open | [c96a9289...88ce](https://chipnet.imaginary.cash/tx/c96a928911e301a808859080fbd842004ab47e79992f63023110a5f3884388ce) |
 | run3 | fill | [f6d03597...a7a2](https://chipnet.imaginary.cash/tx/f6d0359759159ac189383ea76155d2bc7dad63d153c67f95ca9162df6ab0a7a2) |
+| browser1 | open | [7f3896ae...1101](https://chipnet.imaginary.cash/tx/7f3896aed87a94eb1b9dee9dd938f5c6567ad97766cca8a702af2a8e54151101) |
+| browser1 | fill | [f9215922...18a6](https://chipnet.imaginary.cash/tx/f92159229f9ec6b3b55feeb43ffc48cd67e297075d259671c8d6d41a71c118a6) |
 
 The saved invitations are in [invitations/](invitations/); the full list, failures included, is in
 [docs/CHIPNET-RUNS.md](docs/CHIPNET-RUNS.md).
@@ -152,6 +154,31 @@ disposable account there; no funds are needed to view.
    to leave without accepting.
 4. "Inspect", choose `chipnet` and paste a txid from the table above. The script debugger steps through each input;
    the offer input shows the redeem script with the fill and cancel branches.
+
+## Take an offer from inside the XO debug tool
+
+In run `browser1` the taker was a new disposable chipnet account in https://blaze.xo.cash/, which built, signed and
+exported its part of the fill. To do the same:
+
+1. In the debug tool create a chipnet account and import `template/swap-intent.json` (steps 1 and 2 above). "Receive"
+   asks for a default receive policy: choose "Set up default receive", then `Receive` and `Wallet (P2PKH)`. Do the same
+   for `Change` under Settings, Defaults, or the tool cannot add change later. "Receive" then shows the address.
+2. Fund that address from the maker's engine wallet:
+
+   ```sh
+   npx tsx scripts/send.ts maker <bchtest:address> tokens 1000 <run>
+   npx tsx scripts/send.ts maker <bchtest:address> sats 30000 <run>
+   ```
+
+3. Open the offer and start the fill: `npx tsx scripts/run.ts open <run>`, then `npx tsx scripts/run.ts fill-start <run>`.
+4. In the debug tool: "Join Invitation", paste `invitations/<run>-fill-start.json`, "View invitation", choose the role
+   `Taker`, "Accept invitation", "Add to invitation". On the invitation page paste the account's address as
+   `takerLockingScript` and "Add"; "Set up output" for both outputs with role `taker`; "Add input", "Select all";
+   "Add change", "Add selected change"; then "Sign", "Generate selected", "Append to invitation". Every change asks
+   for a confirmation ("Add to invitation").
+5. "Copy invitation" and save the JSON as `invitations/<run>-fill-taken.json`, then
+   `npx tsx scripts/run.ts fill-finish <run>` completes the offer input and broadcasts. "Update invitation" with
+   `invitations/<run>-fill.json` shows the invitation as completed in the tool.
 
 ## Known limits
 
