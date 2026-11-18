@@ -196,6 +196,9 @@ disposable account there; no funds are needed to view.
 4. "Inspect", choose `chipnet` and paste a txid from the table above. The script debugger steps through each input;
    the offer input shows the redeem script with the fill and cancel branches.
 
+Screenshots of each step, for every saved Swap Intent invitation and transaction, are in
+[docs/debug-tool/](docs/debug-tool/README.md).
+
 ## Take an offer from inside the XO debug tool
 
 In run `browser1` the taker was a new disposable chipnet account in https://blaze.xo.cash/, which built, signed and

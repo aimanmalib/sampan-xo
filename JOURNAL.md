@@ -657,3 +657,20 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
   stops `--write` with the invitation's name.
 - Regression: with the previous README, "puts the full txid, the invitation and template/used/<id> on one line" and
   "README holds exactly what --write would write" were red; green with the table.
+
+## 2026-11-18 19:58 Debug tool screenshots committed (docs/debug-tool)
+
+- New disposable chipnet account "debug viewer" at https://blaze.xo.cash/. Imported `template/swap-intent.json`, then
+  "Join Invitation" and "View invitation" (not accepted) for the eight invitations behind an `ok` open, fill or cancel
+  row: run1-open, run2-open, run1-fill, run3-open, run3-fill, run2-cancel, browser1-open, browser1-fill. Each review
+  showed template `Swap Intent`, the action and the commits with roles.
+- "Inspect" on `chipnet` for the eight txids: each page showed status SUCCESS once and no FAIL.
+- First script attempt navigated to `https://blaze.xo.cash/inspect-transaction` with `wait_until='networkidle'`; it
+  produced no inspect screenshot before the 590 s limit. Clicking the "Inspect" button in the side menu instead
+  worked (about 10 s per txid). A helper file named `inspect.py` shadowed the Python standard module and failed with
+  `AttributeError: partially initialized module 'inspect' has no attribute 'getfile' (most likely due to a circular import)`;
+  renamed.
+- Committed 27 PNG files to `docs/debug-tool/swap-intent/`: 18 from this session, 9 steps of the browser1 run
+  (join, outputs, inputs, sign, update, completed, inspect). Account creation, settings and receive screens left out.
+  Reduced to 128 colours with Pillow; largest file 131 KB. Index with image, content and invitation or txid in
+  `docs/debug-tool/README.md`.
