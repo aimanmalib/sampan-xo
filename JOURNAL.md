@@ -756,3 +756,12 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
   the landed amount covers the deposit into the engine wallet, the land fee and the engine change output.
 - The request is accepted and queued, not yet paid: status read right after the request is "waiting". No mainnet
   transaction has been made. The run starts once the coins arrive.
+
+## 2026-11-18 22:43 UTC: Mainnet funding not paid
+
+- The shared test wallet answered the 21:31 UTC request with status "short" (`KURANG`): 0 sat available after its
+  reserve, 0 sat sent, shortfall 7000 sat. Read at 22:41 UTC.
+- Measured at 22:42 UTC with `npx tsx scripts/wallets.ts balance --network mainnet`: payer and owner
+  `confirmed=0 unconfirmed=0`. No mainnet transaction has been made.
+- The mainnet run needs 7000 sat (0.00007 BCH) at the payer address
+  `bitcoincash:qzqhpy3rzuzmfj0ylnpky8zfvd8xhpz8xuxssgdcnh` from another source. Chipnet runs are unaffected.
