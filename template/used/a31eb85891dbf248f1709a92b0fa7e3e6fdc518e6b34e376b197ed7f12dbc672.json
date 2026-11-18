@@ -1168,7 +1168,7 @@
           "role": "receiver",
           "values": {
             "generated": {
-              "ownerKey": "KyRQa5pEXuzVcDwnXRLpYAascjchQW5DoxVRMbj4DTxS83573mz8"
+              "ownerKey": "example private key from the template scenario, removed; see README"
             },
             "variables": {
               "requestedSatoshis": 2000

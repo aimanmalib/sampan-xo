@@ -629,3 +629,16 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
   version of `template/*.json`; `--check` is offline and needs no git history) and `tests/used-templates.test.ts`.
 - Sabotage: with the content-hash comparison disabled, "fails when one byte of a stored template changes" went red;
   with the missing-file check disabled, "fails when an invitation has no stored template" went red. Both restored.
+
+## 2026-11-18 19:20 Example key removed from template/used
+
+- The repository secret scan (gitleaks, rule `generic-api-key`) flagged
+  `template/used/a31eb858...c672.json` line 1171: `"ownerKey": "<WIF>"` in the `requesting satoshis` scenario of the
+  P2PKH wallet template. The value comes from `@xo-cash/templates` 0.0.12 (`dist/index.mjs`), an example key in the
+  package's own test scenario, not a key of this project. It controls nothing here and cannot be rotated by us.
+- The template id hashes the whole template, scenarios included, so removing the value changes the id.
+- Way out: `--write` now replaces every WIF-shaped string with a fixed placeholder; `--check` accepts a file holding
+  the placeholder only when a package export, with the same replacement, equals it byte for byte and the unchanged
+  export hashes to the file name. The other three stored templates had no such value and are unchanged.
+- Tests: "holds no private-key-shaped value" and "accepts a redacted file only against an original that hashes to its
+  name" were both red with the previous stored file and are green now.

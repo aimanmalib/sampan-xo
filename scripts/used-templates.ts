@@ -5,6 +5,7 @@
  *   npx tsx scripts/used-templates.ts --write   find each template (current export, @xo-cash/templates, or an
  *                                               earlier commit of template/*.json) and write it
  *   npx tsx scripts/used-templates.ts --check   offline: every invitation has its file and every file hashes to its name
+ *                                               (example keys in template scenarios are stored as a placeholder)
  */
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';

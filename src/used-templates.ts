@@ -29,6 +29,31 @@ export const invitationIdentifiers = (root: string): { file: string; identifier:
       return { file, identifier: typeof id === 'string' && /^[0-9a-f]{64}$/.test(id) ? id : undefined };
     });
 
+/**
+ * Text that replaces an example private key (WIF) in a template scenario. The @xo-cash/templates P2PKH wallet template
+ * carries one in its test scenario; it is public in the npm package and controls nothing, but a key-shaped value in this
+ * repository would be indistinguishable from a leaked one, so stored files hold this text instead.
+ */
+export const exampleKeyPlaceholder = 'example private key from the template scenario, removed; see README';
+
+/** Base58 WIF private key (mainnet or testnet, compressed or not). */
+const wifPattern = /^[5KLc9][1-9A-HJ-NP-Za-km-z]{50,51}$/;
+
+/** A template JSON (as `templateJson` prints it) with every WIF-shaped string replaced by the placeholder. */
+export const redactExampleKeys = (json: string): string => {
+  let found = false;
+  const redacted = JSON.stringify(
+    JSON.parse(json, (_key, value: unknown) => {
+      if (typeof value !== 'string' || !wifPattern.test(value)) return value;
+      found = true;
+      return exampleKeyPlaceholder;
+    }),
+    null,
+    2,
+  );
+  return found ? redacted + '\n' : json;
+};
+
 /** The templates shipped by the @xo-cash/templates package (for example the P2PKH wallet template). */
 export const packageCandidates = (): TemplateCandidate[] =>
   Object.entries(xoTemplates)
@@ -37,9 +62,11 @@ export const packageCandidates = (): TemplateCandidate[] =>
 
 /**
  * Problems with `template/used/`: an invitation without an identifier, an identifier without a file, or a file whose
- * content does not hash to its own name. Empty when complete.
+ * content does not hash to its own name. A file holding the example key placeholder passes only when it equals, byte
+ * for byte, the redacted form of an original (by default the @xo-cash/templates exports) that hashes to its name.
+ * Empty when complete.
  */
-export const checkUsedTemplates = (root: string): string[] => {
+export const checkUsedTemplates = (root: string, originals: TemplateCandidate[] = packageCandidates()): string[] => {
   const problems: string[] = [];
   for (const { file, identifier } of invitationIdentifiers(root)) {
     if (identifier === undefined) problems.push(`${invitationsFolder}/${file}: no templateIdentifier`);
@@ -50,9 +77,17 @@ export const checkUsedTemplates = (root: string): string[] => {
   const stored = existsSync(folder) ? readdirSync(folder).filter((file) => file.endsWith('.json')).sort() : [];
   for (const file of stored) {
     const name = file.slice(0, -'.json'.length);
+    const content = readFileSync(join(folder, file), 'utf8');
+    if (content.includes(exampleKeyPlaceholder)) {
+      const matches = (candidate: TemplateCandidate): boolean =>
+        redactExampleKeys(candidate.json) === content && identifierOf(candidate.json) === name;
+      if (!originals.some(matches))
+        problems.push(`${usedFolder}/${file}: redacted, but no original template both matches it and hashes to its name`);
+      continue;
+    }
     let actual: string;
     try {
-      actual = identifierOf(readFileSync(join(folder, file), 'utf8'));
+      actual = identifierOf(content);
     } catch (error) {
       problems.push(`${usedFolder}/${file}: not a valid XO template (${(error as Error).message.split('\n')[0]})`);
       continue;
@@ -85,7 +120,7 @@ export const writeUsedTemplates = (root: string, candidates: TemplateCandidate[]
     const json = templateJson(parseTemplate(candidate.json));
     if (identifierOf(json) !== identifier) throw new Error(`${candidate.source}: re-serialized template changed identifier`);
     if (!written.includes(target)) {
-      writeFileSync(join(root, target), json);
+      writeFileSync(join(root, target), redactExampleKeys(json));
       written.push(target);
     }
   }

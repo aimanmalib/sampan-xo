@@ -1,11 +1,19 @@
-import { cpSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { cpSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { afterEach, describe, expect, it } from 'vitest';
 import { swapIntentTemplate } from '../template/swap-intent.js';
 import { templateJson } from '../src/template-json.js';
-import { checkUsedTemplates, identifierOf, packageCandidates, usedFolder, writeUsedTemplates } from '../src/used-templates.js';
+import {
+  checkUsedTemplates,
+  exampleKeyPlaceholder,
+  identifierOf,
+  packageCandidates,
+  redactExampleKeys,
+  usedFolder,
+  writeUsedTemplates,
+} from '../src/used-templates.js';
 
 const repo = fileURLToPath(new URL('..', import.meta.url));
 const temporary: string[] = [];
@@ -47,6 +55,26 @@ describe('template/used', () => {
     expect(problems.length).toBeGreaterThan(0);
     expect(problems.every((problem) => problem.includes(`${swapId}.json is missing`))).toBe(true);
     expect(problems).toContainEqual(expect.stringContaining('invitations/run1-open.json'));
+  });
+
+  it('holds no private-key-shaped value (the P2PKH package template example key is replaced)', () => {
+    const files = readdirSync(join(repo, usedFolder)).filter((file) => file.endsWith('.json'));
+    const texts = files.map((file) => readFileSync(join(repo, usedFolder, file), 'utf8'));
+    expect(texts.filter((text) => /"[5KLc9][1-9A-HJ-NP-Za-km-z]{50,51}"/.test(text))).toEqual([]);
+    expect(texts.filter((text) => text.includes(exampleKeyPlaceholder))).toHaveLength(1);
+  });
+
+  it('accepts a redacted file only against an original that hashes to its name', () => {
+    const p2pkh = packageCandidates().find((candidate) => candidate.source.endsWith('p2pkhTemplate'))!;
+    const p2pkhId = identifierOf(p2pkh.json);
+    const root = copyOfRepo();
+    const file = join(root, usedFolder, `${p2pkhId}.json`);
+    expect(readFileSync(file, 'utf8')).toBe(redactExampleKeys(p2pkh.json));
+    expect(checkUsedTemplates(root, [])).toEqual([expect.stringContaining(`${p2pkhId}.json: redacted, but no original`)]);
+    const text = readFileSync(file, 'utf8');
+    const index = text.indexOf('Wallet');
+    writeFileSync(file, text.slice(0, index) + 'w' + text.slice(index + 1));
+    expect(checkUsedTemplates(root)).toEqual([expect.stringContaining(`${p2pkhId}.json: redacted, but no original`)]);
   });
 
   it('fails when an invitation names no template', () => {

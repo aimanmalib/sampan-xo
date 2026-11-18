@@ -145,6 +145,12 @@ Each invitation names its template by id; the exact template is in `template/use
 `npx tsx scripts/used-templates.ts --check` confirms that every invitation has its file and that each file hashes to
 its own name.
 
+One exception: the P2PKH wallet template from `@xo-cash/templates` (id `a31eb858...c672`, used by the browser1 fund
+invitations) carries an example private key in its test scenario. It is public in the npm package and controls no
+funds, but the stored copy replaces it with a placeholder so the repository holds no key-shaped value. That file is
+checked instead against the package export: the export, with the same replacement, must equal the file byte for byte,
+and the unchanged export must hash to the file's name.
+
 ## Open a saved invitation in the XO debug tool
 
 The XO debugging wallet at https://blaze.xo.cash/ reads the saved invitations and the chipnet transactions. Use a new
