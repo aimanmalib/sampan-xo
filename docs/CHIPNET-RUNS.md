@@ -31,6 +31,7 @@ opened on a public chipnet explorer (https://chipnet.imaginary.cash/tx/). Invita
 | 2026-11-18 19:02 | landing3 | convert | - (not built: `the converter engine wallet has no coin with 100 test token units`) | - | fail |
 | 2026-11-18 19:05 | landing3 | convert | 5c15f12c1e4fe868a5c0761c4592b019c07d71106e3faba99a00c8e240dfabe1 | invitations/landing3-convert.json | ok |
 | 2026-11-18 19:07 | landing4 | giveBack | - (rejected: `non-BIP68-final (code 64)`; built txid 84db84e9a1bc8d6f959432eddb91d52b368ffd1872722cf87723e717c273164d, land coin 6 blocks old) | - | fail |
+| 2026-11-18 20:12 | landing4 | giveBack | 84db84e9a1bc8d6f959432eddb91d52b368ffd1872722cf87723e717c273164d | invitations/landing4-giveBack.json | ok |
 
 run2 is the open -> cancel run: the offer opened at 19:30 was cancelled by the maker at 19:56. The fill steps in between are saved as `<run>-fill-start.json` (maker adds
 the offer coin) and `<run>-fill-taken.json` (taker adds the payment and signs).
@@ -45,7 +46,9 @@ docs/decisions/0002-byte-identical-port.md).
 landing3 is the land -> convert run with the byte-identical template: the owner received 100 test token units at output 0.
 The failed row is the first converter step: an abandoned, never broadcast draft in the taker engine still reserved both
 token coins; see the journal.
-landing4 is the land -> giveBack run with the byte-identical template.
+landing4 is the land -> giveBack run with the byte-identical template: the owner received 9500 sat (10000 landed, 500 fee)
+as BCH with no token. The failed row is the first attempt at 6 confirmations, refused as `non-BIP68-final`; the same
+transaction was accepted at 20:12; see the journal.
 
 browser1 is the open -> fill run with the taker part done by hand in the XO debug tool (https://blaze.xo.cash/), in a new
 disposable chipnet account created there. The project's maker sent that account 1000 test tokens and 30000 sat (the two

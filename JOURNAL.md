@@ -683,3 +683,19 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
   to view them and inspect the fill txid in https://blaze.xo.cash/ with a new disposable account. It is a list, not a
   draft; no feedback text was written by the agent.
 - `FEEDBACK.md` is not in the repository yet: the entrant's own feedback has not been written.
+
+## 2026-11-18 20:12 Chipnet landing4 giveBack accepted
+
+- 20:12 `timeout 200 npx tsx scripts/landing-run.ts giveBack landing4` broadcast
+  `84db84e9a1bc8d6f959432eddb91d52b368ffd1872722cf87723e717c273164d`, the same txid the nodes refused at 19:07 as
+  `non-BIP68-final (code 64)`. Saved `invitations/landing4-giveBack.json`.
+- Explorer (https://chipnet.imaginary.cash/tx/84db84e9a1bc8d6f959432eddb91d52b368ffd1872722cf87723e717c273164d) at 20:13:
+  unconfirmed, one input from `bchtest:pvp48e6zfhj9glvrlwp8tzap2rmpkl3yel2g29rt9h9y99ja86hfqc2u6lnlx`, unlocking script
+  starting with `OP_1` (cashc selector for `giveBack`), one P2PKH output of 9500 sat to the owner
+  `bchtest:qz4rr7mn324zdkeav5v3gpqvlf3jx9u68qgxya53h3`, no token, fee 500 sat (2.31 sat/B).
+- The covenant compiled from the deployed contract's cashc bytecode accepted the engine's giveBack with no change to the
+  payer steps. Between the refusal and acceptance about 65 minutes passed (land at height 337122).
+- During the run the engine printed, many times over, verbatim:
+  `Failed to process transaction update: Error: Could not validate a block header on height 337123: The requested header is ahead of the current checkpoint at height 332384`
+  (same message for heights 333698, 333701, 336994, 337068, 337122). The broadcast succeeded regardless and the script
+  exited 0.
