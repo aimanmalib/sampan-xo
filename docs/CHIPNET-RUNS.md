@@ -21,6 +21,11 @@ opened on a public chipnet explorer (https://chipnet.imaginary.cash/tx/). Invita
 | 2026-11-16 09:19 | landing2 | land | a0e6da274c8c5881bfc5c0c103c4d64f1612d1d69b79aeac876fea165ffdce47 | invitations/landing2-land.json | ok |
 | 2026-11-16 09:27 | landing2 | giveBack | - (rejected: `non-BIP68-final (code 64)`; built txid de83797632b64d4725fcd47ec9325fc49dc36cddf30fdd7d301137d01d1819dd, land coin 8 blocks old) | - | fail |
 | 2026-11-16 10:19 | landing2 | giveBack | de83797632b64d4725fcd47ec9325fc49dc36cddf30fdd7d301137d01d1819dd | invitations/landing2-giveBack.json | ok |
+| 2026-11-18 16:19 | browser1 | fund | 95bb24063f8d4b67562e0a8d417fe4b0d1144b8821e85c8ad0559cd161a442b2 | invitations/browser1-fund-tokens.json | ok |
+| 2026-11-18 16:19 | browser1 | fund | 9288186e171e9fd123960c30252361bbe9025c7721c3597d197ff6b11c18e41d | invitations/browser1-fund-sats.json | ok |
+| 2026-11-18 16:21 | browser1 | open | 7f3896aed87a94eb1b9dee9dd938f5c6567ad97766cca8a702af2a8e54151101 | invitations/browser1-open.json | ok |
+| 2026-11-18 17:50 | browser1 | fill | - (not built: `TemplateUnlockingScriptNotFoundError: Unlocking script not found for locking script "sendingLockingscript"`) | - | fail |
+| 2026-11-18 17:51 | browser1 | fill | f92159229f9ec6b3b55feeb43ffc48cd67e297075d259671c8d6d41a71c118a6 | invitations/browser1-fill.json | ok |
 
 run2 is the open -> cancel run: the offer opened at 19:30 was cancelled by the maker at 19:56. The fill steps in between are saved as `<run>-fill-start.json` (maker adds
 the offer coin) and `<run>-fill-taken.json` (taker adds the payment and signs).
@@ -29,3 +34,11 @@ landing1 is the land -> convert run: the owner received 100 test token units at 
 landing2 is the land -> giveBack run: the owner received 9500 sat (10000 landed, 500 fee) as BCH with no token. The nodes refused
 the same transaction as `non-BIP68-final` from 09:27 until 10:18 although the land already had 8 confirmations by Electrum
 height at 09:25; see the journal.
+
+browser1 is the open -> fill run with the taker part done by hand in the XO debug tool (https://blaze.xo.cash/), in a new
+disposable chipnet account created there. The project's maker sent that account 1000 test tokens and 30000 sat (the two
+`fund` rows, P2PKH wallet template `sendFungibleTokens` and `sendSatoshis` through the XO engine), opened the offer and
+started the fill (`browser1-fill-start.json`). In the debug tool the taker joined that invitation, added its receiving
+script, both outputs, its two coins and change, signed its two inputs and exported the invitation
+(`browser1-fill-taken.json`: the tool's "Copy invitation" JSON, pretty printed). The maker then completed the offer input and broadcast
+(`browser1-fill.json`). The failed row is the first finish attempt, before the fix described in the journal.
