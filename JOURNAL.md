@@ -729,3 +729,12 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
   `npm ci` rc 0 (311 packages, 43 s); `npm test` rc 0, 18 test files, 124 tests; `npx tsx scripts/check-bytecode.ts --json`
   rc 0 with `identical: true`; `npx tsx scripts/landing-run.ts --help` rc 0. Folder removed afterwards.
 - `runs-table.ts --check` and `used-templates.ts --check` rc 0 on the working tree.
+
+## 2026-11-18 21:25 UTC: Facts list for the entrant, Landing part updated
+
+- Added the facts of the 18 Nov Landing entries (byte-identical template, landing3 and landing4 runs, exact template
+  of every invitation, debug tool screenshots, README and clean clone) to the entrant's facts list: what worked, what
+  the engine and the debug tool refused, verbatim errors, time lost. It is a list, not a draft; no feedback text was
+  written by the agent.
+- `FEEDBACK-MIGRATE.md` is not in the repository yet: the entrant's own migration feedback has not been written.
+- The mainnet run has not started: no mainnet funds have been requested yet, both mainnet addresses still hold 0.
