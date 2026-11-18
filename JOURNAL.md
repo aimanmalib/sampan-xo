@@ -534,3 +534,42 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
 - Scripts pick the network with `--network chipnet|mainnet` (default chipnet); `config/chipnet.json` is unchanged and
   `loadConfig` still rejects the mainnet file. Tests: `tests/landing-network.test.ts` (9 cases).
 - Time: about 25 minutes.
+
+## 2026-11-18 18:30 Landing template made byte-identical to the deployed contract
+
+- Goal: the template's landing script should equal the redeem bytecode of a real Sampan landing address, not only
+  enforce the same rules. The earlier script (0001) was CashASM written by hand in a different opcode order.
+- Read once from mainnet Electrum (`bch.imaginary.cash:50004`, `blockchain.transaction.get`, read only) the Sampan
+  giveBack `5671fd920b3a3c74d322b23250d31a33326452e28528236227f0c89f3a585ba6` and the transaction it spends
+  (`0310e0cd3ac67e51aa157dc8ac67ae59b0f69931963e1946547e471548d42f81`). A first try with `npx tsx` on a `.ts` file with
+  top-level await failed: "Top-level await is currently not supported with the "cjs" output format" (outside a
+  package with `"type": "module"`); renamed to `.mts`. A second fetch returned `{}` because I had reversed the outpoint
+  hash by hand and got two bytes wrong; reversing it in code fixed it.
+- Unlocking script of the giveBack: `OP_1` (cashc selector for `giveBack`), then a 136-byte redeem bytecode: `OP_6`,
+  `00e1f505` (rateDen 100000000), `002d3101` (rateNum 20000000), the 32-byte category in transaction order, the 25-byte
+  P2PKH owner, then the artifact bytecode. The spent output is P2SH20 `a914dd3069dbb9dc5daeab179976bccfdf6c4bbec08387`.
+- New `landingLockingBytecode`: `landingConstructorArguments` (`<returnAfter> <rateDen> <rateNum>
+  <$(<tokenCategory> OP_REVERSEBYTES)> <ownerLockingScript>`) followed by the artifact bytecode split into named parts.
+  Unlocking: `OP_0` convert, `OP_1` giveBack. The XO engine compiled it to the deployed redeem bytecode on the first
+  try (engine `compileLockingBytecodeFromTemplateLockingScriptIdentifier`, locking type switched to `p2s` to get the
+  bare script). The `$(...)` evaluation inside a push worked in the engine compiler.
+- XO locking types: `@xo-cash/types` has `p2s`, `p2pkh`, `p2sh`; the engine maps `p2sh` to `p2sh32`. No P2SH20, so
+  the address differs from Sampan's for the same parameters (docs/decisions/0002).
+- `npx tsx scripts/check-bytecode.ts --json`: `identical: true` (deployed, template and cashc redeem bytecode equal).
+  `--params config/chipnet.json`: `identical: true`. `--params config/mainnet.json` (contract parameters now filled
+  from the fixture): `identical: true`, differs from the deployed address in `ownerLockingScript` only.
+- `tests/template-json.test.ts` failed after the export: landing1/landing2 invitations name the earlier template
+  `03fad65372a2941104b9256de44ed263452ea26e26b4a6bef39b9d44d20e3515`, the new template is
+  `e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e`. The test now expects the earlier identifier
+  for those two runs and the current one for any later run.
+- Sabotage in `template/landing.ts`, each restored after: one `OP_NIP` removed from giveBack: 5 tests red (bytecode
+  3, covenant 2); category check replaced by `OP_DROP OP_DROP`: 5 red (bytecode 3, covenant "another token category"
+  and "display order"); `OP_CHECKSEQUENCEVERIFY` removed: 5 red (bytecode 3, covenant "before returnAfter" and
+  "final sequence").
+- Targeted tests: 89 passed (landing, swap, template-json, config, readme). The existing VM tests passed against the
+  new script without change.
+- Time: about 50 minutes.
+- The push hook's secret scan (gitleaks `generic-api-key`) flagged the 64-hex category value under the key
+  `tokenCategory` in `config/mainnet.json` and the fixture. It is a public token category, not a key. The config and
+  fixture field is now `category` (as `testToken.category` in `config/chipnet.json`, which the scan accepts); the
+  template variable keeps its name `tokenCategory`.

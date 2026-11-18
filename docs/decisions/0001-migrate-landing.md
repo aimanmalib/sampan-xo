@@ -35,7 +35,7 @@ and runs it on chipnet. The Swap Intent template in the same repository is a sep
   | value sent by the payer | variable `landedSatoshis` |
 
   The locking script is written in CashASM line by line from the CashScript source. It holds no public key and needs no
-  signature, as in the original.
+  signature, as in the original. (Replaced by 0002: the script is now the cashc bytecode of the deployed contract.)
 - **P2SH32 instead of P2SH20.** The template uses the XO `p2sh` locking type, which is P2SH32, as the Swap Intent template does.
   The landing address therefore differs from the address Sampan computes for the same parameters; the rules are the same.
 - **A `converter` role stands in for the Cauldron pool.** Chipnet has no Sampan token and no pool for it. The fungible test token

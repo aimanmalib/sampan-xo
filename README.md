@@ -243,7 +243,8 @@ sequenceDiagram
 ### Differences from the original
 
 - **P2SH32 instead of P2SH20.** The template uses the XO `p2sh` locking type, which is P2SH32, so the landing address
-  differs from the one Sampan computes for the same parameters. The rules are the same.
+  differs from the one Sampan computes for the same parameters. The redeem bytecode is the same: see
+  `npx tsx scripts/check-bytecode.ts` and [docs/decisions/0002](docs/decisions/0002-byte-identical-port.md).
 - **A `converter` role instead of a Cauldron pool.** Chipnet has no Sampan token and no pool for it. The fungible test
   token minted for the Swap Intent runs (`testToken.category` in `config/chipnet.json`) stands in, and the `taker`
   account, which holds it, adds the token input and receives the landed BCH. The contract never checked who provides the
