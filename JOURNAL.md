@@ -513,3 +513,24 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
   Change policy in place; a note in the join dialog that signing needs "Append to invitation" after "Generate"; an
   engine option to sign only the inputs a commit of this entity added, so a wallet that funded the other party does not
   try to sign that party's coins.
+
+## 2026-11-18 18:26 Migrate to XO: mainnet accounts and config for one minimum run
+
+- Scope: one mainnet Landing run (land, then giveBack) is planned, with small amounts and a fixed set of actions. This
+  step only adds the accounts and the config; no mainnet transaction was made.
+- `npm run wallets -- add --network mainnet` appended two new phrases to `.env` (`MAINNET_PAYER_MNEMONIC`,
+  `MAINNET_OWNER_MNEMONIC`, mode 0600). The three chipnet lines before them stayed byte for byte (checked by comparing
+  the file prefix); chipnet phrases are not used on mainnet.
+- Mainnet addresses (path m/44'/145'/0'/0/0): payer `bitcoincash:qzqhpy3rzuzmfj0ylnpky8zfvd8xhpz8xuxssgdcnh`, owner
+  `bitcoincash:qpclaehgrt7507sg2f0fnd3jq6txqwwsvgadvh427s` (token-aware form
+  `bitcoincash:zpclaehgrt7507sg2f0fnd3jq6txqwwsvg68lfmvpr` in `config/mainnet.json`). Both balances read 0 through
+  Electrum.
+- `config/mainnet.json`: landedSatoshis 5000, giveBackFeeSatoshis 1000, engine folder `.xo-mainnet`. The contract
+  parameters (token category, rate, returnAfter) stay null until they are read from the deployed contract.
+  `src/landing-network.ts` refuses landedSatoshis outside 546..20000 and a giveBack fee outside 1..1000.
+- Electrum probe (read only, `blockchain.headers.get_tip`, port 50004 wss): bch.imaginary.cash, bch.loping.net and
+  electrum.imaginary.cash answered at height 977918; electroncash.de: "Connection to 'electroncash.de:50004' timed out
+  after 10000 milliseconds." The first two are in the config.
+- Scripts pick the network with `--network chipnet|mainnet` (default chipnet); `config/chipnet.json` is unchanged and
+  `loadConfig` still rejects the mainnet file. Tests: `tests/landing-network.test.ts` (9 cases).
+- Time: about 25 minutes.

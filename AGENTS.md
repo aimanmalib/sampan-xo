@@ -1,7 +1,7 @@
 # Notes for coding agents
 
 - Node 22, TypeScript strict, ES modules, `tsx` for scripts, vitest for tests. Pin dependency versions exactly.
-- Chipnet only. Never add mainnet servers, mainnet addresses or real funds.
+- Chipnet, except one minimum mainnet Landing run (land, then giveBack) set in `config/mainnet.json`; its limits are checked in `src/landing-network.ts`. No other mainnet transactions, no real tokens.
 - Never print or commit wallet phrases. `.env` stays untracked; `.env.example` lists variable names only.
 - Values that may change belong in `config/chipnet.json`, not in code.
 - Keep modules small. Entry points in `scripts/` stay thin; logic lives in `src/` and `template/`.

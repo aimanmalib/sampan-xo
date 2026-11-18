@@ -20,7 +20,10 @@ export interface FundingKey {
  * Derives the plain P2PKH funding key of one account. It holds test coins and test tokens outside XO;
  * the XO engine derives its own keys from the same phrase under its own purpose path.
  */
-export const deriveFundingKey = (mnemonic: string, config: ChipnetConfig): FundingKey => {
+export const deriveFundingKey = (
+  mnemonic: string,
+  config: Pick<ChipnetConfig, 'fundingDerivationPath'> & { addressPrefix: 'bchtest' | 'bitcoincash' },
+): FundingKey => {
   const root = deriveHdPrivateNodeFromBip39Mnemonic(mnemonic);
   const node = deriveHdPath(root, config.fundingDerivationPath);
   if (!('privateKey' in node)) throw new Error('derivation did not produce a private node');

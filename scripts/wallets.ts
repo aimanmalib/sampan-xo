@@ -6,6 +6,9 @@
  *   npx tsx scripts/wallets.ts addresses  print the funding address of each account
  *   npx tsx scripts/wallets.ts balance    print the chipnet balance and token amounts of each funding address
  *
+ * Add `--network mainnet` to work on the two mainnet accounts of config/mainnet.json (payer, owner) instead.
+ * Their variables carry a MAINNET_ prefix; chipnet phrases are never used on mainnet. Use `add` there: .env already exists.
+ *
  * Phrases are never printed.
  */
 import { generateBip39Mnemonic } from '@bitauth/libauth';
@@ -14,21 +17,24 @@ import { deriveFundingKey } from '../src/accounts.js';
 import { loadConfig } from '../src/config.js';
 import { connectChipnet, getBalance, listUnspent } from '../src/electrum.js';
 import { appendEnvVariables, mnemonicVariable, readEnvFile, readMnemonic, writeNewEnvFile } from '../src/env.js';
+import { loadMainnetConfig, parseNetworkArg, withoutNetworkArg } from '../src/landing-network.js';
 
 const envPath = fileURLToPath(new URL('../.env', import.meta.url));
-const config = loadConfig();
-const command = process.argv[2] ?? 'addresses';
+const network = parseNetworkArg(process.argv.slice(2));
+const config = network === 'mainnet' ? loadMainnetConfig() : loadConfig();
+const command = withoutNetworkArg(process.argv.slice(2))[0] ?? 'addresses';
+const variable = (account: (typeof config.accounts)[number]) => mnemonicVariable(account, network);
 
 const addresses = () =>
-  config.accounts.map((account) => ({ account, ...deriveFundingKey(readMnemonic(account, envPath), config) }));
+  config.accounts.map((account) => ({ account, ...deriveFundingKey(readMnemonic(account, envPath, network), config) }));
 
 if (command === 'generate') {
-  writeNewEnvFile(envPath, Object.fromEntries(config.accounts.map((a) => [mnemonicVariable(a), generateBip39Mnemonic()])));
+  writeNewEnvFile(envPath, Object.fromEntries(config.accounts.map((a) => [variable(a), generateBip39Mnemonic()])));
   console.log('wrote .env (0600)');
 }
 if (command === 'add') {
   const present = readEnvFile(envPath);
-  const missing = config.accounts.map(mnemonicVariable).filter((name) => !(name in present) && !process.env[name]);
+  const missing = config.accounts.map(variable).filter((name) => !(name in present) && !process.env[name]);
   appendEnvVariables(envPath, Object.fromEntries(missing.map((name) => [name, generateBip39Mnemonic()])));
   console.log(`added ${missing.length === 0 ? 'nothing' : missing.join(', ')} to .env`);
 }

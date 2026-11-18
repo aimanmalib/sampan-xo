@@ -1,7 +1,10 @@
 import { appendFileSync, chmodSync, existsSync, readFileSync, writeFileSync } from 'node:fs';
 import type { AccountName } from './config.js';
+import type { MainnetAccountName, Network } from './landing-network.js';
 
-export const mnemonicVariable = (account: AccountName): string => `${account.toUpperCase()}_MNEMONIC`;
+/** Chipnet names stay MAKER_MNEMONIC and so on; mainnet names carry a MAINNET_ prefix so the two can never be mixed. */
+export const mnemonicVariable = (account: AccountName | MainnetAccountName, network: Network = 'chipnet'): string =>
+  `${network === 'mainnet' ? 'MAINNET_' : ''}${account.toUpperCase()}_MNEMONIC`;
 
 /** Parses KEY=VALUE lines. Comments and blank lines are skipped; surrounding quotes are removed. */
 export const parseEnv = (text: string): Record<string, string> => {
@@ -20,8 +23,8 @@ export const readEnvFile = (path: string): Record<string, string> =>
   existsSync(path) ? parseEnv(readFileSync(path, 'utf8')) : {};
 
 /** Returns the mnemonic for one account, from the process environment first, then the .env file. */
-export const readMnemonic = (account: AccountName, envPath: string): string => {
-  const name = mnemonicVariable(account);
+export const readMnemonic = (account: AccountName | MainnetAccountName, envPath: string, network: Network = 'chipnet'): string => {
+  const name = mnemonicVariable(account, network);
   const value = process.env[name] ?? readEnvFile(envPath)[name] ?? '';
   if (value === '') throw new Error(`${name} is not set (see .env.example)`);
   return value;

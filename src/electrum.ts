@@ -10,8 +10,10 @@ export interface AddressBalance {
 const application = 'swap-intent-xo-template';
 const protocolVersion = '1.5';
 
-/** Connects to the first chipnet Electrum server in the config that answers. */
-export const connectChipnet = async (config: ChipnetConfig): Promise<ElectrumClient<never>> => {
+/** Connects to the first Electrum server in the config that answers (chipnet, or mainnet for the one Landing run). */
+export const connectChipnet = async (
+  config: Pick<ChipnetConfig, 'electrumServers'> & { network: string },
+): Promise<ElectrumClient<never>> => {
   const errors: string[] = [];
   for (const server of config.electrumServers) {
     const client = new ElectrumClient<never>(application, protocolVersion, server.host, {
@@ -26,7 +28,7 @@ export const connectChipnet = async (config: ChipnetConfig): Promise<ElectrumCli
       errors.push(`${server.host}:${server.port} ${String(error)}`);
     }
   }
-  throw new Error(`no chipnet Electrum server answered: ${errors.join('; ')}`);
+  throw new Error(`no ${config.network} Electrum server answered: ${errors.join('; ')}`);
 };
 
 /** Reads the confirmed and unconfirmed balance of a cash address, in satoshis. */

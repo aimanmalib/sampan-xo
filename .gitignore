@@ -25,3 +25,4 @@ data/
 
 # XO engine databases (hold wallet state; never commit)
 /.xo/
+/.xo-mainnet/
