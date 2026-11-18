@@ -320,6 +320,28 @@ Follow "Open a saved invitation in the XO debug tool" above with the Landing fil
 - Each `convert` or `giveBack` spends one landed coin, at input 0, as in the original.
 - Chipnet test wallets and a test token only. The code has not been reviewed for use with real funds.
 
+## Proof the port is faithful
+
+The Landing locking script is the bytecode cashc 0.14.0 compiles from `contracts/landing.cash`, with template
+variables in place of the constructor arguments. For the parameters of a Sampan landing address that was spent on
+mainnet, the XO engine compiles it to the same redeem bytecode, byte for byte.
+
+- Deployed contract: the Sampan `giveBack` transaction
+  [5671fd920b3a3c74d322b23250d31a33326452e28528236227f0c89f3a585ba6](https://blockchair.com/bitcoin-cash/transaction/5671fd920b3a3c74d322b23250d31a33326452e28528236227f0c89f3a585ba6).
+  Its unlocking script carries the 136-byte redeem bytecode; the output it spends is `OP_HASH160 <hash160(redeem)> OP_EQUAL`.
+  Both raw transactions are in [tests/fixtures/landing-deployed.json](tests/fixtures/landing-deployed.json), read once
+  from a public Electrum server. The cashc artifact is [tests/fixtures/landing-artifact.json](tests/fixtures/landing-artifact.json).
+- Check, offline: `npx tsx scripts/check-bytecode.ts` (add `--json` for the full bytecode). It verifies the fixture
+  (hash of the raw transaction, redeem push, spent output), then compares three redeem bytecodes: the deployed one,
+  the template's as compiled by the XO engine, and cashc's (constructor arguments plus artifact bytecode). Output:
+  `identical: true`. `--params config/chipnet.json` does the same comparison for the chipnet parameters.
+- Tests: [tests/landing-bytecode.test.ts](tests/landing-bytecode.test.ts) turn red when one opcode is removed, the
+  category byte order changes, the rate changes by one, or one byte of the fixture changes.
+- Same redeem bytecode, different P2SH wrapper: XO's `p2sh` locking type is P2SH32 and Sampan addresses are P2SH20,
+  so the address is not the same. Unlocking pushes the cashc function selector (`0` convert, `1` giveBack).
+- The chipnet runs `landing1` and `landing2` above were made with an earlier hand-written script that enforced the
+  same rules in a different opcode order. Record: [docs/decisions/0002-byte-identical-port.md](docs/decisions/0002-byte-identical-port.md).
+
 ## AI disclosure
 
 The code, tests, README and build journal in this repository were written by an AI coding agent working for the entrant,
