@@ -262,9 +262,14 @@ sequenceDiagram
 | landing1 | convert | [7a9b82e8...d056](https://chipnet.imaginary.cash/tx/7a9b82e8159b01bcf53e5c556f90d568a32961a4aef7551d119454bc7461d056) |
 | landing2 | land | [a0e6da27...ce47](https://chipnet.imaginary.cash/tx/a0e6da274c8c5881bfc5c0c103c4d64f1612d1d69b79aeac876fea165ffdce47) |
 | landing2 | giveBack | [de837976...19dd](https://chipnet.imaginary.cash/tx/de83797632b64d4725fcd47ec9325fc49dc36cddf30fdd7d301137d01d1819dd) |
+| landing3 | land | [af2ba18f...c9db](https://chipnet.imaginary.cash/tx/af2ba18fd27ca75c6fa5422a73bf602900be6019850efa3d57877e01eae0c9db) |
+| landing3 | convert | [5c15f12c...abe1](https://chipnet.imaginary.cash/tx/5c15f12c1e4fe868a5c0761c4592b019c07d71106e3faba99a00c8e240dfabe1) |
+| landing4 | land | [faa1a8ab...81f2](https://chipnet.imaginary.cash/tx/faa1a8abb2dc2c80052d118413ebf6d2190f0b99ea7b1cbd736fca3d9ab781f2) |
 
-All four ran through the XO engine. In landing1 the owner received 100 test token units at output 0 of the convert
-transaction. In landing2 the owner received 9500 satoshis with no token. The first giveBack attempts were refused by
+All ran through the XO engine. landing1 and landing2 used an earlier hand-written script; landing3 and landing4 use
+the byte-identical template (see [Proof the port is faithful](#proof-the-port-is-faithful)). The landing4 giveBack is
+waiting for the land coin to be accepted as old enough. In landing1 and landing3 the owner received 100 test token
+units at output 0 of the convert transaction. In landing2 the owner received 9500 satoshis with no token. The first giveBack attempts were refused by
 the chipnet nodes as `non-BIP68-final` until about an hour after the land coin was mined; the refusals are rows in
 [docs/CHIPNET-RUNS.md](docs/CHIPNET-RUNS.md) and the measurements are in the [journal](JOURNAL.md).
 
