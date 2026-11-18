@@ -140,6 +140,11 @@ Every step accepts `--dry-run` (build and check without broadcasting). The chipn
 The saved invitations are in [invitations/](invitations/); the full list, failures included, is in
 [docs/CHIPNET-RUNS.md](docs/CHIPNET-RUNS.md).
 
+Each invitation names its template by id; the exact template is in `template/used/<id>.json`
+([template/used/](template/used/)). The id is the one the XO engine computes (sha256 of the serialized template), and
+`npx tsx scripts/used-templates.ts --check` confirms that every invitation has its file and that each file hashes to
+its own name.
+
 ## Open a saved invitation in the XO debug tool
 
 The XO debugging wallet at https://blaze.xo.cash/ reads the saved invitations and the chipnet transactions. Use a new

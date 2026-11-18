@@ -1,0 +1,1236 @@
+{
+  "name": "Wallet (P2PKH)",
+  "description": "A standard single-factor wallet template that uses Pay-to-Public-Key-Hash (P2PKH) locking scripts.",
+  "icon": "wallet",
+  "$schema": "https://libauth.org/schemas/wallet-template-v0.schema.json",
+  "version": "1",
+  "supported": [
+    "BCH_2023_05",
+    "BCH_2024_05",
+    "BCH_2025_05",
+    "BCH_2026_05"
+  ],
+  "defaults": {
+    "change": {
+      "role": "receiver",
+      "generate": [
+        "ownerKey"
+      ],
+      "output": "changeOutput"
+    },
+    "address": {
+      "role": "receiver",
+      "generate": [
+        "ownerKey"
+      ],
+      "lockingScript": "receivingLockingScript"
+    },
+    "receive": {
+      "role": "receiver",
+      "generate": [
+        "ownerKey"
+      ],
+      "output": "receiveOutput"
+    }
+  },
+  "roles": {
+    "owner": {
+      "name": "Wallet Owner",
+      "description": "The party who can spend from this wallet.",
+      "icon": "owner"
+    },
+    "receiver": {
+      "name": "Receiver",
+      "description": "A party that is receiving value.",
+      "icon": "receiver"
+    },
+    "sender": {
+      "name": "Sender",
+      "description": "A party that is sending value.",
+      "icon": "sender"
+    }
+  },
+  "start": [
+    {
+      "role": "receiver",
+      "generate": [
+        "ownerKey"
+      ],
+      "action": "receive"
+    },
+    {
+      "role": "receiver",
+      "generate": [
+        "ownerKey"
+      ],
+      "action": "requestSatoshis"
+    },
+    {
+      "role": "receiver",
+      "generate": [
+        "ownerKey"
+      ],
+      "action": "requestFungibleTokens"
+    },
+    {
+      "role": "receiver",
+      "generate": [
+        "ownerKey"
+      ],
+      "action": "requestNonfungibleTokens"
+    }
+  ],
+  "actions": {
+    "receive": {
+      "name": "Receive",
+      "description": "Receive an unspecified amount of cash and/or tokens from one or more senders.",
+      "icon": "receive",
+      "roles": {
+        "receiver": {
+          "name": "Receive",
+          "description": "Receive an unspecified amount of cash and/or tokens from one or more senders.",
+          "icon": "receive",
+          "requirements": {
+            "secrets": [
+              "ownerKey"
+            ]
+          }
+        },
+        "sender": {
+          "name": "Send",
+          "description": "Send an unspecified amount of cash and/or tokens to the provided receiver.",
+          "icon": "send",
+          "requirements": {
+            "variables": [
+              "transferredSatoshis"
+            ]
+          }
+        }
+      },
+      "requirements": {
+        "participants": [
+          {
+            "role": "receiver",
+            "slots": {
+              "min": 1,
+              "max": 1
+            }
+          },
+          {
+            "role": "sender",
+            "slots": {
+              "min": 1
+            }
+          }
+        ]
+      },
+      "transaction": "receiveTransaction"
+    },
+    "requestSatoshis": {
+      "name": "Request Satoshis",
+      "description": "Requests a specific amount of Bitcoin Cash from one or more senders.",
+      "icon": "request",
+      "roles": {
+        "receiver": {
+          "name": "Request Satoshis",
+          "description": "Requests a specific amount of Bitcoin Cash from one or more senders.",
+          "icon": "request",
+          "requirements": {
+            "variables": [
+              "requestedSatoshis"
+            ],
+            "secrets": [
+              "ownerKey"
+            ]
+          }
+        },
+        "sender": {
+          "name": "Send",
+          "description": "Send a specific amount of Bitcoin Cash to the provided receiver.",
+          "icon": "send",
+          "requirements": {}
+        }
+      },
+      "requirements": {
+        "participants": [
+          {
+            "role": "receiver",
+            "slots": {
+              "min": 1,
+              "max": 1
+            }
+          },
+          {
+            "role": "sender",
+            "slots": {
+              "min": 1
+            }
+          }
+        ]
+      },
+      "transaction": "requestSatoshisTransaction"
+    },
+    "requestFungibleTokens": {
+      "name": "Request Fungible Tokens",
+      "description": "Requests a specific amount of a fungible tokens from one or more senders.",
+      "icon": "request",
+      "roles": {
+        "receiver": {
+          "name": "Request Fungible Tokens",
+          "description": "Requests a specific amount of a fungible tokens from one or more senders.",
+          "icon": "request",
+          "requirements": {
+            "variables": [
+              "requestedTokenCategory",
+              "requestedTokenAmount"
+            ],
+            "secrets": [
+              "ownerKey"
+            ]
+          }
+        },
+        "sender": {
+          "name": "Send",
+          "description": "Send a specific amount of fungible tokens to the provided receiver.",
+          "icon": "send",
+          "requirements": {}
+        }
+      },
+      "requirements": {
+        "participants": [
+          {
+            "role": "receiver",
+            "slots": {
+              "min": 1,
+              "max": 1
+            }
+          },
+          {
+            "role": "sender",
+            "slots": {
+              "min": 1
+            }
+          }
+        ]
+      },
+      "transaction": "requestFungibleTokensTransaction"
+    },
+    "requestNonfungibleTokens": {
+      "name": "Request a Non-fungible Token",
+      "description": "Requests a non-fungible token from one or more senders.",
+      "icon": "request",
+      "roles": {
+        "receiver": {
+          "name": "Request a Non-fungible Token",
+          "description": "Requests a non-fungible token from one or more senders.",
+          "icon": "request",
+          "requirements": {
+            "variables": [
+              "requestedTokenCategory",
+              "requestedTokenCapability",
+              "requestedTokenCommitment"
+            ],
+            "secrets": [
+              "ownerKey"
+            ]
+          }
+        },
+        "sender": {
+          "name": "Send",
+          "description": "Send a non-fungible token to the provided receiver.",
+          "icon": "send",
+          "requirements": {}
+        }
+      },
+      "requirements": {
+        "participants": [
+          {
+            "role": "receiver",
+            "slots": {
+              "min": 1,
+              "max": 1
+            }
+          },
+          {
+            "role": "sender",
+            "slots": {
+              "min": 1
+            }
+          }
+        ]
+      },
+      "transaction": "requestNonfungibleTokensTransaction"
+    },
+    "sendSatoshis": {
+      "name": "Send Satoshis",
+      "description": "Sends a specific amount of Bitcoin Cash to a given recipient.",
+      "icon": "send",
+      "roles": {
+        "sender": {
+          "requirements": {
+            "variables": [
+              "transferredSatoshis",
+              "recipientLockingscript"
+            ],
+            "secrets": [
+              "ownerKey"
+            ]
+          }
+        }
+      },
+      "requirements": {
+        "participants": [
+          {
+            "role": "sender",
+            "slots": {
+              "min": 1,
+              "max": 1
+            }
+          }
+        ]
+      },
+      "conditions": [
+        "$(OP_INPUTINDEX OP_UTXOVALUE <dustLimit> OP_GREATERTHAN)"
+      ],
+      "transaction": "transferSatoshisTransaction"
+    },
+    "sendFungibleTokens": {
+      "name": "Send Fungible Tokens",
+      "description": "Send a specific amount of a fungible token to a given recipient.",
+      "icon": "send",
+      "roles": {
+        "sender": {
+          "requirements": {
+            "variables": [
+              "transferredTokenCategory",
+              "transferredTokenAmount",
+              "recipientLockingscript"
+            ],
+            "secrets": [
+              "ownerKey"
+            ]
+          }
+        }
+      },
+      "requirements": {
+        "participants": [
+          {
+            "role": "sender",
+            "slots": {
+              "min": 1,
+              "max": 1
+            }
+          }
+        ]
+      },
+      "conditions": [
+        "$(OP_INPUTINDEX OP_UTXOTOKENAMOUNT <0> OP_GREATERTHAN)"
+      ],
+      "transaction": "transferFungibleTokensTransaction"
+    },
+    "sendNonfungibleTokens": {
+      "name": "Send a Non-fungible Token",
+      "description": "Send a non-fungible token to a given recipient.",
+      "icon": "send",
+      "roles": {
+        "sender": {
+          "requirements": {
+            "variables": [
+              "transferredTokenCategory",
+              "transferredTokenCapability",
+              "transferredTokenCommitment",
+              "recipientLockingscript"
+            ],
+            "secrets": [
+              "ownerKey"
+            ]
+          }
+        }
+      },
+      "requirements": {
+        "participants": [
+          {
+            "role": "sender",
+            "slots": {
+              "min": 1,
+              "max": 1
+            }
+          }
+        ]
+      },
+      "conditions": [
+        "$(OP_INPUTINDEX OP_UTXOTOKENCATEGORY OP_SIZE OP_NIP <32> OP_GREATERTHAN)"
+      ],
+      "transaction": "transferNonfungibleTokensTransaction"
+    },
+    "burnFungibleTokens": {
+      "name": "Delete Fungible Tokens",
+      "description": "Permanently and irreversibly deletes one or more fungible tokens.",
+      "icon": "burn",
+      "roles": {
+        "owner": {
+          "requirements": {
+            "variables": [
+              "burnedTokenCategory",
+              "burnedTokenAmount"
+            ],
+            "secrets": [
+              "ownerKey"
+            ]
+          }
+        }
+      },
+      "requirements": {
+        "participants": [
+          {
+            "role": "owner",
+            "slots": {
+              "min": 1,
+              "max": 1
+            }
+          }
+        ]
+      },
+      "conditions": [
+        "$(OP_INPUTINDEX OP_UTXOTOKENAMOUNT <0> OP_GREATERTHAN)"
+      ],
+      "transaction": "burnFungibleTokensTransaction"
+    },
+    "burnNonfungibleTokens": {
+      "name": "Delete a Non-fungible Token",
+      "description": "Permanently and irreversibly deletes one non-fungible token.",
+      "icon": "burn",
+      "roles": {
+        "owner": {
+          "requirements": {
+            "variables": [
+              "burnedTokenCategory",
+              "burnedTokenCapability",
+              "burnedTokenCommitment"
+            ],
+            "secrets": [
+              "ownerKey"
+            ]
+          }
+        }
+      },
+      "requirements": {
+        "participants": [
+          {
+            "role": "owner",
+            "slots": {
+              "min": 1,
+              "max": 1
+            }
+          }
+        ]
+      },
+      "conditions": [
+        "$(OP_INPUTINDEX OP_UTXOTOKENCATEGORY OP_SIZE OP_NIP <32> OP_GREATERTHAN)"
+      ],
+      "transaction": "burnNonfungibleTokenTransaction"
+    },
+    "sign": {
+      "name": "Sign Message",
+      "description": "Signs a provided message using the Bitcoin message signing protocol.",
+      "icon": "sign",
+      "roles": {
+        "owner": {
+          "requirements": {
+            "variables": [
+              "messageToSign"
+            ],
+            "secrets": [
+              "ownerKey"
+            ]
+          }
+        }
+      },
+      "requirements": {
+        "participants": [
+          {
+            "role": "owner",
+            "slots": {
+              "min": 1,
+              "max": 1
+            }
+          }
+        ]
+      },
+      "data": "messageSignature"
+    },
+    "verify": {
+      "name": "Verify Message Signature",
+      "description": "Verifies a provided message signature according to the Bitcoin message signing protocol.",
+      "icon": "verify",
+      "roles": {
+        "owner": {
+          "requirements": {
+            "variables": [
+              "messageSignature",
+              "messageToVerify"
+            ],
+            "secrets": [
+              "ownerKey"
+            ]
+          }
+        }
+      },
+      "requirements": {
+        "participants": [
+          {
+            "role": "owner",
+            "slots": {
+              "min": 1,
+              "max": 1
+            }
+          }
+        ]
+      },
+      "data": "messageSignatureValidity"
+    }
+  },
+  "data": {
+    "messageSignature": {
+      "type": "signature",
+      "value": "$(<messagePrefix> <message> OP_CAT <ownerKey.data_signature.top_stack_element>)"
+    },
+    "messageSignatureValidity": {
+      "type": "integer",
+      "value": "$(<messageSignature> <messagePrefix> <message> OP_CAT <ownerKey.public_key> OP_CHECKDATASIG)"
+    }
+  },
+  "transactions": {
+    "receiveTransaction": {
+      "name": "Transfer Completed",
+      "description": "Transferred an unspecified amount of cash and/or tokens.",
+      "icon": "request",
+      "version": 2,
+      "locktime": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "output": "receiveOutput"
+        }
+      ],
+      "roles": {
+        "receiver": {
+          "name": "Received",
+          "description": "Received an unspecified amount of cash and/or tokens.",
+          "icon": "receive"
+        },
+        "sender": {
+          "name": "Sent",
+          "description": "Sent an unspecified amount of cash and/or tokens.",
+          "icon": "send"
+        }
+      },
+      "composable": true
+    },
+    "requestSatoshisTransaction": {
+      "name": "Satoshis Transferred",
+      "description": "Transferred $(<requestedSatoshis>) satoshis.",
+      "icon": "request",
+      "version": 2,
+      "locktime": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "output": "requestSatoshisOutput"
+        }
+      ],
+      "roles": {
+        "receiver": {
+          "name": "Received",
+          "description": "Received $(<requestedSatoshis>) satoshis.",
+          "icon": "receive"
+        },
+        "sender": {
+          "name": "Sent",
+          "description": "Sent $(<requestedSatoshis>) satoshis.",
+          "icon": "send"
+        }
+      },
+      "composable": true
+    },
+    "requestFungibleTokensTransaction": {
+      "name": "Fungible Tokens Transferred",
+      "description": "Transferred $(<requestedTokenAmount> <requestedTokenCategory.decimalsFactor> OP_DIV).$(<requestedTokenAmount> <requestedTokenCategory.decimalsFactor> OP_MOD) $(<requestedTokenCategory.symbol>) tokens.",
+      "icon": "request",
+      "version": 2,
+      "locktime": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "output": "requestFungibleTokensOutput"
+        }
+      ],
+      "roles": {
+        "receiver": {
+          "name": "Received",
+          "description": "Received $(<requestedTokenAmount> <requestedTokenCategory.decimalsFactor> OP_DIV).$(<requestedTokenAmount> <requestedTokenCategory.decimalsFactor> OP_MOD) $(<requestedTokenCategory.symbol>) tokens.",
+          "icon": "receive"
+        },
+        "sender": {
+          "name": "Sent",
+          "description": "Sent $(<requestedTokenAmount> <requestedTokenCategory.decimalsFactor> OP_DIV).$(<requestedTokenAmount> <requestedTokenCategory.decimalsFactor> OP_MOD) $(<requestedTokenCategory.symbol>) tokens.",
+          "icon": "send"
+        }
+      },
+      "composable": true
+    },
+    "requestNonfungibleTokensTransaction": {
+      "name": "Non-Fungible Token Transferred",
+      "description": "Transferred one non-fungible $(<requestedTokenCapability> <0x02> OP_EQUAL OP_IF <\"minting\"> OP_ELSE <requestedTokenCapability> <0x01> OP_EQUAL OP_IF <\"mutable\"> OP_ELSE <\"immutable\"> OP_ENDIF OP_ENDIF) (<requestedTokenCategory.symbol>) token, with $(<requestedTokenCommitment>) commitment.",
+      "icon": "request",
+      "version": 2,
+      "locktime": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "output": "requestNonfungibleTokensOutput"
+        }
+      ],
+      "roles": {
+        "receiver": {
+          "name": "Received",
+          "description": "Received one non-fungible $(<requestedTokenCapability> <0x02> OP_EQUAL OP_IF <\"minting\"> OP_ELSE <requestedTokenCapability> <0x01> OP_EQUAL OP_IF <\"mutable\"> OP_ELSE <\"immutable\"> OP_ENDIF OP_ENDIF) (<requestedTokenCategory.symbol>) token, with $(<requestedTokenCommitment>) commitment.",
+          "icon": "receive"
+        },
+        "sender": {
+          "name": "Sent",
+          "description": "Sent the requested non-fungible $(<requestedTokenCapability> <0x02> OP_EQUAL OP_IF <\"minting\"> OP_ELSE <requestedTokenCapability> <0x01> OP_EQUAL OP_IF <\"mutable\"> OP_ELSE <\"immutable\"> OP_ENDIF OP_ENDIF) (<requestedTokenCategory.symbol>) token, with $(<requestedTokenCommitment>) commitment.",
+          "icon": "send"
+        }
+      },
+      "composable": true
+    },
+    "transferSatoshisTransaction": {
+      "name": "Satoshis Transferred",
+      "description": "$(<transferredSatoshis>) satoshis were transferred to a recipient.",
+      "icon": "send",
+      "version": 2,
+      "locktime": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "output": "transferSatoshisOutput"
+        }
+      ],
+      "roles": {
+        "receiver": {
+          "name": "Received",
+          "description": "Received $(<transferredSatoshis>) satoshis.",
+          "icon": "receive"
+        },
+        "sender": {
+          "name": "Sent",
+          "description": "Sent $(<transferredSatoshis>) satoshis.",
+          "icon": "send"
+        }
+      },
+      "composable": true
+    },
+    "transferFungibleTokensTransaction": {
+      "name": "Fungible Tokens Transferred",
+      "description": "$(<transferredTokenAmount> <transferredTokenCategory.decimalsFactor> OP_DIV).$(<transferredTokenAmount> <transferredTokenCategory.decimalsFactor> OP_MOD) $(<transferredTokenCategory.symbol>) tokens were transferred to a recipient.",
+      "icon": "send",
+      "version": 2,
+      "locktime": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "output": "transferFungibleTokensOutput"
+        }
+      ],
+      "roles": {
+        "receiver": {
+          "name": "Received",
+          "description": "Received $(<transferredTokenAmount> <transferredTokenCategory.decimalsFactor> OP_DIV).$(<transferredTokenAmount> <transferredTokenCategory.decimalsFactor> OP_MOD) $(<transferredTokenCategory.symbol>) tokens.",
+          "icon": "receive"
+        },
+        "sender": {
+          "name": "Sent",
+          "description": "Sent $(<transferredTokenAmount> <transferredTokenCategory.decimalsFactor> OP_DIV).$(<transferredTokenAmount> <transferredTokenCategory.decimalsFactor> OP_MOD) $(<transferredTokenCategory.symbol>) tokens.",
+          "icon": "send"
+        }
+      },
+      "composable": true
+    },
+    "transferNonfungibleTokensTransaction": {
+      "name": "Non-fungible Token Transferred",
+      "description": "One non-fungible $(<transferredTokenCapability> <0x02> OP_EQUAL OP_IF <\"minting\"> OP_ELSE <transferredTokenCapability> <0x01> OP_EQUAL OP_IF <\"mutable\"> OP_ELSE <\"immutable\"> OP_ENDIF OP_ENDIF) $(<transferredTokenCategory.symbol>) token was transferred to a recipient, with $(<transferredTokenCommitment>) commitment.",
+      "icon": "send",
+      "version": 2,
+      "locktime": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "output": "transferNonfungibleTokenOutput"
+        }
+      ],
+      "roles": {
+        "receiver": {
+          "name": "Received",
+          "description": "Received one non-fungible $(<transferredTokenCapability> <0x02> OP_EQUAL OP_IF <\"minting\"> OP_ELSE <transferredTokenCapability> <0x01> OP_EQUAL OP_IF <\"mutable\"> OP_ELSE <\"immutable\"> OP_ENDIF OP_ENDIF) (<transferredTokenCategory.symbol>) token, with $(<transferredTokenCommitment>) commitment.",
+          "icon": "receive"
+        },
+        "sender": {
+          "name": "Sent",
+          "description": "Sent one non-fungible $(<transferredTokenCapability> <0x02> OP_EQUAL OP_IF <\"minting\"> OP_ELSE <transferredTokenCapability> <0x01> OP_EQUAL OP_IF <\"mutable\"> OP_ELSE <\"immutable\"> OP_ENDIF OP_ENDIF) (<transferredTokenCategory.symbol>) token, with $(<transferredTokenCommitment>) commitment.",
+          "icon": "send"
+        }
+      },
+      "composable": true
+    },
+    "burnFungibleTokensTransaction": {
+      "name": "Deleted fungible tokens",
+      "description": "Permanently and irreversibly deleted $(<burnedTokenAmount> <burnedTokenCategory.decimalsFactor> OP_DIV).$(<burnedTokenAmount> <burnedTokenCategory.decimalsFactor> OP_MOD) $(<burnedTokenCategory.symbol>) tokens.",
+      "icon": "burn",
+      "version": 2,
+      "locktime": 0,
+      "inputs": [
+        {
+          "input": "burnFungibleTokensInput"
+        }
+      ],
+      "outputs": [],
+      "composable": true
+    },
+    "burnNonfungibleTokenTransaction": {
+      "name": "Deleted non fungible token",
+      "description": "Permanently and irreversibly deleted a non-fungible $(<burnedTokenCapability> <0x02> OP_EQUAL OP_IF <\"minting\"> OP_ELSE <burnedTokenCapability> <0x01> OP_EQUAL OP_IF <\"mutable\"> OP_ELSE <\"immutable\"> OP_ENDIF OP_ENDIF) (<burnedTokenCategory.symbol>) token, with $(<burnedTokenCommitment>) commitment.",
+      "icon": "burn",
+      "version": 2,
+      "locktime": 0,
+      "inputs": [
+        {
+          "input": "burnNonfungibleTokenInput"
+        }
+      ],
+      "outputs": [],
+      "composable": true
+    }
+  },
+  "inputs": {
+    "burnFungibleTokensInput": {
+      "name": "Deleted fungible tokens",
+      "description": "Permanently and irreversibly deleted $(<burnedTokenAmount>) $(<burnedTokenCategory>).",
+      "icon": "burn",
+      "token": {
+        "category": "$(<burnedTokenCategory>)",
+        "amount": "$(<this.fungibleTokenAmount> <burnedTokenAmount> OP_GREATERTHANOREQUAL OP_IF <this.fungibleTokens> OP_ENDIF)"
+      },
+      "unlockingScript": "unlockP2PKH",
+      "omitChangeAmounts": {
+        "fungibleTokens": "$(<burnedTokenAmount>)"
+      }
+    },
+    "burnNonfungibleTokenInput": {
+      "name": "Deleted non-fungible token",
+      "description": "Permanently and irreversibly burned one non-fungible $(<burnedTokenCapability> <0x02> OP_EQUAL OP_IF <\"minting\"> OP_ELSE <burnedTokenCapability> <0x01> OP_EQUAL OP_IF <\"mutable\"> OP_ELSE <\"immutable\"> OP_ENDIF OP_ENDIF) token of category $(<burnedTokenCategory>), with a $(<burnedTokenCommitment>) commitment.",
+      "icon": "burn",
+      "token": {
+        "category": "$(<burnedTokenCategory>)",
+        "nft": {
+          "capability": "$(<burnedTokenCapability>)",
+          "commitment": "$(<burnedTokenCommitment>)"
+        }
+      },
+      "unlockingScript": "unlockP2PKH",
+      "omitChangeAmounts": {
+        "nonfungibleTokens": 1
+      }
+    }
+  },
+  "outputs": {
+    "changeOutput": {
+      "name": "Change",
+      "description": "Funds returned as change.",
+      "icon": "receive",
+      "lockingScript": "receivingLockingScript"
+    },
+    "receiveOutput": {
+      "name": "Recipient output",
+      "description": "Transferred an unspecified amount of cash and/or tokens to a recipient.",
+      "icon": "receive",
+      "roles": {
+        "receiver": {
+          "name": "Received",
+          "description": "Received an unspecified amount of cash and/or tokens."
+        },
+        "sender": {
+          "name": "Sent",
+          "description": "Sent an unspecified amount of cash and/or tokens."
+        }
+      },
+      "lockingScript": "receivingLockingScript",
+      "valueSatoshis": "$(<transferredSatoshis>)",
+      "token": null
+    },
+    "requestSatoshisOutput": {
+      "name": "Satoshis",
+      "description": "$(<requestedSatoshis>) satoshis.",
+      "icon": "request",
+      "roles": {
+        "receiver": {
+          "name": "Satoshis Received",
+          "description": "Received $(<requestedSatoshis>) satoshis."
+        },
+        "sender": {
+          "name": "Satoshis Sent",
+          "description": "Sent $(<requestedSatoshis>) satoshis."
+        }
+      },
+      "lockingScript": "receivingLockingScript",
+      "valueSatoshis": "$(<requestedSatoshis>)",
+      "token": null
+    },
+    "requestFungibleTokensOutput": {
+      "name": "Fungible $(<requestedTokenCategory.symbol>) Tokens",
+      "description": "$(<requestedTokenAmount> <requestedTokenCategory.decimalsFactor> OP_DIV).$(<requestedTokenAmount> <requestedTokenCategory.decimalsFactor> OP_MOD) $(<requestedTokenCategory.symbol>) tokens.",
+      "icon": "request",
+      "roles": {
+        "receiver": {
+          "name": "Fungible $(<requestedTokenCategory.symbol>) Tokens Received",
+          "description": "Received $(<requestedTokenAmount> <requestedTokenCategory.decimalsFactor> OP_DIV).$(<requestedTokenAmount> <requestedTokenCategory.decimalsFactor> OP_MOD) $(<requestedTokenCategory.symbol>) tokens."
+        },
+        "sender": {
+          "name": "Fungible $(<requestedTokenCategory.symbol>) Tokens Sent",
+          "description": "Sent $(<requestedTokenAmount> <requestedTokenCategory.decimalsFactor> OP_DIV).$(<requestedTokenAmount> <requestedTokenCategory.decimalsFactor> OP_MOD) $(<requestedTokenCategory.symbol>) tokens."
+        }
+      },
+      "lockingScript": "receivingLockingScript",
+      "valueSatoshis": "1000",
+      "token": {
+        "category": "$(<requestedTokenCategory>)",
+        "amount": "$(<requestedTokenAmount>)",
+        "nft": null
+      }
+    },
+    "requestNonfungibleTokensOutput": {
+      "name": "Non-fungible $(<requestedTokenCategory.symbol>) Token",
+      "description": "Transferred one non-fungible $(<requestedTokenCapability> <0x02> OP_EQUAL OP_IF <\"minting\"> OP_ELSE <requestedTokenCapability> <0x01> OP_EQUAL OP_IF <\"mutable\"> OP_ELSE <\"immutable\"> OP_ENDIF OP_ENDIF) $(<requestedTokenCategory.symbol>) token to a recipient, with $(<requestedTokenCommitment>) commitment.",
+      "icon": "request",
+      "roles": {
+        "receiver": {
+          "name": "Non-fungible $(<requestedTokenCategory.symbol>) Token Received",
+          "description": "Received one non-fungible $(<requestedTokenCapability> <0x02> OP_EQUAL OP_IF <\"minting\"> OP_ELSE <requestedTokenCapability> <0x01> OP_EQUAL OP_IF <\"mutable\"> OP_ELSE <\"immutable\"> OP_ENDIF OP_ENDIF) $(<requestedTokenCategory.symbol>) token, with $(<requestedTokenCommitment>) commitment."
+        },
+        "sender": {
+          "name": "Non-fungible $(<requestedTokenCategory.symbol>) Token Sent",
+          "description": "Sent the requested non-fungible $(<requestedTokenCapability> <0x02> OP_EQUAL OP_IF <\"minting\"> OP_ELSE <requestedTokenCapability> <0x01> OP_EQUAL OP_IF <\"mutable\"> OP_ELSE <\"immutable\"> OP_ENDIF OP_ENDIF) $(<requestedTokenCategory.symbol>) token, with $(<requestedTokenCommitment>) commitment."
+        }
+      },
+      "lockingScript": "receivingLockingScript",
+      "valueSatoshis": "1000",
+      "token": {
+        "category": "$(<requestedTokenCategory>)",
+        "amount": null,
+        "nft": {
+          "capability": "$(<requestedTokenCapability>)",
+          "commitment": "$(<requestedTokenCommitment>)"
+        }
+      }
+    },
+    "transferSatoshisOutput": {
+      "name": "Recipient output",
+      "description": "Transferred $(<transferredSatoshis>) satoshis to a recipient.",
+      "icon": "send",
+      "roles": {
+        "receiver": {
+          "name": "Received",
+          "description": "Received $(<transferredSatoshis>) satoshis."
+        },
+        "sender": {
+          "name": "Sent",
+          "description": "Sent $(<transferredSatoshis>) satoshis."
+        }
+      },
+      "lockingScript": "sendingLockingscript",
+      "valueSatoshis": "$(<transferredSatoshis>)"
+    },
+    "transferFungibleTokensOutput": {
+      "name": "Recipient output",
+      "description": "Transferred $(<transferredTokenAmount> <transferredTokenCategory.decimalsFactor> OP_DIV).$(<transferredTokenAmount> <transferredTokenCategory.decimalsFactor> OP_MOD) $(<transferredTokenCategory.symbol>) tokens to a recipient.",
+      "icon": "send",
+      "roles": {
+        "receiver": {
+          "name": "Received",
+          "description": "Received $(<transferredTokenAmount> <transferredTokenCategory.decimalsFactor> OP_DIV).$(<transferredTokenAmount> <transferredTokenCategory.decimalsFactor> OP_MOD) $(<transferredTokenCategory.symbol>) tokens."
+        },
+        "sender": {
+          "name": "Sent",
+          "description": "Sent $(<transferredTokenAmount> <transferredTokenCategory.decimalsFactor> OP_DIV).$(<transferredTokenAmount> <transferredTokenCategory.decimalsFactor> OP_MOD) $(<transferredTokenCategory.symbol>) tokens."
+        }
+      },
+      "lockingScript": "sendingLockingscript",
+      "token": {
+        "category": "$(<transferredTokenCategory>)",
+        "amount": "$(<transferredTokenAmount>)"
+      }
+    },
+    "transferNonfungibleTokenOutput": {
+      "name": "Recipient output",
+      "description": "Transferred one non-fungible $(<transferredTokenCapability> <0x02> OP_EQUAL OP_IF <\"minting\"> OP_ELSE <transferredTokenCapability> <0x01> OP_EQUAL OP_IF <\"mutable\"> OP_ELSE <\"immutable\"> OP_ENDIF OP_ENDIF) $(<transferredTokenCategory.symbol>) token to a recipient, with $(<transferredTokenCommitment>) commitment.",
+      "icon": "send",
+      "roles": {
+        "receiver": {
+          "name": "Received",
+          "description": "Received one non-fungible $(<transferredTokenCapability> <0x02> OP_EQUAL OP_IF <\"minting\"> OP_ELSE <transferredTokenCapability> <0x01> OP_EQUAL OP_IF <\"mutable\"> OP_ELSE <\"immutable\"> OP_ENDIF OP_ENDIF) $(<transferredTokenCategory.symbol>) token, with $(<transferredTokenCommitment>) commitment."
+        },
+        "sender": {
+          "name": "Sent",
+          "description": "Sent one non-fungible $(<transferredTokenCapability> <0x02> OP_EQUAL OP_IF <\"minting\"> OP_ELSE <transferredTokenCapability> <0x01> OP_EQUAL OP_IF <\"mutable\"> OP_ELSE <\"immutable\"> OP_ENDIF OP_ENDIF) $(<transferredTokenCategory.symbol>) token, with $(<transferredTokenCommitment>) commitment."
+        }
+      },
+      "lockingScript": "sendingLockingscript",
+      "token": {
+        "category": "$(<transferredTokenCategory>)",
+        "nft": {
+          "capability": "$(<transferredTokenCapability>)",
+          "commitment": "$(<transferredTokenCommitment>)"
+        }
+      }
+    }
+  },
+  "lockingScripts": {
+    "sendingLockingscript": {
+      "name": "Sent",
+      "description": "Funds sent to an external recipient",
+      "icon": "address",
+      "lockingType": "p2pkh",
+      "lockingBytecode": "lockToRecipient",
+      "actions": [],
+      "state": {
+        "variables": [],
+        "secrets": []
+      },
+      "balance": {},
+      "selectable": false
+    },
+    "receivingLockingScript": {
+      "name": "Received",
+      "description": "Funds received without wallet coordination.",
+      "icon": "address",
+      "lockingType": "p2pkh",
+      "lockingBytecode": "lockP2PKH",
+      "unlockingBytecode": "unlockP2PKH",
+      "actions": [],
+      "roles": {
+        "receiver": {
+          "state": {
+            "variables": [],
+            "secrets": [
+              "ownerKey"
+            ]
+          },
+          "actions": [
+            {
+              "role": "owner",
+              "secrets": [
+                {
+                  "ownerKey": null
+                }
+              ],
+              "action": "sign"
+            },
+            {
+              "role": "owner",
+              "secrets": [
+                {
+                  "ownerKey": null
+                }
+              ],
+              "action": "verify"
+            },
+            {
+              "role": "sender",
+              "secrets": [
+                {
+                  "ownerKey": null
+                }
+              ],
+              "action": "sendSatoshis"
+            },
+            {
+              "role": "sender",
+              "secrets": [
+                {
+                  "ownerKey": null
+                }
+              ],
+              "action": "sendFungibleTokens"
+            },
+            {
+              "role": "sender",
+              "secrets": [
+                {
+                  "ownerKey": null
+                }
+              ],
+              "action": "sendNonfungibleTokens"
+            },
+            {
+              "role": "sender",
+              "secrets": [
+                {
+                  "ownerKey": null
+                }
+              ],
+              "action": "burnFungibleTokens"
+            },
+            {
+              "role": "sender",
+              "secrets": [
+                {
+                  "ownerKey": null
+                }
+              ],
+              "action": "burnNonfungibleTokens"
+            }
+          ],
+          "balance": {
+            "satoshis": true,
+            "fungibleTokens": true,
+            "nonfungibleTokens": true
+          },
+          "selectable": true
+        }
+      }
+    }
+  },
+  "scripts": {
+    "lockP2PKH": "OP_DUP OP_HASH160 <$(<ownerKey.public_key> OP_HASH160)> OP_EQUALVERIFY OP_CHECKSIG",
+    "unlockP2PKH": "<ownerKey.schnorr_signature.all_outputs> <ownerKey.public_key>",
+    "lockToRecipient": "$(<recipientLockingscript>)"
+  },
+  "constants": {
+    "dustLimit": {
+      "name": "Dust Limit",
+      "description": "Standard required minimum satoshis for Pay to Public Key Hash outputs.",
+      "type": "integer",
+      "value": 546
+    },
+    "messagePrefix": {
+      "name": "Message Prefix",
+      "description": "Standard message prefix used in the bitcoin signed message protocol.",
+      "type": "bytes",
+      "value": "0x18426974636f696e205369676e6564204d6573736167653a0a"
+    }
+  },
+  "variables": {
+    "ownerKey": {
+      "name": "Owners Private Key",
+      "description": "The private key used to authorize spending of received funds.",
+      "type": "private_key"
+    },
+    "recipientLockingscript": {
+      "name": "Recipient Locking Script",
+      "description": "The locking script that receives the transferred value.",
+      "type": "locking_script"
+    },
+    "messageToSign": {
+      "name": "Message",
+      "description": "The text message to sign.",
+      "type": "string"
+    },
+    "messageToVerify": {
+      "name": "Message",
+      "description": "The text message to verify.",
+      "type": "string"
+    },
+    "messageSignature": {
+      "name": "Message Signature",
+      "description": "The signature for the message.",
+      "type": "signature"
+    },
+    "requestedSatoshis": {
+      "name": "Requested Amount",
+      "description": "The Bitcoin Cash amount requested",
+      "type": "satoshis"
+    },
+    "transferredSatoshis": {
+      "name": "Transferred Amount",
+      "description": "The Bitcoin Cash amount transferred",
+      "type": "satoshis"
+    },
+    "requestedTokenCategory": {
+      "name": "Requested Token Category",
+      "description": "The token category requested",
+      "type": "token_category"
+    },
+    "requestedTokenAmount": {
+      "name": "Requested Token Amount",
+      "description": "The fungible token amount requested",
+      "type": "token_amount"
+    },
+    "requestedTokenCapability": {
+      "name": "Requested Token Capability",
+      "description": "The non-fungible token capability requested",
+      "type": "token_capability"
+    },
+    "requestedTokenCommitment": {
+      "name": "Requested Token Commitment",
+      "description": "The non-fungible token commitment requested",
+      "type": "token_commitment"
+    },
+    "transferredTokenCategory": {
+      "name": "Sending Token Category",
+      "description": "The token category of the token(s) to send",
+      "type": "token_category"
+    },
+    "transferredTokenAmount": {
+      "name": "Sending Token Amount",
+      "description": "The fungible token amount to send",
+      "type": "token_amount"
+    },
+    "transferredTokenCapability": {
+      "name": "Sending Token Capability",
+      "description": "The token capability for the non-fungible token to send",
+      "type": "token_capability"
+    },
+    "transferredTokenCommitment": {
+      "name": "Sending Token Commitment",
+      "description": "The token commitment for the non-fungible token to send",
+      "type": "token_commitment"
+    },
+    "burnedTokenCategory": {
+      "name": "Deleted Token Category",
+      "description": "The token category of the token(s) to delete",
+      "type": "token_category"
+    },
+    "burnedTokenAmount": {
+      "name": "Deleted Token Amount",
+      "description": "The fungible token amount to delete",
+      "type": "token_amount"
+    },
+    "burnedTokenCapability": {
+      "name": "Deleted Token Capability",
+      "description": "The token capability for the non-fungible token to delete",
+      "type": "token_capability"
+    },
+    "burnedTokenCommitment": {
+      "name": "Deleted Token Commitment",
+      "description": "The token commitment for the non-fungible token to delete",
+      "type": "token_commitment"
+    }
+  },
+  "icons": [
+    {
+      "name": "wallet",
+      "hash": "0000000000000000000000"
+    },
+    {
+      "name": "owner",
+      "hash": "0000000000000000000000"
+    },
+    {
+      "name": "sender",
+      "hash": "0000000000000000000000"
+    },
+    {
+      "name": "address",
+      "hash": "0000000000000000000000"
+    },
+    {
+      "name": "receive",
+      "hash": "0000000000000000000000"
+    },
+    {
+      "name": "request",
+      "hash": "0000000000000000000000"
+    },
+    {
+      "name": "send",
+      "hash": "0000000000000000000000"
+    },
+    {
+      "name": "burn",
+      "hash": "0000000000000000000000"
+    },
+    {
+      "name": "sign",
+      "hash": "0000000000000000000000"
+    },
+    {
+      "name": "verify",
+      "hash": "0000000000000000000000"
+    }
+  ],
+  "scenarios": [
+    {
+      "name": "requesting satoshis",
+      "description": "happy-path evaluation for requesting satoshis.",
+      "action": "requestSatoshis",
+      "roles": [
+        {
+          "role": "receiver",
+          "values": {
+            "generated": {
+              "ownerKey": "KyRQa5pEXuzVcDwnXRLpYAascjchQW5DoxVRMbj4DTxS83573mz8"
+            },
+            "variables": {
+              "requestedSatoshis": 2000
+            },
+            "secrets": {},
+            "inputs": [],
+            "outputs": [
+              {
+                "lockingBytecode": "76a91475c715ecb74178fe87933e57e947e5e92d904b8188ac",
+                "valueSatoshis": 2000
+              }
+            ]
+          }
+        },
+        {
+          "role": "sender",
+          "values": {
+            "generated": {},
+            "variables": {},
+            "secrets": {},
+            "inputs": [
+              {
+                "outpointTransactionHash": "4ef28553a31a266719e66ba97fee3aeecd6d1788f7ff6ab12f8ebceda49660c0",
+                "outpointIndex": 0,
+                "sequenceNumber": 0,
+                "unlockingBytecode": "41226b2be7c2890c8bbde2f79e79640e56d866843f2e822ec51c469019d13db04a422c9ee49f5eefd26fee24e91910edbbb032b90cc54c34da80a61e69b0ee3d22412103e7ab26c36a7c7f45b2c26f33c08b0fa43a633268700f47216646d4cb37ae5696"
+              }
+            ],
+            "outputs": [
+              {
+                "lockingBytecode": "76a91475c715ecb74178fe87933e57e947e5e92d904b8188ac",
+                "valueSatoshis": 2000
+              }
+            ]
+          }
+        }
+      ],
+      "values": {
+        "generated": {},
+        "variables": {},
+        "secrets": {}
+      },
+      "outcome": {
+        "roles": {
+          "receiver": {
+            "name": "Request",
+            "description": "Requested a specific amount of satoshis from one or more senders.",
+            "icon": "request"
+          },
+          "sender": {
+            "name": "Send",
+            "description": "Sent a specific amount of satoshis to the provided receiver.",
+            "icon": "send"
+          }
+        },
+        "transactions": [
+          {
+            "transaction": "0200000001c06096a4edbc8e2fb16afff788176dcdee3aee7fa96be61967261aa35385f24e000000006441226b2be7c2890c8bbde2f79e79640e56d866843f2e822ec51c469019d13db04a422c9ee49f5eefd26fee24e91910edbbb032b90cc54c34da80a61e69b0ee3d22412103e7ab26c36a7c7f45b2c26f33c08b0fa43a633268700f47216646d4cb37ae5696000000000267530300000000001976a91475c715ecb74178fe87933e57e947e5e92d904b8188acd0070000000000001976a91475c715ecb74178fe87933e57e947e5e92d904b8188ac00000000",
+            "value": ""
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -613,3 +613,19 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
   `non-BIP68-final (code 64)`. Same refusal as landing2 on 2026-11-16, which the nodes accepted 59 blocks after the
   land. The failed invitation was archived in the payer engine at once (one-off, not committed) so it does not keep the
   land coin reserved for the next attempt. Next attempt after 20:05.
+
+## 2026-11-18 19:15 Exact template of every saved invitation (template/used)
+
+- Tried: find how the engine names a template. Neither the engine README nor the type declarations say how
+  `templateIdentifier` is computed; the source of `@xo-cash/utils` 0.0.10 (`generateTemplateIdentifier`) does it:
+  sha256 of `serializeTemplate(template)`, hex. Formatting of the JSON file does not change the id, since the template
+  is parsed and serialized again before hashing. About 5 minutes to find.
+- The 27 files in `invitations/` name four ids, all matched without failure:
+  `c4f2cf94...a456` = current `template/swap-intent.ts` (run1 to run3, browser1 open and fill);
+  `a31eb858...c672` = `p2pkhTemplate` from `@xo-cash/templates` 0.0.12 (browser1 fund-sats, fund-tokens, made by the
+  debug tool's wallet); `e0e9b742...e03e` = current `template/landing.ts` (landing3, landing4);
+  `03fad653...3515` = `template/landing.json` at commit 856cc27 (landing1, landing2).
+- Added `scripts/used-templates.ts` (`--write` searches the current export, the package templates and every committed
+  version of `template/*.json`; `--check` is offline and needs no git history) and `tests/used-templates.test.ts`.
+- Sabotage: with the content-hash comparison disabled, "fails when one byte of a stored template changes" went red;
+  with the missing-file check disabled, "fails when an invitation has no stored template" went red. Both restored.
