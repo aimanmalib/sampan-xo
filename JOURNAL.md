@@ -607,3 +607,9 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
   (landing1 and landing3). The covenant with the cashc bytecode accepted the engine's convert without any change to the
   converter steps.
 - Heights at 19:06 (Electrum): landing4 land 337122, landing3 land 337123, landing3 convert 337126.
+- 19:07 (tip 337127, the landing4 land coin 6 blocks old by Electrum height) `giveBack landing4` built
+  `84db84e9a1bc8d6f959432eddb91d52b368ffd1872722cf87723e717c273164d` and the broadcast was refused, verbatim:
+  `TransactionBroadcastFailedError: Transaction broadcast failed for transaction hash "84db84e9a1bc8d6f959432eddb91d52b368ffd1872722cf87723e717c273164d" of invitation "ad209ef8ba966b0e6b199e013f4ee0d5": Error: Failed to broadcast transaction: Error: Failed to request 'blockchain.transaction.broadcast': the transaction was rejected by network rules.`
+  `non-BIP68-final (code 64)`. Same refusal as landing2 on 2026-11-16, which the nodes accepted 59 blocks after the
+  land. The failed invitation was archived in the payer engine at once (one-off, not committed) so it does not keep the
+  land coin reserved for the next attempt. Next attempt after 20:05.
