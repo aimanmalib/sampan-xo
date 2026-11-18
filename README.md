@@ -248,6 +248,9 @@ Sampan, ported to an XO template named "Landing" and run on chipnet with two fol
 - XO implementation: [template/landing.ts](template/landing.ts), exported for XO tools as
   [template/landing.json](template/landing.json); run script [scripts/landing-run.ts](scripts/landing-run.ts); saved
   invitations `invitations/landing*.json`; design record [docs/decisions/0001-migrate-landing.md](docs/decisions/0001-migrate-landing.md).
+- Evidence: the locking script is byte-identical to the deployed Sampan contract ([Proof the port is faithful](#proof-the-port-is-faithful)),
+  the chipnet runs of `land`, `convert` and `giveBack` are [below](#chipnet-runs-landing), and debug tool screenshots
+  of each invitation and transaction are in [docs/debug-tool/](docs/debug-tool/README.md#landing).
 
 The original contract: anyone pays BCH to the landing address, and the coin can then leave only to the owner, either
 converted to tokens at or above a minimum rate (`convert`) or returned as BCH once it is a few blocks old (`giveBack`).
@@ -301,22 +304,30 @@ sequenceDiagram
 
 ### Chipnet runs (Landing)
 
-| Run | Action | Txid |
-| --- | --- | --- |
-| landing1 | land | [78832800...a894](https://chipnet.imaginary.cash/tx/7883280023308e712beb1a51f5f9ba050dd740b7a8099fcf14e18a98437ca894) |
-| landing1 | convert | [7a9b82e8...d056](https://chipnet.imaginary.cash/tx/7a9b82e8159b01bcf53e5c556f90d568a32961a4aef7551d119454bc7461d056) |
-| landing2 | land | [a0e6da27...ce47](https://chipnet.imaginary.cash/tx/a0e6da274c8c5881bfc5c0c103c4d64f1612d1d69b79aeac876fea165ffdce47) |
-| landing2 | giveBack | [de837976...19dd](https://chipnet.imaginary.cash/tx/de83797632b64d4725fcd47ec9325fc49dc36cddf30fdd7d301137d01d1819dd) |
-| landing3 | land | [af2ba18f...c9db](https://chipnet.imaginary.cash/tx/af2ba18fd27ca75c6fa5422a73bf602900be6019850efa3d57877e01eae0c9db) |
-| landing3 | convert | [5c15f12c...abe1](https://chipnet.imaginary.cash/tx/5c15f12c1e4fe868a5c0761c4592b019c07d71106e3faba99a00c8e240dfabe1) |
-| landing4 | land | [faa1a8ab...81f2](https://chipnet.imaginary.cash/tx/faa1a8abb2dc2c80052d118413ebf6d2190f0b99ea7b1cbd736fca3d9ab781f2) |
-| landing4 | giveBack | [84db84e9...164d](https://chipnet.imaginary.cash/tx/84db84e9a1bc8d6f959432eddb91d52b368ffd1872722cf87723e717c273164d) |
+With the byte-identical template (template `e0e9b742...e03e`, see [Proof the port is faithful](#proof-the-port-is-faithful)):
 
-All ran through the XO engine. landing1 and landing2 used an earlier hand-written script; landing3 and landing4 use
-the byte-identical template (see [Proof the port is faithful](#proof-the-port-is-faithful)). In landing1 and landing3 the owner received 100 test token
-units at output 0 of the convert transaction. In landing2 and landing4 the owner received 9500 satoshis with no token. The first giveBack attempts were refused by
-the chipnet nodes as `non-BIP68-final` until about an hour after the land coin was mined; the refusals are rows in
-[docs/CHIPNET-RUNS.md](docs/CHIPNET-RUNS.md) and the measurements are in the [journal](JOURNAL.md).
+| Run | Action | Txid | Invitation |
+| --- | --- | --- | --- |
+| landing3 | land | [af2ba18f...c9db](https://chipnet.imaginary.cash/tx/af2ba18fd27ca75c6fa5422a73bf602900be6019850efa3d57877e01eae0c9db) | [landing3-land.json](invitations/landing3-land.json) |
+| landing3 | convert | [5c15f12c...abe1](https://chipnet.imaginary.cash/tx/5c15f12c1e4fe868a5c0761c4592b019c07d71106e3faba99a00c8e240dfabe1) | [landing3-convert.json](invitations/landing3-convert.json) |
+| landing4 | land | [faa1a8ab...81f2](https://chipnet.imaginary.cash/tx/faa1a8abb2dc2c80052d118413ebf6d2190f0b99ea7b1cbd736fca3d9ab781f2) | [landing4-land.json](invitations/landing4-land.json) |
+| landing4 | giveBack | [84db84e9...164d](https://chipnet.imaginary.cash/tx/84db84e9a1bc8d6f959432eddb91d52b368ffd1872722cf87723e717c273164d) | [landing4-giveBack.json](invitations/landing4-giveBack.json) |
+
+With the earlier hand-written script (template `03fad653...3515`, same rules in a different opcode order):
+
+| Run | Action | Txid | Invitation |
+| --- | --- | --- | --- |
+| landing1 | land | [78832800...a894](https://chipnet.imaginary.cash/tx/7883280023308e712beb1a51f5f9ba050dd740b7a8099fcf14e18a98437ca894) | [landing1-land.json](invitations/landing1-land.json) |
+| landing1 | convert | [7a9b82e8...d056](https://chipnet.imaginary.cash/tx/7a9b82e8159b01bcf53e5c556f90d568a32961a4aef7551d119454bc7461d056) | [landing1-convert.json](invitations/landing1-convert.json) |
+| landing2 | land | [a0e6da27...ce47](https://chipnet.imaginary.cash/tx/a0e6da274c8c5881bfc5c0c103c4d64f1612d1d69b79aeac876fea165ffdce47) | [landing2-land.json](invitations/landing2-land.json) |
+| landing2 | giveBack | [de837976...19dd](https://chipnet.imaginary.cash/tx/de83797632b64d4725fcd47ec9325fc49dc36cddf30fdd7d301137d01d1819dd) | [landing2-giveBack.json](invitations/landing2-giveBack.json) |
+
+All eight ran through the XO engine, including both follow-up actions. In the convert runs (landing3, landing1) the
+owner received 100 test token units at output 0. In the giveBack runs (landing4, landing2) the owner received 9500
+satoshis with no token. The first giveBack attempts were refused by the chipnet nodes as `non-BIP68-final` until about
+an hour after the land coin was mined; the refusals are rows in [docs/CHIPNET-RUNS.md](docs/CHIPNET-RUNS.md) and the
+measurements are in the [journal](JOURNAL.md). The exact template each invitation names is linked from
+[Runs, invitations and templates](#runs-invitations-and-templates).
 
 ### Reproduce the invitations
 
@@ -330,23 +341,32 @@ After steps 1 to 5 of the setup above (wallets, chipnet coins for the maker, tes
    npx tsx scripts/wallets.ts addresses
    ```
 
-2. Land and convert (the three convert steps run as separate processes, payer and converter exchange invitation files):
+2. Check the locking script for your parameters against the deployed contract (offline):
 
    ```sh
-   npx tsx scripts/landing-run.ts land landing1
-   npx tsx scripts/landing-run.ts convert landing1
+   npx tsx scripts/check-bytecode.ts --params config/chipnet.json
    ```
 
-3. Land a second coin, wait until it is `landing.returnAfter` blocks old, then return it to the owner. The giveBack
+3. Land and convert under a new run name (the three convert steps run as separate processes; payer and converter
+   exchange invitation files):
+
+   ```sh
+   npx tsx scripts/landing-run.ts land landing5
+   npx tsx scripts/landing-run.ts convert landing5
+   ```
+
+4. Land a second coin, wait until it is `landing.returnAfter` blocks old, then return it to the owner. The giveBack
    step reads the coin's age from chipnet Electrum first and refuses a coin that is too young.
 
    ```sh
-   npx tsx scripts/landing-run.ts land landing2
-   npx tsx scripts/landing-run.ts giveBack landing2
+   npx tsx scripts/landing-run.ts land landing6
+   npx tsx scripts/landing-run.ts giveBack landing6
    ```
 
 Each step writes `invitations/<run>-<step>.json` and accepts `--dry-run`; `npx tsx scripts/landing-run.ts --help`
-prints the steps. The offline tests for the template (convert and giveBack paths, each covenant check failing on its
+prints the steps. Existing run names (`landing1` to `landing4`) already have saved invitations. After a run,
+`npx tsx scripts/used-templates.ts --write` and `npx tsx scripts/runs-table.ts --write` add its template and table row.
+The offline tests for the template (convert and giveBack paths, each covenant check failing on its
 own) are `tests/landing-*.test.ts` and run with `npm test`.
 
 ### Open the Landing invitations in the XO debug tool
@@ -355,10 +375,10 @@ Follow "Open a saved invitation in the XO debug tool" above with the Landing fil
 
 1. "Import Template" with the contents of [template/landing.json](template/landing.json). The tool reports
    Landing `e0e9b742...e03e`, "2 roles · 3 actions · 12 scripts" (the byte-identical template; landing1 and landing2
-   were made with the earlier `03fad653...3515`). Regenerate the file with
+   were made with the earlier `03fad653...3515`, also kept in [template/used/](template/used/)). Regenerate the file with
    `npx tsx scripts/export-template.ts` after changing `template/landing.ts`.
-2. "Join Invitation" with any `invitations/landing*.json`, then "View invitation". `landing1-convert.json` shows the
-   `convert` action with its six commits and the broadcast result; `landing2-giveBack.json` shows `giveBack`.
+2. "Join Invitation" with any `invitations/landing*.json`, then "View invitation". `landing3-convert.json` shows the
+   `convert` action with its six commits and the broadcast result; `landing4-giveBack.json` shows `giveBack` with four.
 3. "Inspect" on `chipnet` with the convert or giveBack txid above steps through the landing input and decodes its
    P2SH32 redeem script with both branches.
 
