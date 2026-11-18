@@ -1,0 +1,179 @@
+{
+  "invitationIdentifier": "99084a0bc5bdc65e25c0156432ee5f03",
+  "templateIdentifier": "e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e",
+  "actionIdentifier": "convert",
+  "createdAtTimestamp": 1795028524659,
+  "commits": [
+    {
+      "commitIdentifier": "898d48f1ea90ac4bd2f3cc02864b30a8",
+      "createdAtTimestamp": 1795028524660,
+      "data": {},
+      "expiresAtTimestamp": 1795046524659,
+      "signature": "7d36ee025b10ea1d25a0658d2e00f7690d10edaa1f81a6b361f84ef359f86b85fda04aac7fd79fd3fbc5d423a08289049ee96e81fa6b009ac8ad689355ea4693",
+      "entityIdentifier": "tpubDFK2w8YvhM4F3pPvQoQdujf8hD6byVP7rPD4rJYJVjaomrSjyecHs9xHSJTMaydqfhFU8RHJPmc7VRRSJxbH3wMwD3r9DHpuFWiut53a8tc"
+    },
+    {
+      "commitIdentifier": "d2a70aae1a7e0d48144d356bc1d9c1df",
+      "previousCommitIdentifier": "898d48f1ea90ac4bd2f3cc02864b30a8",
+      "createdAtTimestamp": 1795028524858,
+      "data": {
+        "variables": [
+          {
+            "variableIdentifier": "landedSatoshis",
+            "value": "<bigint: 10000n>"
+          },
+          {
+            "variableIdentifier": "ownerLockingScript",
+            "value": "76a914aa31fb738aaa26db3d651914040cfa6323179a3888ac"
+          },
+          {
+            "variableIdentifier": "tokenCategory",
+            "value": "008eebd7502376715a8ffc87f6b6341cbe284c27237ea0204eaee167603ff95a"
+          },
+          {
+            "variableIdentifier": "rateNum",
+            "value": "<bigint: 1n>"
+          },
+          {
+            "variableIdentifier": "rateDen",
+            "value": "<bigint: 100n>"
+          },
+          {
+            "variableIdentifier": "returnAfter",
+            "value": "<bigint: 6n>"
+          }
+        ],
+        "inputs": [
+          {
+            "inputIdentifier": "convertInput",
+            "transactionIndex": 0,
+            "outpointTransactionHash": "<uint8array: af2ba18fd27ca75c6fa5422a73bf602900be6019850efa3d57877e01eae0c9db>",
+            "outpointIndex": 0,
+            "sequenceNumber": 0
+          }
+        ]
+      },
+      "expiresAtTimestamp": 1795046524858,
+      "signature": "d6eba3d5745693217d48ae5265d728f369a02a02a3393d4f692ff1c5b4e17b0e215295b9b781a56210e50acce37075e960ac0a0a357e13430d5d957316ba3ac9",
+      "entityIdentifier": "tpubDFK2w8YvhM4F3pPvQoQdujf8hD6byVP7rPD4rJYJVjaomrSjyecHs9xHSJTMaydqfhFU8RHJPmc7VRRSJxbH3wMwD3r9DHpuFWiut53a8tc"
+    },
+    {
+      "commitIdentifier": "01c51ebcef87bd4b1f0c0a74e390b587",
+      "previousCommitIdentifier": "d2a70aae1a7e0d48144d356bc1d9c1df",
+      "createdAtTimestamp": 1795028543155,
+      "data": {
+        "roleIdentifier": "converter"
+      },
+      "expiresAtTimestamp": 1795046543154,
+      "signature": "6bd28aad6584c8bd1c0a5e4be4a1ef0b312afd186c06d53afc3604ddbba0db2e0ad6a433af48c70b509df8ecf77e386a622c27046e3563b907a674094d88544e",
+      "entityIdentifier": "tpubDEAFjKdcD6vtmYU6AGWGnSewbUTZPgvRPGcoc39nPdaDccbF1ULmoRzTd2NqyouHEjX7avEdJucaYvK1V6QfDg5Yfhm3doxowoWTUahVo1s"
+    },
+    {
+      "commitIdentifier": "0b54773084c4014f01faea3991c30780",
+      "previousCommitIdentifier": "01c51ebcef87bd4b1f0c0a74e390b587",
+      "createdAtTimestamp": 1795028704681,
+      "data": {
+        "variables": [
+          {
+            "variableIdentifier": "converterLockingScript",
+            "value": "76a9140a67409a60dc1d7fae2129cbd54217cf0c77e4d388ac",
+            "roleIdentifier": "converter"
+          },
+          {
+            "variableIdentifier": "converterCoinSatoshis",
+            "value": "<bigint: 8800n>",
+            "roleIdentifier": "converter"
+          },
+          {
+            "variableIdentifier": "converterCoinTokens",
+            "value": "<bigint: 997900n>",
+            "roleIdentifier": "converter"
+          },
+          {
+            "variableIdentifier": "convertFeeSatoshis",
+            "value": "<bigint: 1000n>",
+            "roleIdentifier": "converter"
+          }
+        ],
+        "inputs": [
+          {
+            "transactionIndex": 1,
+            "outpointTransactionHash": "<uint8array: 7a9b82e8159b01bcf53e5c556f90d568a32961a4aef7551d119454bc7461d056>",
+            "outpointIndex": 1,
+            "sequenceNumber": 0,
+            "roleIdentifier": "converter"
+          }
+        ],
+        "outputs": [
+          {
+            "outputIdentifier": "ownerTokenOutput",
+            "transactionIndex": 0,
+            "roleIdentifier": "converter",
+            "lockingBytecode": "<uint8array: 76a914aa31fb738aaa26db3d651914040cfa6323179a3888ac>"
+          },
+          {
+            "outputIdentifier": "converterPayoutOutput",
+            "transactionIndex": 1,
+            "roleIdentifier": "converter",
+            "lockingBytecode": "<uint8array: 76a9140a67409a60dc1d7fae2129cbd54217cf0c77e4d388ac>"
+          }
+        ],
+        "roleIdentifier": "converter"
+      },
+      "expiresAtTimestamp": 1795046704658,
+      "signature": "97b2ad408977bc85ea629c2783c4b2285d95f01a41db94602388b13358486f0db5a1ccf42cd433170eef1a5be081398a66f9ad586ef998e7c7fb1cb55eca0a0a",
+      "entityIdentifier": "tpubDEAFjKdcD6vtmYU6AGWGnSewbUTZPgvRPGcoc39nPdaDccbF1ULmoRzTd2NqyouHEjX7avEdJucaYvK1V6QfDg5Yfhm3doxowoWTUahVo1s"
+    },
+    {
+      "commitIdentifier": "dfb64381a846819d91a8439e8bfb3628",
+      "previousCommitIdentifier": "0b54773084c4014f01faea3991c30780",
+      "createdAtTimestamp": 1795028706582,
+      "data": {
+        "inputs": [
+          {
+            "mergesWith": {
+              "commitIdentifier": "0b54773084c4014f01faea3991c30780",
+              "itemIndex": 0
+            },
+            "unlockingBytecode": "<uint8array: 41aff6252bf5e16f1d63814545ba3bdcf5ab77d660349f518e033a7c115cd4b571c4a5cd28b346c1f4b33e59b3d496e3e6908415f94350e1d5126f592a0480d3c54121025187fa9fe784127cbfe4d0e3dd156e400e831854587ec6d39f03ce7319d3205d>"
+          }
+        ]
+      },
+      "expiresAtTimestamp": 1795046706582,
+      "signature": "30cd9c65ac183cc7ffdaee3f8d558284c2f13da9b9319a7c7daaf7a3ef20c5c58b3985a35a52b91542dc0e9e96f31fd3bbf7d9552940313ce91cdeda8730af5e",
+      "entityIdentifier": "tpubDEAFjKdcD6vtmYU6AGWGnSewbUTZPgvRPGcoc39nPdaDccbF1ULmoRzTd2NqyouHEjX7avEdJucaYvK1V6QfDg5Yfhm3doxowoWTUahVo1s"
+    },
+    {
+      "commitIdentifier": "9b3e72192e3b23dcc053ad1d37bfec16",
+      "previousCommitIdentifier": "dfb64381a846819d91a8439e8bfb3628",
+      "createdAtTimestamp": 1795028736550,
+      "data": {
+        "inputs": [
+          {
+            "mergesWith": {
+              "commitIdentifier": "d2a70aae1a7e0d48144d356bc1d9c1df",
+              "itemIndex": 0
+            },
+            "unlockingBytecode": "<uint8array: 004c8156016451205af93f6067e1ae4e20a07e23274c28be1c34b6f687fc8f5a71762350d7eb8e001976a914aa31fb738aaa26db3d651914040cfa6323179a3888ac5579009c63c0009dc4c39d00cd8800d18800d37b9500c67b95a2777767557a519dc0009d547ab275c3519dc4519d00cd8800d1008800cc00c602e80394a277777768>"
+          }
+        ]
+      },
+      "expiresAtTimestamp": 1795046736550,
+      "signature": "682279b6c80d19385899a2f4b364750a14f0085431e00c1a0643e04ccb544c793453a702c419decd4b0185e020bdf6ea2bd20306e863f6163ece3fa1be050e2f",
+      "entityIdentifier": "tpubDFK2w8YvhM4F3pPvQoQdujf8hD6byVP7rPD4rJYJVjaomrSjyecHs9xHSJTMaydqfhFU8RHJPmc7VRRSJxbH3wMwD3r9DHpuFWiut53a8tc"
+    }
+  ],
+  "result": {
+    "transactions": {
+      "convertTransaction": {
+        "transactionHash": "5c15f12c1e4fe868a5c0761c4592b019c07d71106e3faba99a00c8e240dfabe1",
+        "createdAtTimestamp": 1795028737947,
+        "createdByEntityIdentifier": "tpubDFK2w8YvhM4F3pPvQoQdujf8hD6byVP7rPD4rJYJVjaomrSjyecHs9xHSJTMaydqfhFU8RHJPmc7VRRSJxbH3wMwD3r9DHpuFWiut53a8tc",
+        "createdBySignature": "9ce7843791622c38da5bbbcadc48889ca9224c92893d415483e6f36b8fb7d8ed93968e828f59e4acdd22cffdfcf503bb020e67ef4a782089d4bfe629f1ff9153",
+        "broadcastedAtTimestamp": 1795028739756,
+        "broadcastedByEntityIdentifier": "tpubDFK2w8YvhM4F3pPvQoQdujf8hD6byVP7rPD4rJYJVjaomrSjyecHs9xHSJTMaydqfhFU8RHJPmc7VRRSJxbH3wMwD3r9DHpuFWiut53a8tc",
+        "broadcastedBySignature": "b9c56177032b114b6a4aeef62c21f983a2f4f3adac3d25802ebe4bf163f405dd1572fcc1760bc745e477130b83dc1576ae7bfba6aa1e20e4af85a8d77734ee4d"
+      }
+    }
+  }
+}

@@ -26,6 +26,10 @@ opened on a public chipnet explorer (https://chipnet.imaginary.cash/tx/). Invita
 | 2026-11-18 16:21 | browser1 | open | 7f3896aed87a94eb1b9dee9dd938f5c6567ad97766cca8a702af2a8e54151101 | invitations/browser1-open.json | ok |
 | 2026-11-18 17:50 | browser1 | fill | - (not built: `TemplateUnlockingScriptNotFoundError: Unlocking script not found for locking script "sendingLockingscript"`) | - | fail |
 | 2026-11-18 17:51 | browser1 | fill | f92159229f9ec6b3b55feeb43ffc48cd67e297075d259671c8d6d41a71c118a6 | invitations/browser1-fill.json | ok |
+| 2026-11-18 19:00 | landing4 | land | faa1a8abb2dc2c80052d118413ebf6d2190f0b99ea7b1cbd736fca3d9ab781f2 | invitations/landing4-land.json | ok |
+| 2026-11-18 19:01 | landing3 | land | af2ba18fd27ca75c6fa5422a73bf602900be6019850efa3d57877e01eae0c9db | invitations/landing3-land.json | ok |
+| 2026-11-18 19:02 | landing3 | convert | - (not built: `the converter engine wallet has no coin with 100 test token units`) | - | fail |
+| 2026-11-18 19:05 | landing3 | convert | 5c15f12c1e4fe868a5c0761c4592b019c07d71106e3faba99a00c8e240dfabe1 | invitations/landing3-convert.json | ok |
 
 run2 is the open -> cancel run: the offer opened at 19:30 was cancelled by the maker at 19:56. The fill steps in between are saved as `<run>-fill-start.json` (maker adds
 the offer coin) and `<run>-fill-taken.json` (taker adds the payment and signs).
@@ -34,6 +38,13 @@ landing1 is the land -> convert run: the owner received 100 test token units at 
 landing2 is the land -> giveBack run: the owner received 9500 sat (10000 landed, 500 fee) as BCH with no token. The nodes refused
 the same transaction as `non-BIP68-final` from 09:27 until 10:18 although the land already had 8 confirmations by Electrum
 height at 09:25; see the journal.
+landing1 and landing2 used the earlier hand-written script (template `03fad653...`). landing3 and landing4 repeat the
+same actions with the byte-identical template (`e0e9b742...`, the cashc bytecode of the deployed contract; see
+docs/decisions/0002-byte-identical-port.md).
+landing3 is the land -> convert run with the byte-identical template: the owner received 100 test token units at output 0.
+The failed row is the first converter step: an abandoned, never broadcast draft in the taker engine still reserved both
+token coins; see the journal.
+landing4 is the land -> giveBack run with the byte-identical template.
 
 browser1 is the open -> fill run with the taker part done by hand in the XO debug tool (https://blaze.xo.cash/), in a new
 disposable chipnet account created there. The project's maker sent that account 1000 test tokens and 30000 sat (the two

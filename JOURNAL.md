@@ -576,3 +576,34 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
 - The project check requires a `tokenCategory` key in the fixture parameters, so the fixture keeps that key with an
   object holding `displayOrder` and `transactionOrder`; the scan does not flag it, and `fixtureParams` refuses a
   fixture whose two orders disagree.
+
+## 2026-11-18 19:00 Chipnet runs with the byte-identical template (landing3, landing4)
+- 19:00 `landing-run.ts land landing4` broadcast `faa1a8abb2dc2c80052d118413ebf6d2190f0b99ea7b1cbd736fca3d9ab781f2`. The
+  invitation names template `e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e`. Output 0 locking bytecode
+  `aa200353e7424de4547d83fb82758ba150f61b7e24cfd485146b2dca42965d3eae9087` (landing address
+  `bchtest:pvp48e6zfhj9glvrlwp8tzap2rmpkl3yel2g29rt9h9y99ja86hfqc2u6lnlx`), the same bytes as `templateLocking` from
+  `npx tsx scripts/check-bytecode.ts --json --params config/chipnet.json` (`identical: true`). The explorer page shows it.
+- During every engine start the log repeats
+  `Failed to process transaction update: Error: Could not validate a block header on height 337068: The requested header is ahead of the current checkpoint at height 332384`
+  and
+  `Failed to synchronize block headers, will retry later: Error: Header '00000000000ecc7187034ddaa4327af300c23fd57bfd2557af6ca2392a022671' at height 332451 claims target 486604799, expected 437753688.`
+  The steps still completed. The chipnet tip was 337126 at 19:06.
+- The land step again ended with
+  `note: broadcast recorded; the engine then failed to clear a spent coin reservation: UnspentOutputNotFoundInStoreError: Unspent output "7f3896aed87a94eb1b9dee9dd938f5c6567ad97766cca8a702af2a8e54151101:1" not found in store`
+  (same as on 2026-11-16; the broadcast is not affected).
+- 19:01 `land landing3` broadcast `af2ba18fd27ca75c6fa5422a73bf602900be6019850efa3d57877e01eae0c9db` (same landing
+  address; it spent the unconfirmed change of the landing4 land).
+- 19:02 `convert landing3`: `convert-start` saved, then `convert-take` failed with
+  `Error: the converter engine wallet has no coin with 100 test token units`. A read-only listing of the taker engine
+  (`listUnspentOutputs`, not committed) showed both token coins with `reservedBy` `8d1a167a00ba2933b6e7770186dffd54`, a
+  `sendFungibleTokens` invitation created in the taker engine at 15:54 and never broadcast. Way out, as on 2026-11-16:
+  `engine.archiveInvitation` in the taker engine for that invitation and for the half-joined convert invitation
+  `99084a0bc5bdc65e25c0156432ee5f03` (one-off, not committed). The token coin `7a9b82e8...:1` (997900 units) was then
+  spendable. About 4 minutes lost.
+- 19:05 `convert-take landing3` saved; `convert-finish landing3` broadcast
+  `5c15f12c1e4fe868a5c0761c4592b019c07d71106e3faba99a00c8e240dfabe1`. Explorer: input 0 from the landing address above,
+  output 0 to `bchtest:qz4rr7mn324zdkeav5v3gpqvlf3jx9u68qgxya53h3` with 100 units of
+  `008eebd7502376715a8ffc87f6b6341cbe284c27237ea0204eaee167603ff95a`. Owner balance afterwards: 200 token units
+  (landing1 and landing3). The covenant with the cashc bytecode accepted the engine's convert without any change to the
+  converter steps.
+- Heights at 19:06 (Electrum): landing4 land 337122, landing3 land 337123, landing3 convert 337126.
