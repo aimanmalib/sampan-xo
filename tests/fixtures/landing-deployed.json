@@ -10,7 +10,10 @@
   "prevoutLockingBytecode": "a914dd3069dbb9dc5daeab179976bccfdf6c4bbec08387",
   "params": {
     "ownerLockingScript": "76a91481728a688d02d1758e6231de5246cff9b151ce5788ac",
-    "category": "2469acc5afa4b10cb5b5c04afb89c3a3ffd61c5da9c01e26d00951cae2a02544",
+    "tokenCategory": {
+      "displayOrder": "2469acc5afa4b10cb5b5c04afb89c3a3ffd61c5da9c01e26d00951cae2a02544",
+      "transactionOrder": "4425a0e2ca5109d0261ec0a95d1cd6ffa3c389fb4ac0b5b50cb1a4afc5ac6924"
+    },
     "rateNum": 20000000,
     "rateDen": 100000000,
     "returnAfter": 6

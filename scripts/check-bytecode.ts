@@ -10,6 +10,7 @@ import { readFileSync } from 'node:fs';
 import {
   checkDeployed,
   compareRedeems,
+  fixtureParams,
   paramsFromConfig,
   type CashcArtifact,
   type DeployedFixture,
@@ -25,7 +26,7 @@ const artifact = read<CashcArtifact>(new URL('../tests/fixtures/landing-artifact
 const deployed = checkDeployed(fixture, artifact);
 const report =
   paramsAt === -1
-    ? { params: fixture.params, ...deployed }
+    ? { params: fixtureParams(fixture), ...deployed }
     : (() => {
         const config = read<{ landing: Parameters<typeof paramsFromConfig>[0]; testToken?: { category: string } }>(args[paramsAt + 1] ?? '');
         // Chipnet takes the category from its test token; mainnet states it in the landing section.
@@ -33,8 +34,9 @@ const report =
           ...config.landing,
           category: config.landing.category ?? config.testToken?.category ?? null,
         });
+        const deployedParams = fixtureParams(fixture);
         const changed = Object.keys(params).filter(
-          (key) => params[key as keyof typeof params] !== fixture.params[key as keyof typeof params],
+          (key) => params[key as keyof typeof params] !== deployedParams[key as keyof typeof params],
         );
         return { params, ...compareRedeems(params, artifact), deployedIdentical: deployed.identical, differsFromDeployedIn: changed };
       })();

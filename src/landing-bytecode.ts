@@ -40,8 +40,16 @@ export interface DeployedFixture {
   prevRawTx: string;
   redeemBytecode: string;
   prevoutLockingBytecode: string;
-  params: LandingParams;
+  /** The category is stored in both byte orders, so the fixture states which one cashc pushed. */
+  params: Omit<LandingParams, 'category'> & { tokenCategory: { displayOrder: string; transactionOrder: string } };
 }
+
+/** The parameters a fixture states, in the form the template and cashc functions take. */
+export const fixtureParams = (fixture: DeployedFixture): LandingParams => {
+  const { tokenCategory, ...rest } = fixture.params;
+  if (reverseHex(tokenCategory.displayOrder) !== tokenCategory.transactionOrder) throw new Error('fixture category orders disagree');
+  return { ...rest, category: tokenCategory.displayOrder };
+};
 
 export interface CashcArtifact {
   bytecode: string;
@@ -168,8 +176,12 @@ export const checkDeployed = (fixture: DeployedFixture, artifact: CashcArtifact,
     throw new Error('prevoutLockingBytecode is not the spent output');
   }
   if (fixture.prevoutLockingBytecode !== `a914${binToHex(hash160(redeem))}87`) throw new Error('hash160(redeem) is not in the prevout');
-  if (JSON.stringify(paramsFromRedeem(redeem)) !== JSON.stringify(fixture.params)) throw new Error('params do not match the redeem pushes');
-  return compareRedeems(fixture.params, artifact, template, fixture.redeemBytecode, fixture.txid);
+  const params = fixtureParams(fixture);
+  const fromRedeem = paramsFromRedeem(redeem);
+  if ((Object.keys(params) as (keyof LandingParams)[]).some((key) => params[key] !== fromRedeem[key])) {
+    throw new Error('params do not match the redeem pushes');
+  }
+  return compareRedeems(params, artifact, template, fixture.redeemBytecode, fixture.txid);
 };
 
 /** Compares the template and cashc redeem bytecode for any parameters, and the deployed one when given. */

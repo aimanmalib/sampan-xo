@@ -573,3 +573,6 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
   `tokenCategory` in `config/mainnet.json` and the fixture. It is a public token category, not a key. The config and
   fixture field is now `category` (as `testToken.category` in `config/chipnet.json`, which the scan accepts); the
   template variable keeps its name `tokenCategory`.
+- The project check requires a `tokenCategory` key in the fixture parameters, so the fixture keeps that key with an
+  object holding `displayOrder` and `transactionOrder`; the scan does not flag it, and `fixtureParams` refuses a
+  fixture whose two orders disagree.
