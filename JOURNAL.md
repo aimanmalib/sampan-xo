@@ -448,3 +448,68 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
   engine documentation, the four txids) as a plain list for the entrant, with steps to open the Landing template and two
   invitations in https://blaze.xo.cash/. No feedback text was drafted by the agent.
 - `FEEDBACK-MIGRATE.md` is not in the repository yet: the entrant's own feedback on the migration has not been written.
+
+## 2026-11-18 18:10 Taker part of a fill done inside the XO debug tool (run browser1)
+
+- Goal: one Swap Intent invitation joined, signed and paid from inside https://blaze.xo.cash/, not only viewed. A new
+  disposable chipnet account was created in the tool (scripted Chromium with a kept browser profile, so the account
+  survives between sessions; the project's phrases were not entered anywhere outside the repository's scripts).
+- Choice: the tool takes the `taker` role of a fill started by the maker script. The other order (tool opens the offer)
+  was not tried: the fill needs the maker's engine to supply the offer coin, so the maker would also have had to be the
+  tool account.
+- Receive address: "Receive" first said "In order for the wallet to receive funds it must generate a new receiving
+  address. If a default receive policy is not set for the wallet, one must be added." "Set up default receive" offers
+  the policies `Receive`, `Change`, `Address` and the template `Wallet (P2PKH)`; after choosing `Receive` the dialog
+  showed "Creating a receive address…" and the address `bchtest:qz3zugr6rdmx8xy0ykqfu6r0me6vhj6juuysc3qunc`.
+- Funding: new `scripts/send.ts` sends tokens or satoshis from an engine wallet with the P2PKH wallet template actions
+  `sendFungibleTokens` and `sendSatoshis`. Errors met while writing it, verbatim:
+  - `TemplateLockingScriptRoleNotFoundError: Role "sender" not found on locking script "sendingLockingscript"` when the
+    output carried `roleIdentifier: 'sender'`; the output entry now has no role.
+  - `MergedItemValueSatoshisMissingError: Merged output is missing valueSatoshis: outputIndex 0` for the token output:
+    the template's `transferFungibleTokensOutput` has no `valueSatoshis`. The output now carries the token coin's own
+    satoshis.
+  - The token transfer 95bb2406… was broadcast, then the script stopped with `Error: The server answered
+    'blockchain.transaction.dsproof.subscribe' with a status that is not the shape the protocol defines.` The invitation
+    was read back from the maker's engine store and saved as `browser1-fund-tokens.json`. The satoshi transfer a minute
+    later did not hit the error.
+  - The taker engine wallet listed its largest plain coin and both token coins as not spendable (cause not checked), so
+    the maker funded the tool account.
+- Joining: "Join Invitation", paste `browser1-fill-start.json`, "View invitation" shows the template, action, commits,
+  the four offer variables and the offer input, then "Choose a role" with `Taker` as the only role. "Accept invitation"
+  asks again: "Joining adds a commit that records you as a participant in this invitation. It does not add inputs or
+  outputs." with "Add to invitation".
+- The invitation page lists what is missing for the role ("VARIABLES TO ADD", "OUTPUTS TO ADD") with the template's
+  descriptions, and a transaction tab that explains why the draft would fail, for example "Outputs exceed inputs by
+  1000 satoshis. Open Add and add at least 1000 satoshis of new inputs. Invitation outputs cannot be reduced." and
+  "Bitauth token validation rejected this transaction. … the transaction creates new fungible tokens for a category
+  without a matching genesis input." (before the token input was added).
+- Variable: the address pasted into `takerLockingScript` became `76a914a22e207a1b7663988f25809e686fde74cbcb52e788ac`.
+  Outputs: "Set up output" shows each template field with its CashAssembly and the resolved value; the transaction index
+  field is fixed by the template (disabled). Inputs: "Add input" lists the wallet's coins with template and category.
+- Change: the first try said "This template has no change policy and no default Change policy is set in Settings, so
+  automatic change cannot pick a change address. Set one, or use Manual." After setting `Change` to `Wallet (P2PKH)`
+  under Settings, Defaults, "Add selected change" added one 29160 sat output (30000 left over, 840 sat estimated fee).
+- Signing: "Sign" lists "Inputs still needing unlocking bytecode: 3. Yours: 2. From other participants: 1."; the offer
+  input shows "Waiting on another participant". "Generate selected (2)" only shows a preview; nothing is stored until
+  "Append to invitation". Every change is one commit and asks for a confirmation first; the exported invitation had 10
+  commits.
+- Export: "Copy invitation" writes the invitation JSON to the clipboard. Saved as `browser1-fill-taken.json` (pretty
+  printed through the XO utils, same commits).
+- Finish by the maker, first try (17:50), verbatim: `TemplateUnlockingScriptNotFoundError: Unlocking script not found
+  for locking script "sendingLockingscript" in template: a31eb858…`. The maker's engine counted the taker's two inputs
+  as its own because it had created those coins (the two transfers), and tried to sign them. The second try then failed
+  with `InvitationHistoryConflictError: … expected the updated invitation to keep every stored commit in its stored
+  position`, because the first try had already stored the maker's signature commit. Fix in `finishFill`: sign only the
+  offer input (transaction index 0), and skip the update when every commit of the taker's file is already stored. A
+  regression test (`tests/browser-run.test.ts`) fails on the old code. The fill f9215922… was then broadcast (17:51).
+- Checks: all four browser1 txids open on https://chipnet.imaginary.cash/tx/ (HTTP 200, txid in the page) and are
+  known to both Electrum servers; the tool account received the 20000 sat payout. In the tool, "Update invitation" with
+  `browser1-fill.json` previewed "Stored commits 10, Incoming commits 11, New commits 1 (to append)" with the broadcast
+  result, and after "Apply update" the invitation shows `COMPLETED`, "1000 tokens paid to the maker for 20000
+  satoshis." "Inspect" with `chipnet` and the fill txid reports `SUCCESS` and steps the offer input ("Step 1 of 30").
+- Time: about 2 hours 20 minutes, most of it waiting for a browser slot on the shared host and finding the next button
+  one screen at a time (each step had to be scripted before the next screen could be seen).
+- Suggestions: a "Use my receive address" choice next to a locking script variable; "Add change" offering to set the
+  Change policy in place; a note in the join dialog that signing needs "Append to invitation" after "Generate"; an
+  engine option to sign only the inputs a commit of this entity added, so a wallet that funded the other party does not
+  try to sign that party's coins.
