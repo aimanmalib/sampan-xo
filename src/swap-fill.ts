@@ -6,6 +6,9 @@ import type { AccountEngine } from './xo-engine.js';
 /** The four offer variables, as the maker committed them in the open invitation. */
 export const offerVariableIdentifiers = ['offeredSatoshis', 'wantedCategory', 'wantedAmount', 'makerLockingScript'] as const;
 
+/** Transaction index of the offer coin in a fill; the covenant pays the maker at the same output index. */
+export const fillInputTransactionIndex = 0;
+
 /** Reads the offer variables from an open invitation, without their role and merge references. */
 export const readOfferVariables = (open: XOInvitation): XOInvitationVariable[] => {
   const found = new Map<string, XOInvitationVariable>();
@@ -53,7 +56,7 @@ export const startFill = async (account: AccountEngine, open: XOInvitation): Pro
     inputs: [
       {
         inputIdentifier: 'fillInput',
-        transactionIndex: 0,
+        transactionIndex: fillInputTransactionIndex,
         outpointTransactionHash: hexToBin(offer.outpointTransactionHash),
         outpointIndex: offer.outpointIndex,
         sequenceNumber: 0,
@@ -99,10 +102,22 @@ export const takeFill = async (account: AccountEngine, started: XOInvitation, wa
   return stored!.invitation;
 };
 
-/** fill, maker part two: stores the taker's commits, completes the offer input and broadcasts. */
+/**
+ * fill, maker part two: stores the taker's commits, completes the offer input and broadcasts.
+ * Only the offer input is completed. The engine counts as its own every input whose coin it once created, so when
+ * the maker funded the taker's wallet (the debug tool run), the taker's coins were listed as the maker's too and
+ * signing them failed with TemplateUnlockingScriptNotFoundError.
+ */
 export const finishFill = async (account: AccountEngine, taken: XOInvitation, broadcast: boolean): Promise<ActionResult> => {
   const { engine } = account;
-  await engine.updateInvitation(taken);
-  await signOwnInputs(account, taken.invitationIdentifier);
-  return finishAction(account, taken.invitationIdentifier, broadcast);
+  const invitationIdentifier = taken.invitationIdentifier;
+  // A finish that failed after signing keeps its signature commit; the taker's file is then already contained.
+  const stored = await engine.getInvitation(invitationIdentifier);
+  const known = new Set(stored?.invitation.commits.map((commit) => commit.commitIdentifier) ?? []);
+  if (!taken.commits.every((commit) => known.has(commit.commitIdentifier))) await engine.updateInvitation(taken);
+  const { inputsMissingSignatures } = await engine.listMissingRequirements(invitationIdentifier);
+  if (inputsMissingSignatures.some((input) => input.inputIdentifier === 'fillInput')) {
+    await engine.signInvitation(invitationIdentifier, fillInputTransactionIndex);
+  }
+  return finishAction(account, invitationIdentifier, broadcast);
 };
