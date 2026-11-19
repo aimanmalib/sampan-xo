@@ -67,6 +67,9 @@ and runs it on chipnet. The Swap Intent template in the same repository is a sep
 - **Values in config.** `landing.landedSatoshis`, `rateNum`, `rateDen`, `returnAfter` (6, as in Sampan), `giveBackFeeSatoshis`
   and `ownerAddress` live in `config/chipnet.json` and are checked when the config loads.
 - **Engine version.** `@xo-cash/engine` stays at `0.1.1-next.18029697917`, which is still the `next` tag on 2026-11-16.
+  Update 2026-11-19: moved to `0.1.1-next.18170561234` (the new `next` tag) after the Landing and Swap Intent tests,
+  `check-bytecode` and `used-templates --check` passed on it unchanged; chipnet run landing6 used it. Way back: pin the
+  earlier version again in `package.json` and run `npm ci`.
 
 ## Consequences
 
