@@ -924,3 +924,7 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
   invitations use each.
 - `npx tsx scripts/used-templates.ts --check`: `template/used: complete`. `npx tsx scripts/runs-table.ts --check`:
   `README.md: runs table up to date`.
+- Clean copy from `git archive HEAD` (commit 61c8235) in a temporary directory, removed afterwards: `npm ci` rc 0,
+  `npx vitest run` 21 files, 149 tests passed, `npx tsx scripts/run.ts --help` rc 0.
+- Style check on temporary copies: `BUILD-WITH-XO.md` flagged the tool's status word `SUCCESS` in capitals, now in
+  backticks; README flags `FEEDBACK` (the file name) and `SUCCESS`, left as they are.

@@ -39,7 +39,7 @@ run1 is an earlier open -> fill with the same template; all runs are in the
 ## Screenshots of the XO debug tool
 
 [docs/debug-tool/swap-intent/](docs/debug-tool/swap-intent/) holds each saved Swap Intent invitation opened with
-"View invitation", "Inspect" with status SUCCESS for each transaction, and each step of the browser1 taker side. The
+"View invitation", "Inspect" with status `SUCCESS` for each transaction, and each step of the browser1 taker side. The
 index is [docs/debug-tool/README.md](docs/debug-tool/README.md).
 
 ## Check it yourself
