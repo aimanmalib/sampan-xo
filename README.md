@@ -378,7 +378,8 @@ One minimum mainnet run, `mainnet1`, with the byte-identical template (`e0e9b742
 The land locked 5000 sat at the landing address. The giveBack, sent once the land coin was more than six blocks
 old, paid the owner account 4000 sat (5000 landed, 1000 fee) as BCH with no token. Token category, `rateNum`, `rateDen` and `returnAfter` are those of the
 deployed Sampan contract (`tests/fixtures/landing-deployed.json`); only `ownerLockingScript` differs, so the coin
-returned to this run's owner account. No convert ran on mainnet.
+returned to this run's owner account. No convert ran on mainnet. Screenshots of both invitations and both transactions
+in the XO debug tool on `mainnet`: [docs/debug-tool/](docs/debug-tool/README.md#landing-mainnet-mainnet1).
 
 ### Reproduce the invitations
 

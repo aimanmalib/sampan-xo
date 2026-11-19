@@ -992,3 +992,18 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
   web page returns HTTP 401 to `curl`, so the API was used, as for the land row.
 - `scripts/used-templates.ts --write` wrote no new template: the invitation names `e0e9b742…`, the same as mainnet1 land.
   `scripts/runs-table.ts --write` added the giveBack row to the README table.
+
+## 2026-11-19 23:26 UTC: Mainnet run in the XO debug tool
+
+- Browser script (Chromium, 1366x900) on https://blaze.xo.cash/ with a new disposable account. The network list of
+  "Create new account" offered `['mainnet', 'chipnet', 'testnet4']`; the account was created on `mainnet` and shows
+  "debug viewer (mainnet)", balance "~0 BCH". No project phrase went to the tool.
+- "Import Template" with `template/landing.json`, then "Join Invitation" and "View invitation" (not accepted) for
+  `invitations/mainnet1-land.json` (template Landing, action `land`, invitation ID `32321ebe…`, 4 commits) and
+  `invitations/mainnet1-giveBack.json` (action `giveBack`, invitation ID `8dfee025…`, 4 commits, result transaction hash
+  `80387030…`). Both opened on a mainnet account with no error.
+- "Inspect" with the `mainnet` network button: land `7307ceeb…` shows "MAINNET SUCCESS", input 0 is the payer's P2PKH
+  coin (6815 sat). giveBack `80387030…` shows "MAINNET SUCCESS", input 0 of 5000 sat, scriptSig `OP_1` then
+  `OP_PUSHDATA_1 136` (the redeem script), scriptPubKey `OP_HASH256 OP_PUSHBYTES_32 0x61c8a509… OP_EQUAL` (P2SH32).
+- Four screenshots, each under 160 KB, saved as `docs/debug-tool/landing/mainnet-*.png`; no account creation or
+  Settings screen among them. Run time about two minutes.

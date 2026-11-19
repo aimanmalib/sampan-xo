@@ -20,3 +20,6 @@ The landing address contract of Sampan, ported to an XO template with the start 
 Check it offline: `npx tsx scripts/check-bytecode.ts --json`. It verifies the raw deployed transaction in
 [tests/fixtures/landing-deployed.json](tests/fixtures/landing-deployed.json), then compares the deployed redeem bytecode,
 the one the XO engine compiles from the template, and the one cashc's artifact gives for the same parameters.
+
+The mainnet run `mainnet1` (land, then giveBack) seen in the XO debug tool, "Inspect" status SUCCESS on `mainnet`:
+[docs/debug-tool/](docs/debug-tool/README.md#landing-mainnet-mainnet1).

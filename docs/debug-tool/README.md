@@ -102,3 +102,17 @@ the landed coin input and broadcast. Rows are in [docs/CHIPNET-RUNS.md](../CHIPN
 | [browser-07-signed.png](landing/browser-07-signed.png) | Converter input signed; input 0 waits on the payer | [invitations/landing5-convert-taken.json](../../invitations/landing5-convert-taken.json) |
 | [browser-08-completed.png](landing/browser-08-completed.png) | "Update invitation" with the payer's final commit: convert shown as COMPLETED | [invitations/landing5-convert.json](../../invitations/landing5-convert.json) |
 | [browser-09-inspect-convert.png](landing/browser-09-inspect-convert.png) | "Inspect" of the convert transaction on `chipnet`, status SUCCESS | [ac0318bac8697bf3ca46f2f24cb49718c33e58574c530ed71923ccf6d90e128a](https://chipnet.imaginary.cash/tx/ac0318bac8697bf3ca46f2f24cb49718c33e58574c530ed71923ccf6d90e128a) |
+
+### Landing mainnet (mainnet1)
+
+Taken on 2026-11-19 at 23:26 UTC with a fresh `mainnet` account of the tool (the tool offers `mainnet`, `chipnet` and
+`testnet4`), after importing [template/landing.json](../../template/landing.json): "Join Invitation" and "View
+invitation" (not accepted) for both invitations of the mainnet run, then "Inspect" with the `mainnet` network for both
+transactions. Rows are in [docs/MAINNET-RUNS.md](../MAINNET-RUNS.md).
+
+| Image | What it shows | Invitation or txid |
+|---|---|---|
+| [mainnet-01-view-mainnet1-land.png](landing/mainnet-01-view-mainnet1-land.png) | "Join Invitation" review: template Landing, action `land`, commits with roles | [invitations/mainnet1-land.json](../../invitations/mainnet1-land.json) |
+| [mainnet-02-view-mainnet1-giveBack.png](landing/mainnet-02-view-mainnet1-giveBack.png) | "Join Invitation" review: template Landing, action `giveBack`, commit with role `payer`, the input extending the land commit, result transaction hash | [invitations/mainnet1-giveBack.json](../../invitations/mainnet1-giveBack.json) |
+| [mainnet-03-inspect-mainnet1-land.png](landing/mainnet-03-inspect-mainnet1-land.png) | "Inspect" on `mainnet` of the land transaction, status SUCCESS | [7307ceebe247f57b177f8dbcb69cad97a3a05055712d74934b65f0713551b8ef](https://blockchair.com/bitcoin-cash/transaction/7307ceebe247f57b177f8dbcb69cad97a3a05055712d74934b65f0713551b8ef) |
+| [mainnet-04-inspect-mainnet1-giveBack.png](landing/mainnet-04-inspect-mainnet1-giveBack.png) | "Inspect" on `mainnet` of the giveBack: input 0 (5000 sat) unlocked with `OP_1` and the 136-byte redeem script, P2SH32 locking script, status SUCCESS | [80387030d47911bb9fa144892cf853a61cb3e4e8bc5f3ce948e78e99e67ca8d8](https://blockchair.com/bitcoin-cash/transaction/80387030d47911bb9fa144892cf853a61cb3e4e8bc5f3ce948e78e99e67ca8d8) |
