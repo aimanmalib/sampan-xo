@@ -1,6 +1,6 @@
 import { binToHex, cashAddressToLockingBytecode, hexToBin } from '@bitauth/libauth';
 import type { XOInvitationVariable } from '@xo-cash/types';
-import type { ChipnetConfig } from './config.js';
+import type { LandingRunConfig } from './landing-run-config.js';
 import { finishAction, signOwnInputs, type ActionResult } from './swap-open.js';
 import type { AccountEngine } from './xo-engine.js';
 
@@ -8,15 +8,18 @@ import type { AccountEngine } from './xo-engine.js';
 export const landingVariableIdentifiers = ['landedSatoshis', 'ownerLockingScript', 'tokenCategory', 'rateNum', 'rateDen', 'returnAfter'] as const;
 
 /** Locking bytecode (hex) of the owner address in the config. */
-export const ownerLockingScriptHex = (config: ChipnetConfig): string => {
+export const ownerLockingScriptHex = (config: LandingRunConfig): string => {
   if (config.landing.ownerAddress === null) throw new Error('landing.ownerAddress is not set; add the owner account first');
   const decoded = cashAddressToLockingBytecode(config.landing.ownerAddress);
   if (typeof decoded === 'string') throw new Error(decoded);
   return binToHex(decoded.bytecode);
 };
 
-/** The landing variables from the config: the token is the chipnet test token, which stands in for the stablecoin. */
-export const landingVariables = (config: ChipnetConfig): XOInvitationVariable[] => {
+/**
+ * The landing variables from the config. On chipnet the token is the test token, which stands in for the stablecoin;
+ * on mainnet it is the category of the deployed Sampan contract.
+ */
+export const landingVariables = (config: LandingRunConfig): XOInvitationVariable[] => {
   if (config.testToken.category === null) throw new Error('testToken.category is not set; run the test token setup first');
   const { landedSatoshis, rateNum, rateDen, returnAfter } = config.landing;
   const values: Record<(typeof landingVariableIdentifiers)[number], XOInvitationVariable['value']> = {
@@ -34,7 +37,7 @@ export const landingVariables = (config: ChipnetConfig): XOInvitationVariable[] 
  * land (payer): pays landing.landedSatoshis to the landing locking script of the configured owner. Funded from the
  * largest plain engine coin; the engine adds the change and the fee.
  */
-export const landCoin = async (account: AccountEngine, config: ChipnetConfig, broadcast: boolean): Promise<ActionResult> => {
+export const landCoin = async (account: AccountEngine, config: LandingRunConfig, broadcast: boolean): Promise<ActionResult> => {
   const { engine, landingTemplateIdentifier: templateIdentifier } = account;
   const template = await engine.getTemplate(templateIdentifier);
   const intent = template?.start?.find((entry) => entry.action === 'land');

@@ -6,7 +6,12 @@ import { Engine, XO_SUPPORTED_NETWORKS } from '@xo-cash/engine';
 import { p2pkhTemplate } from '@xo-cash/templates';
 import { landingTemplate } from '../template/landing.js';
 import { swapIntentTemplate } from '../template/swap-intent.js';
-import type { AccountName, ChipnetConfig } from './config.js';
+import type { AccountName } from './config.js';
+import type { MainnetAccountName } from './landing-network.js';
+import type { LandingRunConfig } from './landing-run-config.js';
+
+/** What starting and stopping an engine reads: the network and the engine folder and stop timeout. */
+export type EngineSettings = Pick<LandingRunConfig, 'network' | 'swap'>;
 
 const repositoryRoot = fileURLToPath(new URL('..', import.meta.url));
 
@@ -40,17 +45,21 @@ const installRejectionGuard = (): void => {
 };
 
 /**
- * Starts the XO engine of one account on chipnet, with the P2PKH wallet template as its change, receive and address
+ * Starts the XO engine of one account on the config's network (chipnet, or mainnet for the one Landing run), with the P2PKH wallet template as its change, receive and address
  * policy and the Swap Intent and Landing templates imported.
  * Storage is the engine's IndexedDB store (a file per account under swap.engineDatabasePath). The SQLite store of
  * @xo-cash/state 0.0.5 has no listScriptHashes, which Engine.create calls, so it cannot start the engine.
  */
-export const startAccountEngine = async (account: AccountName, mnemonic: string, config: ChipnetConfig): Promise<AccountEngine> => {
+export const startAccountEngine = async (
+  account: AccountName | MainnetAccountName,
+  mnemonic: string,
+  config: EngineSettings,
+): Promise<AccountEngine> => {
   installRejectionGuard();
   const databasePath = resolve(repositoryRoot, config.swap.engineDatabasePath) + '/';
   mkdirSync(databasePath, { recursive: true });
   const engine = await Engine.create(mnemonic, {
-    network: XO_SUPPORTED_NETWORKS.chipnet,
+    network: XO_SUPPORTED_NETWORKS[config.network],
     storageType: 'indexeddb' as never,
     databasePath,
     databaseFilename: account,
@@ -71,7 +80,7 @@ export const startAccountEngine = async (account: AccountName, mnemonic: string,
  * Stops the engine, waiting at most swap.engineStopTimeoutSeconds. Engine.stop() was seen to never settle in some
  * runs (after the work was stored), which kept the process alive; callers exit the process after this.
  */
-export const stopAccountEngine = async ({ engine }: AccountEngine, config: ChipnetConfig): Promise<void> => {
+export const stopAccountEngine = async ({ engine }: AccountEngine, config: EngineSettings): Promise<void> => {
   let timer: NodeJS.Timeout | undefined;
   const timeout = new Promise<'timeout'>((resolveTimeout) => {
     timer = setTimeout(() => resolveTimeout('timeout'), config.swap.engineStopTimeoutSeconds * 1000);
@@ -81,9 +90,9 @@ export const stopAccountEngine = async ({ engine }: AccountEngine, config: Chipn
   if (outcome === 'timeout') console.error(`note: Engine.stop() did not settle within ${config.swap.engineStopTimeoutSeconds} s`);
 };
 
-/** Token-aware chipnet cash address of a locking bytecode given as hex. */
+/** Token-aware cash address of a locking bytecode given as hex. */
 export const lockingBytecodeToAddress = (lockingBytecodeHex: string, prefix: string): string => {
-  const result = lockingBytecodeToCashAddress({ bytecode: hexToBin(lockingBytecodeHex), prefix: prefix as 'bchtest', tokenSupport: true });
+  const result = lockingBytecodeToCashAddress({ bytecode: hexToBin(lockingBytecodeHex), prefix: prefix as 'bchtest' | 'bitcoincash', tokenSupport: true });
   if (typeof result === 'string') throw new Error(result);
   return result.address;
 };

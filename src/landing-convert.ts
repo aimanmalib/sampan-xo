@@ -1,6 +1,6 @@
 import { hexToBin } from '@bitauth/libauth';
 import type { XOInvitation, XOInvitationVariable } from '@xo-cash/types';
-import type { ChipnetConfig } from './config.js';
+import type { LandingRunConfig } from './landing-run-config.js';
 import { landingVariableIdentifiers } from './landing-land.js';
 import { finishAction, signOwnInputs, type ActionResult } from './swap-open.js';
 import type { AccountEngine } from './xo-engine.js';
@@ -64,7 +64,7 @@ export const startConvert = (account: AccountEngine, land: XOInvitation): Promis
  * and its payout (landed satoshis and the rest of its tokens) at output 1. No change output: the covenant needs as
  * many outputs as inputs, and the payout already carries everything left. Signs its own input.
  */
-export const takeConvert = async (account: AccountEngine, started: XOInvitation, config: ChipnetConfig): Promise<XOInvitation> => {
+export const takeConvert = async (account: AccountEngine, started: XOInvitation, config: LandingRunConfig): Promise<XOInvitation> => {
   const { engine, landingTemplateIdentifier: templateIdentifier } = account;
   const accepted = await engine.acceptInvitation(started, { roleIdentifier: 'converter' });
   const invitationIdentifier = accepted.invitation.invitationIdentifier;

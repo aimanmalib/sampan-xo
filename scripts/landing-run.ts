@@ -1,5 +1,5 @@
 /**
- * Chipnet runs of the Landing template, driven through the XO engine. Each step runs one account's engine in its
+ * Runs of the Landing template (chipnet, or the one mainnet run), driven through the XO engine. Each step runs one account's engine in its
  * own process; the accounts share nothing but the invitation files in invitations/<run>-<step>.json.
  * maker is the payer, taker the converter; the owner account only receives.
  *
@@ -12,6 +12,9 @@
  *                                                        once it is landing.returnAfter blocks old -> <run>-giveBack.json
  *   npx tsx scripts/landing-run.ts --help                 prints the usage line
  *
+ * Add --network mainnet for the one mainnet run: steps land and giveBack only, run names mainnet<n>, values from
+ * config/mainnet.json, and the MAINNET_PAYER phrase in place of the maker one.
+ *
  * Add --dry-run to build and check without broadcasting; the step's invitation is then archived so its coins are
  * released, and only the steps before the broadcast write their file. A dry-run convert-finish stores the payer's
  * input commit in its engine, so the real convert starts again from convert-start (convert-take after a dry run
@@ -20,17 +23,20 @@
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import type { XOInvitation } from '@xo-cash/types';
-import { loadConfig, type AccountName } from '../src/config.js';
+import type { AccountName } from '../src/config.js';
 import { readMnemonic } from '../src/env.js';
 import { loadInvitation, saveInvitation } from '../src/invitation-file.js';
 import { finishFollowUp, startConvert, takeConvert } from '../src/landing-convert.js';
 import { checkLandAge, giveBack } from '../src/landing-giveback.js';
 import { landCoin } from '../src/landing-land.js';
+import { parseNetworkArg, withoutNetworkArg } from '../src/landing-network.js';
+import { loadRunConfig, networkAccount, runNamePattern } from '../src/landing-run-config.js';
 import { startAccountEngine, stopAccountEngine, type AccountEngine } from '../src/xo-engine.js';
 
 const envPath = fileURLToPath(new URL('../.env', import.meta.url));
-const config = loadConfig();
-const [step, run, flag] = process.argv.slice(2);
+const network = parseNetworkArg(process.argv.slice(2));
+const config = loadRunConfig(network);
+const [step, run, flag] = withoutNetworkArg(process.argv.slice(2));
 const broadcast = flag !== '--dry-run';
 
 type Outcome = { invitation: XOInvitation; transactionHash?: string };
@@ -60,7 +66,7 @@ const steps: Record<string, Step> = {
 };
 
 // The whole convert flow; each step is a separate process, as two separate parties would run it.
-if (step === 'convert' && run !== undefined && flag === undefined) {
+if (step === 'convert' && run !== undefined && flag === undefined && network === 'chipnet') {
   for (const part of ['convert-start', 'convert-take', 'convert-finish']) {
     console.log(`== ${part}`);
     const child = spawnSync(process.execPath, [...process.execArgv, fileURLToPath(import.meta.url), part, run], { stdio: 'inherit' });
@@ -69,21 +75,24 @@ if (step === 'convert' && run !== undefined && flag === undefined) {
   process.exit(0);
 }
 
-const usage = `usage: landing-run.ts ${Object.keys(steps).join('|')} <run> [--dry-run]  or  landing-run.ts convert <run>`;
+const usage = `usage: landing-run.ts ${Object.keys(steps).join('|')} <run> [--dry-run]  or  landing-run.ts convert <run>
+       landing-run.ts land|giveBack mainnet<n> --network mainnet [--dry-run]`;
 if (step === '--help' || step === '-h') {
   console.log(usage);
   process.exit(0);
 }
 
-const selected = step === undefined ? undefined : steps[step];
-if (selected === undefined || run === undefined || !/^landing\d+$/.test(run) || (flag !== undefined && flag !== '--dry-run')) {
-  console.error(`${usage}\n<run> is landing<n>`);
+const mainnetSteps = ['land', 'giveBack'];
+const selected = step === undefined || (network === 'mainnet' && !mainnetSteps.includes(step)) ? undefined : steps[step];
+if (selected === undefined || run === undefined || !runNamePattern(network).test(run) || (flag !== undefined && flag !== '--dry-run')) {
+  console.error(`${usage}\n<run> is ${network === 'mainnet' ? 'mainnet<n>' : 'landing<n>'}`);
   process.exit(2);
 }
 
 const previous = selected.reads === undefined ? undefined : loadInvitation(run, selected.reads);
 if (previous !== undefined) await selected.before?.(previous);
-const account = await startAccountEngine(selected.account, readMnemonic(selected.account, envPath), config);
+const accountName = networkAccount(selected.account, network);
+const account = await startAccountEngine(accountName, readMnemonic(accountName, envPath, network), config);
 try {
   const outcome = await selected.act(account, previous);
   if (outcome.transactionHash !== undefined) console.log(`${step} ${broadcast ? 'broadcast' : 'built (dry run)'} txid ${outcome.transactionHash}`);

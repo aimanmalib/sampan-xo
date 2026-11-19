@@ -69,7 +69,10 @@ export const broadcast = async (client: ElectrumClient<never>, hex: string): Pro
  * Sends a raw transaction to every configured server and returns one line per server.
  * Throws when no server accepted it.
  */
-export const broadcastEverywhere = async (config: ChipnetConfig, hex: string): Promise<string[]> => {
+export const broadcastEverywhere = async (
+  config: Pick<ChipnetConfig, 'electrumServers'> & { network: string },
+  hex: string,
+): Promise<string[]> => {
   const lines: string[] = [];
   let accepted = 0;
   for (const server of config.electrumServers) {

@@ -1,5 +1,5 @@
 import type { XOInvitation } from '@xo-cash/types';
-import type { ChipnetConfig } from './config.js';
+import type { LandingRunConfig } from './landing-run-config.js';
 import { connectChipnet, getTipHeight, getTransactionHeight } from './electrum.js';
 import { readLandTransactionHash, startFollowUp } from './landing-convert.js';
 import { finishAction, signOwnInputs, type ActionResult } from './swap-open.js';
@@ -20,8 +20,8 @@ export const assertOldEnough = (minedHeight: number, tipHeight: number, returnAf
   }
 };
 
-/** Reads the land transaction height and the tip from chipnet Electrum, then applies assertOldEnough. */
-export const checkLandAge = async (land: XOInvitation, config: ChipnetConfig): Promise<void> => {
+/** Reads the land transaction height and the tip from Electrum on the config's network, then applies assertOldEnough. */
+export const checkLandAge = async (land: XOInvitation, config: LandingRunConfig): Promise<void> => {
   const client = await connectChipnet(config);
   try {
     const minedHeight = await getTransactionHeight(client, readLandTransactionHash(land));
@@ -36,7 +36,7 @@ export const checkLandAge = async (land: XOInvitation, config: ChipnetConfig): P
  * output that pays the owner landedSatoshis less giveBackFeeSatoshis. No change: the covenant needs one input and
  * one output, and the landed coin's unlocking script needs no signature.
  */
-export const giveBack = async (account: AccountEngine, land: XOInvitation, config: ChipnetConfig, broadcast: boolean): Promise<ActionResult> => {
+export const giveBack = async (account: AccountEngine, land: XOInvitation, config: LandingRunConfig, broadcast: boolean): Promise<ActionResult> => {
   const { engine, landingTemplateIdentifier: templateIdentifier } = account;
   const { returnAfter, giveBackFeeSatoshis } = config.landing;
   const started = await startFollowUp(account, land, 'giveBack', 'giveBackInput', returnAfter);
