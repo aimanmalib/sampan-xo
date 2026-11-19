@@ -202,6 +202,9 @@ transactions without an invitation (the token mint and the plain deposits) and f
 | chipnet | landing3 | land | [af2ba18fd27ca75c6fa5422a73bf602900be6019850efa3d57877e01eae0c9db](https://chipnet.imaginary.cash/tx/af2ba18fd27ca75c6fa5422a73bf602900be6019850efa3d57877e01eae0c9db) | [invitations/landing3-land.json](invitations/landing3-land.json) | [template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json](template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json) |
 | chipnet | landing3 | convert | [5c15f12c1e4fe868a5c0761c4592b019c07d71106e3faba99a00c8e240dfabe1](https://chipnet.imaginary.cash/tx/5c15f12c1e4fe868a5c0761c4592b019c07d71106e3faba99a00c8e240dfabe1) | [invitations/landing3-convert.json](invitations/landing3-convert.json) | [template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json](template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json) |
 | chipnet | landing4 | giveBack | [84db84e9a1bc8d6f959432eddb91d52b368ffd1872722cf87723e717c273164d](https://chipnet.imaginary.cash/tx/84db84e9a1bc8d6f959432eddb91d52b368ffd1872722cf87723e717c273164d) | [invitations/landing4-giveBack.json](invitations/landing4-giveBack.json) | [template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json](template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json) |
+| chipnet | landing5 | fund | [656b56d28238f2fbd32e36d6722f177ffddfb49285ac7da804d3741c39573aeb](https://chipnet.imaginary.cash/tx/656b56d28238f2fbd32e36d6722f177ffddfb49285ac7da804d3741c39573aeb) | [invitations/landing5-fund-tokens.json](invitations/landing5-fund-tokens.json) | [template/used/a31eb85891dbf248f1709a92b0fa7e3e6fdc518e6b34e376b197ed7f12dbc672.json](template/used/a31eb85891dbf248f1709a92b0fa7e3e6fdc518e6b34e376b197ed7f12dbc672.json) |
+| chipnet | landing5 | land | [5414325621b01e474b7c21f39576d7fe6ea4bf17bc6d84b04dab6be959d68b1b](https://chipnet.imaginary.cash/tx/5414325621b01e474b7c21f39576d7fe6ea4bf17bc6d84b04dab6be959d68b1b) | [invitations/landing5-land.json](invitations/landing5-land.json) | [template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json](template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json) |
+| chipnet | landing5 | convert | [ac0318bac8697bf3ca46f2f24cb49718c33e58574c530ed71923ccf6d90e128a](https://chipnet.imaginary.cash/tx/ac0318bac8697bf3ca46f2f24cb49718c33e58574c530ed71923ccf6d90e128a) | [invitations/landing5-convert.json](invitations/landing5-convert.json) | [template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json](template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json) |
 | chipnet | run4 | open | [d76f3c9f2a190dcddd8c0c28dae338d0fc5f69ecb48d0d1195faa2dc11ecf367](https://chipnet.imaginary.cash/tx/d76f3c9f2a190dcddd8c0c28dae338d0fc5f69ecb48d0d1195faa2dc11ecf367) | [invitations/run4-open.json](invitations/run4-open.json) | [template/used/8f0fb78d266c54d77852910b1ed8fb3772a1a7cd625dde6b548a247f9896712e.json](template/used/8f0fb78d266c54d77852910b1ed8fb3772a1a7cd625dde6b548a247f9896712e.json) |
 | chipnet | run4 | expire | [4d92f782949444f9751ce3dcbd685696319f474f129893fc617f5792f5b35f48](https://chipnet.imaginary.cash/tx/4d92f782949444f9751ce3dcbd685696319f474f129893fc617f5792f5b35f48) | [invitations/run4-expire.json](invitations/run4-expire.json) | [template/used/8f0fb78d266c54d77852910b1ed8fb3772a1a7cd625dde6b548a247f9896712e.json](template/used/8f0fb78d266c54d77852910b1ed8fb3772a1a7cd625dde6b548a247f9896712e.json) |
 | mainnet | mainnet1 | land | [7307ceebe247f57b177f8dbcb69cad97a3a05055712d74934b65f0713551b8ef](https://blockchair.com/bitcoin-cash/transaction/7307ceebe247f57b177f8dbcb69cad97a3a05055712d74934b65f0713551b8ef) | [invitations/mainnet1-land.json](invitations/mainnet1-land.json) | [template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json](template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json) |
@@ -383,20 +386,20 @@ After steps 1 to 5 of the setup above (wallets, chipnet coins for the maker, tes
    exchange invitation files):
 
    ```sh
-   npx tsx scripts/landing-run.ts land landing5
-   npx tsx scripts/landing-run.ts convert landing5
+   npx tsx scripts/landing-run.ts land landing6
+   npx tsx scripts/landing-run.ts convert landing6
    ```
 
 4. Land a second coin, wait until it is `landing.returnAfter` blocks old, then return it to the owner. The giveBack
    step reads the coin's age from chipnet Electrum first and refuses a coin that is too young.
 
    ```sh
-   npx tsx scripts/landing-run.ts land landing6
-   npx tsx scripts/landing-run.ts giveBack landing6
+   npx tsx scripts/landing-run.ts land landing7
+   npx tsx scripts/landing-run.ts giveBack landing7
    ```
 
 Each step writes `invitations/<run>-<step>.json` and accepts `--dry-run`; `npx tsx scripts/landing-run.ts --help`
-prints the steps. Existing run names (`landing1` to `landing4`) already have saved invitations. After a run,
+prints the steps. Existing run names (`landing1` to `landing5`) already have saved invitations. After a run,
 `npx tsx scripts/used-templates.ts --write` and `npx tsx scripts/runs-table.ts --write` add its template and table row.
 The offline tests for the template (convert and giveBack paths, each covenant check failing on its
 own) are `tests/landing-*.test.ts` and run with `npm test`.
@@ -416,6 +419,14 @@ Follow "Open a saved invitation in the XO debug tool" above with the Landing fil
 
 Screenshots of each step for the landing3 and landing4 invitations and transactions, all four with status SUCCESS in
 "Inspect", are in [docs/debug-tool/](docs/debug-tool/README.md#landing).
+
+In run `landing5` the converter was a new disposable chipnet account in the debug tool: the script landed and started
+the convert, and the tool joined `landing5-convert-start.json` as `Converter`, gave its four variables, set up both
+outputs, added and signed its token coin and exported `landing5-convert-taken.json`; `convert-finish` completed the
+landed coin input and broadcast [ac0318ba...128a](https://chipnet.imaginary.cash/tx/ac0318bac8697bf3ca46f2f24cb49718c33e58574c530ed71923ccf6d90e128a).
+The steps follow "Take an offer from inside the XO debug tool" above (fund the account with
+`npx tsx scripts/send.ts taker <bchtest:address> tokens 200 <run>`; no change output, since the covenant needs as many
+outputs as inputs). Screenshots: [docs/debug-tool/](docs/debug-tool/README.md#landing5-the-converter-side-signed-inside-the-tool).
 
 ### Known limits (Landing)
 

@@ -82,3 +82,23 @@ byte-identical template), then "Join Invitation" and "View invitation" (not acce
 | [10-inspect-landing3-convert.png](landing/10-inspect-landing3-convert.png) | "Inspect" script debugger, status SUCCESS | [5c15f12c1e4fe868a5c0761c4592b019c07d71106e3faba99a00c8e240dfabe1](https://chipnet.imaginary.cash/tx/5c15f12c1e4fe868a5c0761c4592b019c07d71106e3faba99a00c8e240dfabe1) |
 | [11-inspect-landing4-land.png](landing/11-inspect-landing4-land.png) | "Inspect" script debugger, status SUCCESS | [faa1a8abb2dc2c80052d118413ebf6d2190f0b99ea7b1cbd736fca3d9ab781f2](https://chipnet.imaginary.cash/tx/faa1a8abb2dc2c80052d118413ebf6d2190f0b99ea7b1cbd736fca3d9ab781f2) |
 | [12-inspect-landing4-giveBack.png](landing/12-inspect-landing4-giveBack.png) | "Inspect" script debugger, status SUCCESS | [84db84e9a1bc8d6f959432eddb91d52b368ffd1872722cf87723e717c273164d](https://chipnet.imaginary.cash/tx/84db84e9a1bc8d6f959432eddb91d52b368ffd1872722cf87723e717c273164d) |
+
+### landing5: the converter side signed inside the tool
+
+Taken on 2026-11-19 during run `landing5`: a script landed 10000 sat and put the landed coin into a convert, and a
+disposable chipnet account in the tool (funded with one coin of 200 test token units by the project's taker) joined
+[invitations/landing5-convert-start.json](../../invitations/landing5-convert-start.json) as `Converter`, gave its
+variables, set up both outputs, added its token coin, signed it and exported the invitation. The script then completed
+the landed coin input and broadcast. Rows are in [docs/CHIPNET-RUNS.md](../CHIPNET-RUNS.md).
+
+| Image | What it shows | Invitation or txid |
+|---|---|---|
+| [browser-01-join-view.png](landing/browser-01-join-view.png) | "Join Invitation" review of the convert, role `Converter` chosen, before accepting | [invitations/landing5-convert-start.json](../../invitations/landing5-convert-start.json) |
+| [browser-02-joined.png](landing/browser-02-joined.png) | Invitation joined as converter; variables and outputs still to add | [invitations/landing5-convert-start.json](../../invitations/landing5-convert-start.json) |
+| [browser-03-variables.png](landing/browser-03-variables.png) | The four converter variables typed in: receiving address, coin satoshis 16800, coin tokens 200, fee 1000 | [invitations/landing5-convert-start.json](../../invitations/landing5-convert-start.json) |
+| [browser-04-outputs.png](landing/browser-04-outputs.png) | Both outputs set up: 100 tokens to the owner at output 0, the payout to the converter at output 1 | [invitations/landing5-convert-start.json](../../invitations/landing5-convert-start.json) |
+| [browser-05-input-selected.png](landing/browser-05-input-selected.png) | "Select coins": the account's one coin, 16800 sat and 200 test token units, selected | [invitations/landing5-convert-start.json](../../invitations/landing5-convert-start.json) |
+| [browser-06-sign-preview.png](landing/browser-06-sign-preview.png) | "Sign": unlocking bytecode generated for input 1 (the converter's coin), before appending | [invitations/landing5-convert-start.json](../../invitations/landing5-convert-start.json) |
+| [browser-07-signed.png](landing/browser-07-signed.png) | Converter input signed; input 0 waits on the payer | [invitations/landing5-convert-taken.json](../../invitations/landing5-convert-taken.json) |
+| [browser-08-completed.png](landing/browser-08-completed.png) | "Update invitation" with the payer's final commit: convert shown as COMPLETED | [invitations/landing5-convert.json](../../invitations/landing5-convert.json) |
+| [browser-09-inspect-convert.png](landing/browser-09-inspect-convert.png) | "Inspect" of the convert transaction on `chipnet`, status SUCCESS | [ac0318bac8697bf3ca46f2f24cb49718c33e58574c530ed71923ccf6d90e128a](https://chipnet.imaginary.cash/tx/ac0318bac8697bf3ca46f2f24cb49718c33e58574c530ed71923ccf6d90e128a) |

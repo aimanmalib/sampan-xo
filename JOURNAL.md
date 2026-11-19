@@ -834,6 +834,44 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
 - The redeem bytecode is 136 bytes. Versions in the table are from `package.json` and the cashc artifact (`cashc` 0.14.0).
 - README `## Migrate to XO` links to the table in one line.
 
+## 2026-11-19 15:38 UTC: landing5, the converter side signed inside the XO debug tool
+
+- Mainnet giveBack not yet possible: at 14:28 UTC the mainnet tip was 978032 and the land coin (block 978029) needs
+  6 confirmations (tip 978034). Worked on the chipnet debug tool run meanwhile.
+- New disposable chipnet account in https://blaze.xo.cash/, template `template/landing.json` imported. "Receive" asked
+  for a default receive policy, verbatim: `In order for the wallet to receive funds it must generate a new receiving
+  address. If a default receive policy is not set for the wallet, one must be added.` Set Receive and Change to
+  `Wallet (P2PKH)` (Settings, Defaults), as in run browser1.
+- Fund 15:00 UTC: `npx tsx scripts/send.ts taker <account address> tokens 200 landing5`, txid
+  `656b56d28238f2fbd32e36d6722f177ffddfb49285ac7da804d3741c39573aeb`, one coin of 16800 sat and 200 test token units
+  (the token coin's own satoshis travel with the tokens). The engine printed after the broadcast, verbatim:
+  `note: broadcast recorded; the engine then failed to clear a spent coin reservation: UnspentOutputNotFoundInStoreError: Unspent output "5c15f12c1e4fe868a5c0761c4592b019c07d71106e3faba99a00c8e240dfabe1:1" not found in store`
+  200 units, not 100: the payout at output 1 carries the rest of the converter's tokens, and a token output of 0 units
+  is not valid.
+- Land 15:01 UTC: `npx tsx scripts/landing-run.ts land landing5`, txid
+  `5414325621b01e474b7c21f39576d7fe6ea4bf17bc6d84b04dab6be959d68b1b`. Then `convert-start landing5`.
+- In the tool: "Join Invitation" with the convert-start JSON lists the role choices `Choose a role`, `Converter`. After
+  "Accept invitation" the invitation page lists the four converter variables with the template's names and
+  descriptions, and both outputs ("Set up output"; the dialog resolves `$(<tokenOutputSatoshis>)` to 1000 and
+  `$(converterPayoutSatoshis)` to 24800). "Add input" offered the one coin; the tool placed it at input position 1,
+  as the covenant needs. No change was added: the tool reported `Leftover after the estimated fee is below the dust
+  limit, so it stays with the fee.` "Sign" showed `Inputs still needing unlocking bytecode: 2. Yours: 1. From other
+  participants: 1.`; "Generate unlocking bytecode", then "Append to invitation", signed input 1 (100 bytes).
+  Before the payer signs, the tool shows `WOULD FAIL` with `Input 0 unlock script failed`, which is expected.
+- First finish attempt failed. I ran `convert-finish landing5 --dry-run` first (built txid `ac0318ba...`), then the
+  real `convert-finish`, which ended with, verbatim:
+  `InvitationHistoryConflictError: Invitation "0345103c0705474e335ce4d91c8ebb21" history conflict at stored commit "1885a381830f4932807a513c7353c30b", expected the updated invitation to keep every stored commit in its stored position`
+  The dry run had stored the payer's input commit in its engine, as the header of `scripts/landing-run.ts` says. Time
+  lost: about 10 minutes. Way out: "Archive invitation" in the tool (`UTXO reservations will be cleared.`), a new
+  `convert-start landing5` (invitation `776ae1ad...`), the same steps in the tool again, and `convert-finish` without a
+  dry run.
+- Convert 15:25 UTC: txid `ac0318bac8697bf3ca46f2f24cb49718c33e58574c530ed71923ccf6d90e128a`, saved
+  `invitations/landing5-convert.json`. Both chipnet Electrum servers report fund and land at height 338323 and the
+  convert at 338346. "Update invitation" with the final JSON in the tool: `New commits | 1 (to append)`, then the convert
+  shows `COMPLETED`. "Inspect" on `chipnet` with the convert txid: status `SUCCESS`, inputs 0 and 1.
+- `scripts/used-templates.ts --write` matched landing5 land and convert to `e0e9b742...` (the byte-identical template)
+  and the fund to the P2PKH wallet template `a31eb858...`.
+
 ## 2026-11-19 18:55 UTC: Swap Intent expire action (template version 2)
 
 - Tried: a third branch in the offer locking script, `expire`, following the Landing `giveBack` pattern: input
@@ -928,3 +966,13 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
   `npx vitest run` 21 files, 149 tests passed, `npx tsx scripts/run.ts --help` rc 0.
 - Style check on temporary copies: `BUILD-WITH-XO.md` flagged the tool's status word `SUCCESS` in capitals, now in
   backticks; README flags `FEEDBACK` (the file name) and `SUCCESS`, left as they are.
+
+## 2026-11-19 23:00 UTC: landing5 rows opened on the explorer
+
+- https://chipnet.imaginary.cash/ did not answer from this host (`curl` code 000 after 30 s) for the three landing5
+  txids. A plain `curl` of https://explorer.selene.cash/tx/<txid> answers 404 (the page is built in the browser).
+- 23:00 opened in a browser on https://explorer.selene.cash/tx/<txid>?network=chipnet: fund `656b56d2...3aeb` 486
+  confirmations, land `54143256...8b1b` 486 confirmations, convert `ac0318ba...128a` 463 confirmations. Only then were
+  the landing5 rows in docs/CHIPNET-RUNS.md committed as `ok`.
+- The landing5 work had been kept aside since 15:38 while the explorer was down; merging it with the later run4 rows
+  kept both, landing5 rows first by time. The README runs table was written again with `scripts/runs-table.ts --write`.

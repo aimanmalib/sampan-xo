@@ -32,6 +32,10 @@ opened on a public chipnet explorer (https://chipnet.imaginary.cash/tx/). Invita
 | 2026-11-18 19:05 | landing3 | convert | 5c15f12c1e4fe868a5c0761c4592b019c07d71106e3faba99a00c8e240dfabe1 | invitations/landing3-convert.json | ok |
 | 2026-11-18 19:07 | landing4 | giveBack | - (rejected: `non-BIP68-final (code 64)`; built txid 84db84e9a1bc8d6f959432eddb91d52b368ffd1872722cf87723e717c273164d, land coin 6 blocks old) | - | fail |
 | 2026-11-18 20:12 | landing4 | giveBack | 84db84e9a1bc8d6f959432eddb91d52b368ffd1872722cf87723e717c273164d | invitations/landing4-giveBack.json | ok |
+| 2026-11-19 15:00 | landing5 | fund | 656b56d28238f2fbd32e36d6722f177ffddfb49285ac7da804d3741c39573aeb | invitations/landing5-fund-tokens.json | ok |
+| 2026-11-19 15:01 | landing5 | land | 5414325621b01e474b7c21f39576d7fe6ea4bf17bc6d84b04dab6be959d68b1b | invitations/landing5-land.json | ok |
+| 2026-11-19 15:20 | landing5 | convert | - (not built: `InvitationHistoryConflictError: Invitation "0345103c0705474e335ce4d91c8ebb21" history conflict at stored commit "1885a381830f4932807a513c7353c30b"`) | - | fail |
+| 2026-11-19 15:25 | landing5 | convert | ac0318bac8697bf3ca46f2f24cb49718c33e58574c530ed71923ccf6d90e128a | invitations/landing5-convert.json | ok |
 | 2026-11-19 19:05 | run4 | open | d76f3c9f2a190dcddd8c0c28dae338d0fc5f69ecb48d0d1195faa2dc11ecf367 | invitations/run4-open.json | ok |
 | 2026-11-19 19:06 | run4 | expire | - (not built, taker account: `InputUnspentOutputUnavailableError: Unspent output d76f3c9f2a190dcddd8c0c28dae338d0fc5f69ecb48d0d1195faa2dc11ecf367:0 of merged input 0 in invitation "76b8fce858b955482e95cc9128992ee3" not tracked by this account`) | - | fail |
 | 2026-11-19 19:10 | run4 | expire | - (expire-early, rejected: `non-BIP68-final (code 64)`; offer 1 to 2 blocks old) | - | fail |
@@ -62,6 +66,19 @@ started the fill (`browser1-fill-start.json`). In the debug tool the taker joine
 script, both outputs, its two coins and change, signed its two inputs and exported the invitation
 (`browser1-fill-taken.json`: the tool's "Copy invitation" JSON, pretty printed). The maker then completed the offer input and broadcast
 (`browser1-fill.json`). The failed row is the first finish attempt, before the fix described in the journal.
+
+landing5 is the land -> convert run with the converter part done by hand in the XO debug tool (https://blaze.xo.cash/),
+in a new disposable chipnet account created there, with the byte-identical template. The project's taker sent that
+account one coin of 200 test token units and 16800 sat (the `fund` row, `sendFungibleTokens` through the XO engine).
+The payer (maker) landed 10000 sat and put the landed coin into a convert (`landing5-convert-start.json`). In the debug
+tool the converter joined that invitation, gave its four variables (receiving script, coin satoshis, coin tokens, fee),
+set up both outputs, added its token coin (input 1), signed it and exported the invitation (`landing5-convert-taken.json`:
+the tool's "Copy invitation" JSON, pretty printed). The payer then completed the landed coin input and broadcast
+(`landing5-convert.json`). The owner received 100 test token units at output 0; the converter received 24800 sat and the
+other 100 units at output 1. The failed row is a first convert invitation that a dry run of `convert-finish` had already
+stored in the payer engine; see the journal.
+The landing5 rows were opened on https://explorer.selene.cash/ (chipnet) at 23:00 on 2026-11-19; the links in the README
+point to chipnet.imaginary.cash.
 
 run4 is the open -> expire run with template version 2. The maker opened the offer at 19:05 with `expireAfter` 2.
 The expire step was first run with the taker account, which the engine refused because only the maker's account
