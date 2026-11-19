@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 400" width="900" height="400" role="img" aria-labelledby="t d">
+  <title id="t">Before and after: the Sampan landing contract as the XO template Landing</title>
+  <desc id="d">Left: before, Sampan's CashScript contract with transactions built by Sampan's own code and convert through Cauldron pools, at a P2SH20 address. Right: after, the XO template Landing with invitations, one role per party, land then convert or giveBack, at a P2SH32 address. Middle: the same 136-byte redeem bytecode, sha256 1901bbb6 to f586f01d.</desc>
+  <rect x="1" y="1" width="898" height="398" rx="14" fill="#ffffff" stroke="#c7ccd4" stroke-width="2"/>
+  <g font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" fill="#1b1f24">
+    <rect x="24" y="24" width="356" height="352" rx="10" fill="#f6f7f9" stroke="#8a929c" stroke-width="1.5"/>
+    <text x="44" y="62" font-size="22" font-weight="700">Before: Sampan</text>
+    <text x="44" y="90" font-size="15" fill="#4a525c">running on mainnet</text>
+    <g font-size="16">
+      <text x="44" y="134">CashScript contract (cashc 0.14.0)</text>
+      <text x="44" y="172">Sampan's own code builds</text>
+      <text x="44" y="194">every transaction</text>
+      <text x="44" y="232">convert swaps through</text>
+      <text x="44" y="254">Cauldron pools</text>
+      <text x="44" y="292">giveBack after 6 blocks</text>
+      <text x="44" y="330">Address type: P2SH20</text>
+    </g>
+    <rect x="520" y="24" width="356" height="352" rx="10" fill="#eef5ff" stroke="#1f5fbf" stroke-width="2"/>
+    <text x="540" y="62" font-size="22" font-weight="700">After: XO template Landing</text>
+    <text x="540" y="90" font-size="15" fill="#4a525c">run on chipnet and mainnet</text>
+    <g font-size="16">
+      <text x="540" y="134">Invitations, one role per party</text>
+      <text x="540" y="172">Start action: land</text>
+      <text x="540" y="210">Follow-up actions on the land</text>
+      <text x="540" y="232">output: convert or giveBack</text>
+      <text x="540" y="270">The XO engine builds and signs</text>
+      <text x="540" y="308">Saved as invitations/*.json</text>
+      <text x="540" y="346">Address type: P2SH32</text>
+    </g>
+    <g text-anchor="middle">
+      <text x="450" y="150" font-size="15" font-weight="700">same 136 bytes</text>
+      <text x="450" y="170" font-size="14">redeem bytecode</text>
+      <line x1="392" y1="200" x2="496" y2="200" stroke="#1b1f24" stroke-width="3"/>
+      <path d="M494 190 L512 200 L494 210 Z" fill="#1b1f24"/>
+      <text x="450" y="236" font-size="14">sha256</text>
+      <text x="450" y="256" font-size="14" font-family="ui-monospace, Menlo, Consolas, monospace">1901bbb6...</text>
+      <text x="450" y="276" font-size="14" font-family="ui-monospace, Menlo, Consolas, monospace">...f586f01d</text>
+    </g>
+  </g>
+</svg>

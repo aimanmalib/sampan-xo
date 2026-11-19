@@ -1,5 +1,13 @@
 # Migrate to XO: the Sampan landing address as the XO template "Landing"
 
+Sampan's landing address contract, live on BCH mainnet, is now the XO template Landing: the XO engine compiles the same
+136-byte redeem bytecode as the deployed contract, and its actions ran through XO invitations (`land`, `convert` and
+`giveBack` on chipnet, `land` then `giveBack` on mainnet).
+
+![Before and after](docs/migrate-before-after.svg)
+
+New project: first commit after the 14 November start ([1ac2691](https://github.com/aimanmalib/sampan-xo/commit/1ac2691e4c699dcc3563fafcd2815bf6eadd6b94), 2026-11-14 17:40 UTC).
+
 The landing address contract of Sampan, ported to an XO template with the start action `land` and the follow-up actions
 `convert` and `giveBack`. The details and the runs are in the [README](README.md#migrate-to-xo).
 

@@ -1007,3 +1007,18 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
   `OP_PUSHDATA_1 136` (the redeem script), scriptPubKey `OP_HASH256 OP_PUSHBYTES_32 0x61c8a509… OP_EQUAL` (P2SH32).
 - Four screenshots, each under 160 KB, saved as `docs/debug-tool/landing/mainnet-*.png`; no account creation or
   Settings screen among them. Run time about two minutes.
+
+## 2026-11-19 23:31 UTC: new project note, summary sentence and before/after diagram
+
+- Root commit measured with `git rev-list --max-parents=0 HEAD`: `1ac2691e4c699dcc3563fafcd2815bf6eadd6b94`, commit time
+  2026-11-14T17:40:48+00:00 (after the 14 November 14:00 UTC start). The "New project" line with a link to that commit is now in
+  the head of README.md and MIGRATE-TO-XO.md.
+- MIGRATE-TO-XO.md starts with one summary sentence and `docs/migrate-before-after.svg`, a hand-written static SVG (viewBox
+  900x400, no script, no external font or image, text 14 to 22 px). Its numbers come from `npx tsx scripts/check-bytecode.ts --json`
+  run at this time: deployed, template and cashc redeem bytecode each 136 bytes, sha256
+  `1901bbb619676836ffa58180113e57612d01e47caad8d8a1fb1aedbff586f01d`, `identical: true`; `returnAfter` 6 from the fixture.
+- `rsvg-convert` is not installed on the host: `/bin/bash: line 1: rsvg-convert: command not found`. Rendered with headless
+  Chromium instead at 900 px and 1800 px width into a temporary folder and opened both images; two spacing fixes, then the
+  PNGs were deleted (not committed).
+- Contrast measured with the WCAG formula: main text #1b1f24 on #ffffff 16.56:1, on #f6f7f9 15.45:1, on #eef5ff 15.09:1;
+  subtitle #4a525c on #f6f7f9 7.39:1, on #eef5ff 7.22:1.

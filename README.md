@@ -3,11 +3,14 @@
 An entry for the "Build with XO" bounty at BCH BLAZE 2026. The same repository also holds the "Migrate to XO" entry:
 the Sampan landing contract as an XO template, see [Migrate to XO](#migrate-to-xo).
 
+New project: first commit after the 14 November start ([1ac2691](https://github.com/aimanmalib/sampan-xo/commit/1ac2691e4c699dcc3563fafcd2815bf6eadd6b94), 2026-11-14 17:40 UTC).
+
 Build journal, written by the AI coding agent while it worked. The feedback in FEEDBACK.md was written by the entrant, by hand.
 
 ## For judges
 
 - Build with XO: [BUILD-WITH-XO.md](BUILD-WITH-XO.md) (submitted invitation, the four chipnet flows, how to check).
+- Migrate to XO: [MIGRATE-TO-XO.md](MIGRATE-TO-XO.md) (before and after diagram, same redeem bytecode, chipnet and mainnet runs).
 
 ## What it is
 
