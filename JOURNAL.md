@@ -765,3 +765,11 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
   `confirmed=0 unconfirmed=0`. No mainnet transaction has been made.
 - The mainnet run needs 7000 sat (0.00007 BCH) at the payer address
   `bitcoincash:qzqhpy3rzuzmfj0ylnpky8zfvd8xhpz8xuxssgdcnh` from another source. Chipnet runs are unaffected.
+
+## 2026-11-19 12:39 UTC: Mainnet funding requested again
+
+- The shared test wallet was topped up at 12:38 UTC. A new request for 7000 sat to the payer address
+  `bitcoincash:qzqhpy3rzuzmfj0ylnpky8zfvd8xhpz8xuxssgdcnh` was made at 12:39 UTC; status read right after is
+  "waiting". The payout runs as a separate queued job, after another job on the same wallet finishes.
+- Measured at 12:39 UTC with `npx tsx scripts/wallets.ts balance --network mainnet`: payer and owner
+  `confirmed=0 unconfirmed=0`. No mainnet transaction has been made.
