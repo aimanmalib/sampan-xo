@@ -17,7 +17,7 @@ The landing address contract of Sampan, ported to an XO template with the start 
 | | Original (Sampan, CashScript) | XO template (this repo) |
 | --- | --- | --- |
 | Contract source | [contracts/landing.cash](https://github.com/aimanmalib/sampan/blob/main/contracts/landing.cash) | [template/landing.ts](template/landing.ts), exported as [template/landing.json](template/landing.json) |
-| Compiler | cashc 0.14.0 (artifact: [tests/fixtures/landing-artifact.json](tests/fixtures/landing-artifact.json)) | XO template CashASM, compiled by `@xo-cash/engine` 0.1.1-next.18029697917 (`@xo-cash/templates` 0.0.12, `@xo-cash/types` 0.0.8) |
+| Compiler | cashc 0.14.0 (artifact: [tests/fixtures/landing-artifact.json](tests/fixtures/landing-artifact.json)) | XO template CashASM, compiled by `@xo-cash/engine` 0.1.1-next.18170561234 (`@xo-cash/templates` 0.0.12, `@xo-cash/types` 0.0.8); chipnet `landing6` ran on this version, the earlier runs on 0.1.1-next.18029697917 |
 | sha256 of the redeem bytecode (136 bytes, parameters of the deployed contract) | `1901bbb619676836ffa58180113e57612d01e47caad8d8a1fb1aedbff586f01d` (from the deployed transaction) | `1901bbb619676836ffa58180113e57612d01e47caad8d8a1fb1aedbff586f01d` (compiled by the XO engine); `check-bytecode` prints `identical: true` |
 | P2SH wrapper | P2SH20 address | P2SH32 address: XO's `p2sh` locking type is P2SH32 and there is no P2SH20 type ([ADR 0002](docs/decisions/0002-byte-identical-port.md)) |
 | Who builds the transactions | Sampan's own code; for `convert` the other inputs and outputs are Cauldron pools | The XO engine, through invitations: one role per party, saved as `invitations/*.json` |

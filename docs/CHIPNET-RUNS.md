@@ -41,6 +41,8 @@ opened on a public chipnet explorer (https://chipnet.imaginary.cash/tx/). Invita
 | 2026-11-19 19:10 | run4 | expire | - (expire-early, rejected: `non-BIP68-final (code 64)`; offer 1 to 2 blocks old) | - | fail |
 | 2026-11-19 19:13 | run4 | expire | - (rejected: `non-BIP68-final (code 64)`; built txid 4d92f782949444f9751ce3dcbd685696319f474f129893fc617f5792f5b35f48, offer 12 or more blocks old by Electrum height; refused again at 19:21, 19:22 and 19:25) | - | fail |
 | 2026-11-19 19:26 | run4 | expire | 4d92f782949444f9751ce3dcbd685696319f474f129893fc617f5792f5b35f48 | invitations/run4-expire.json | ok |
+| 2026-11-19 23:38 | landing6 | land | 9631b0162267422547f5982065daec2835d699b0ea6ade8bd153f06a566b4f01 | invitations/landing6-land.json | ok |
+| 2026-11-19 23:38 | landing6 | convert | 29c6bf27b461bc26809331131f8271c07c23ab9f4400322e125182c000c72d7c | invitations/landing6-convert.json | ok |
 
 run2 is the open -> cancel run: the offer opened at 19:30 was cancelled by the maker at 19:56. The fill steps in between are saved as `<run>-fill-start.json` (maker adds
 the offer coin) and `<run>-fill-taken.json` (taker adds the payment and signs).
@@ -88,3 +90,11 @@ no token. The chipnet nodes refused it as `non-BIP68-final` until 19:26, when th
 Electrum height; the accepted transaction is the same txid that was refused at 19:13.
 Both run4 rows were opened on https://explorer.selene.cash/ (chipnet) at 20:51: https://chipnet.imaginary.cash/
 did not answer from 19:20 to 20:50 (see the journal). The links in the README still point to chipnet.imaginary.cash.
+
+landing6 is the land -> convert run on `@xo-cash/engine` 0.1.1-next.18170561234 (the `next` tag on 2026-11-19), with
+the same template `e0e9b742...e03e` as landing3 to landing5. The payer (maker) landed 10000 sat at the landing address
+`bchtest:pvp48e6zfhj9glvrlwp8tzap2rmpkl3yel2g29rt9h9y99ja86hfqc2u6lnlx` (output 0 locking bytecode = `templateLocking`
+of `check-bytecode --params config/chipnet.json`). In the convert the converter (taker) added its token coin as input 1;
+output 0 pays the owner `bchtest:zz4rr7mn324zdkeav5v3gpqvlf3jx9u68q0vhr6hgz` 100 test token units with 1000 sat, output 1
+returns 997500 units with 8800 sat to the converter. Both rows were opened on https://explorer.selene.cash/ (chipnet) at
+23:40 on 2026-11-19 (land 3 confirmations, convert unconfirmed); https://chipnet.imaginary.cash/ did not answer.

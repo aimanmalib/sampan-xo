@@ -64,7 +64,7 @@ XO tools is [template/swap-intent.json](template/swap-intent.json).
 
 - Node.js 22 (see `.nvmrc`) and npm.
 - Package versions are pinned exactly in `package.json` and `package-lock.json`. The ones that matter:
-  `@xo-cash/engine` 0.1.1-next.18029697917, `@xo-cash/templates` 0.0.12, `@xo-cash/types` 0.0.8,
+  `@xo-cash/engine` 0.1.1-next.18170561234, `@xo-cash/templates` 0.0.12, `@xo-cash/types` 0.0.8,
   `@xo-cash/utils` 0.0.10, `@bitauth/libauth` 3.1.0-next.8, `@electrum-cash/network` 4.4.8, `typescript` 5.9.3,
   `tsx` 4.23.15, `vitest` 3.2.7.
 - The Swap Intent runs on chipnet only. The Landing template has one minimum mainnet run (land, then giveBack),
@@ -210,6 +210,8 @@ transactions without an invitation (the token mint and the plain deposits) and f
 | chipnet | landing5 | convert | [ac0318bac8697bf3ca46f2f24cb49718c33e58574c530ed71923ccf6d90e128a](https://chipnet.imaginary.cash/tx/ac0318bac8697bf3ca46f2f24cb49718c33e58574c530ed71923ccf6d90e128a) | [invitations/landing5-convert.json](invitations/landing5-convert.json) | [template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json](template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json) |
 | chipnet | run4 | open | [d76f3c9f2a190dcddd8c0c28dae338d0fc5f69ecb48d0d1195faa2dc11ecf367](https://chipnet.imaginary.cash/tx/d76f3c9f2a190dcddd8c0c28dae338d0fc5f69ecb48d0d1195faa2dc11ecf367) | [invitations/run4-open.json](invitations/run4-open.json) | [template/used/8f0fb78d266c54d77852910b1ed8fb3772a1a7cd625dde6b548a247f9896712e.json](template/used/8f0fb78d266c54d77852910b1ed8fb3772a1a7cd625dde6b548a247f9896712e.json) |
 | chipnet | run4 | expire | [4d92f782949444f9751ce3dcbd685696319f474f129893fc617f5792f5b35f48](https://chipnet.imaginary.cash/tx/4d92f782949444f9751ce3dcbd685696319f474f129893fc617f5792f5b35f48) | [invitations/run4-expire.json](invitations/run4-expire.json) | [template/used/8f0fb78d266c54d77852910b1ed8fb3772a1a7cd625dde6b548a247f9896712e.json](template/used/8f0fb78d266c54d77852910b1ed8fb3772a1a7cd625dde6b548a247f9896712e.json) |
+| chipnet | landing6 | land | [9631b0162267422547f5982065daec2835d699b0ea6ade8bd153f06a566b4f01](https://chipnet.imaginary.cash/tx/9631b0162267422547f5982065daec2835d699b0ea6ade8bd153f06a566b4f01) | [invitations/landing6-land.json](invitations/landing6-land.json) | [template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json](template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json) |
+| chipnet | landing6 | convert | [29c6bf27b461bc26809331131f8271c07c23ab9f4400322e125182c000c72d7c](https://chipnet.imaginary.cash/tx/29c6bf27b461bc26809331131f8271c07c23ab9f4400322e125182c000c72d7c) | [invitations/landing6-convert.json](invitations/landing6-convert.json) | [template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json](template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json) |
 | mainnet | mainnet1 | land | [7307ceebe247f57b177f8dbcb69cad97a3a05055712d74934b65f0713551b8ef](https://blockchair.com/bitcoin-cash/transaction/7307ceebe247f57b177f8dbcb69cad97a3a05055712d74934b65f0713551b8ef) | [invitations/mainnet1-land.json](invitations/mainnet1-land.json) | [template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json](template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json) |
 | mainnet | mainnet1 | giveBack | [80387030d47911bb9fa144892cf853a61cb3e4e8bc5f3ce948e78e99e67ca8d8](https://blockchair.com/bitcoin-cash/transaction/80387030d47911bb9fa144892cf853a61cb3e4e8bc5f3ce948e78e99e67ca8d8) | [invitations/mainnet1-giveBack.json](invitations/mainnet1-giveBack.json) | [template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json](template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json) |
 <!-- runs-table:end -->
@@ -406,20 +408,21 @@ After steps 1 to 5 of the setup above (wallets, chipnet coins for the maker, tes
    exchange invitation files):
 
    ```sh
-   npx tsx scripts/landing-run.ts land landing6
-   npx tsx scripts/landing-run.ts convert landing6
+   npx tsx scripts/landing-run.ts land landing7
+   npx tsx scripts/landing-run.ts convert landing7
    ```
 
 4. Land a second coin, wait until it is `landing.returnAfter` blocks old, then return it to the owner. The giveBack
    step reads the coin's age from chipnet Electrum first and refuses a coin that is too young.
 
    ```sh
-   npx tsx scripts/landing-run.ts land landing7
-   npx tsx scripts/landing-run.ts giveBack landing7
+   npx tsx scripts/landing-run.ts land landing8
+   npx tsx scripts/landing-run.ts giveBack landing8
    ```
 
 Each step writes `invitations/<run>-<step>.json` and accepts `--dry-run`; `npx tsx scripts/landing-run.ts --help`
-prints the steps. Existing run names (`landing1` to `landing5`) already have saved invitations. After a run,
+prints the steps. Existing run names (`landing1` to `landing6`) already have saved invitations; landing6 ran on engine
+0.1.1-next.18170561234, the earlier runs on 0.1.1-next.18029697917. After a run,
 `npx tsx scripts/used-templates.ts --write` and `npx tsx scripts/runs-table.ts --write` add its template and table row.
 The offline tests for the template (convert and giveBack paths, each covenant check failing on its
 own) are `tests/landing-*.test.ts` and run with `npm test`.

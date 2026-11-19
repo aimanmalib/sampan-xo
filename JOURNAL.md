@@ -1022,3 +1022,42 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
   PNGs were deleted (not committed).
 - Contrast measured with the WCAG formula: main text #1b1f24 on #ffffff 16.56:1, on #f6f7f9 15.45:1, on #eef5ff 15.09:1;
   subtitle #4a525c on #f6f7f9 7.39:1, on #eef5ff 7.22:1.
+
+## 2026-11-19 23:35 UTC: Engine 0.1.1-next.18170561234 and chipnet run landing6
+
+- `npm view @xo-cash/engine dist-tags` at 23:35: next `0.1.1-next.18170561234` (published 2026-11-19 05:22 UTC), latest
+  `0.0.1`. `@xo-cash/templates` latest 0.0.12, `@xo-cash/types` latest 0.0.9. The new engine still depends on
+  `@xo-cash/templates` 0.0.12, `@xo-cash/types` 0.0.8 and `@xo-cash/utils` 0.0.10 (exact), so only the engine pin changed:
+  `npm install --save-exact @xo-cash/engine@0.1.1-next.18170561234` ("changed 5 packages"). Among its dependencies
+  `@electrum-cash/servers` moved from 4.2.0 to 4.3.0 and `@electrum-cash/application` from 0.5.2-development.16863504490
+  to 0.5.3-development.18109001223.
+- Checks before the run, all on the new engine: `tsc --noEmit` clean; `vitest run tests/landing-*.test.ts
+  tests/swap-*.test.ts tests/used-templates.test.ts` 13 files, 105 tests passed with no test or template change;
+  `check-bytecode.ts --json` `identical: true`, sha256 of the deployed, engine-compiled and cashc redeem bytecode all
+  `1901bbb619676836ffa58180113e57612d01e47caad8d8a1fb1aedbff586f01d` (136 bytes); `used-templates.ts --check`
+  "template/used: complete" (the saved invitations of the older runs still match their template ids).
+- 23:37:58 `timeout 200 npx tsx scripts/landing-run.ts land landing6` exit 0 in about 25 s, broadcast
+  `9631b0162267422547f5982065daec2835d699b0ea6ade8bd153f06a566b4f01`. The invitation names template
+  `e0e9b742...e03e`, as in landing3 to landing5. Output 0: 10000 sat to the landing address, locking bytecode
+  `aa200353e7424de4547d83fb82758ba150f61b7e24cfd485146b2dca42965d3eae9087` (the `templateLocking` of
+  `check-bytecode --params config/chipnet.json`).
+- 23:38:25 `timeout 280 npx tsx scripts/landing-run.ts convert landing6` exit 0: convert-start, convert-take and
+  convert-finish each saved their invitation; broadcast `29c6bf27b461bc26809331131f8271c07c23ab9f4400322e125182c000c72d7c`.
+  Read back from chipnet Electrum: input 0 the landed coin, input 1 the taker token coin `656b56d2...:1`; output 0 1000 sat
+  and 100 units of `008eebd7...f95a` to the owner `bchtest:zz4rr7mn324zdkeav5v3gpqvlf3jx9u68q0vhr6hgz`; output 1 8800 sat
+  and 997500 units to the taker. No change to the scripts or the converter steps was needed.
+- Differences seen against 0.1.1-next.18029697917, from the two run logs:
+  - The header lines that appeared at every engine start before (`Could not validate a block header ... ahead of the
+    current checkpoint` and `Failed to synchronize block headers ... claims target`) did not appear: no line with
+    "header" or "checkpoint" in either log. The engine databases in `.xo/` were the ones written by the older version and
+    opened without an error.
+  - The land step no longer printed the spent coin reservation note. The convert-finish step still printed it, verbatim:
+    `note: broadcast recorded; the engine then failed to clear a spent coin reservation: UnspentOutputNotFoundInStoreError: Unspent output "9631b0162267422547f5982065daec2835d699b0ea6ade8bd153f06a566b4f01:0" not found in store`
+    (the broadcast is not affected).
+  - `engine.stop()` returned in all four processes; none reached the `timeout`.
+  - No failed broadcast in this run, so the behaviour of an invitation left reserved after a refused broadcast was not
+    exercised again.
+- https://chipnet.imaginary.cash/tx/ did not answer from this host (`curl` code 000) for either txid. Opened at 23:40 in
+  a browser on https://explorer.selene.cash/tx/<txid>?network=chipnet: land 3 confirmations, convert unconfirmed with
+  "Created 2 token-bearing outputs". Only then were the landing6 rows written as `ok`.
+- README (requirements pin, run names), MIGRATE-TO-XO.md (compiler row) and ADR 0001 now name the new engine version.
