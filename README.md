@@ -7,16 +7,17 @@ Build journal, written by the AI coding agent while it worked. The feedback in F
 
 ## What it is
 
-Swap Intent is an XO template with two roles:
+Swap Intent is an XO template with three roles:
 
 - `maker` opens an offer: locks some BCH and states which CashToken category and how many tokens they want for it.
 - `taker` fills the offer: pays the wanted tokens to the maker and takes the BCH.
 - `maker` can cancel an open offer and take the BCH back.
+- `expirer` (anyone) can return an offer that is `expireAfter` blocks old to the maker, with no key (template version 2).
 
 The offer is enforced by the locking script, not by either party: a fill is valid only if the output at the same index as the
 offer input pays the maker's locking bytecode, carries the wanted token category, and carries at least the wanted token amount.
 
-Status: the template, the offline tests and both chipnet flows (open -> fill and open -> cancel) are done. The
+Status: the template, the offline tests and the chipnet flows open -> fill, open -> cancel and open -> expire are done. The
 [build journal](JOURNAL.md) records each step with timestamps.
 
 ```mermaid
@@ -31,6 +32,8 @@ sequenceDiagram
     else cancel
         M->>O: maker signature
         O->>M: offeredSatoshis less cancelFeeSatoshis
+    else expire, once the offer is expireAfter blocks old
+        O->>M: at least offeredSatoshis less expireFeeSatoshis, no key
     end
 ```
 
@@ -41,7 +44,9 @@ Template variables:
 | `offeredSatoshis` | maker on `open` | BCH locked in the offer; the taker receives all of it on fill |
 | `wantedCategory` | maker on `open` | CashToken category the maker wants, in explorer byte order |
 | `wantedAmount` | maker on `open` | minimum fungible token amount the maker wants |
-| `makerLockingScript` | maker on `open` | where the tokens (on fill) or the refund (on cancel) go |
+| `makerLockingScript` | maker on `open` | where the tokens (on fill) or the refund (on cancel or expire) go |
+| `expireAfter` | maker on `open` | offer age in blocks after which anyone can expire it (relative lock, `config/chipnet.json` `swap.expireAfterBlocks`) |
+| `expireFeeSatoshis` | maker on `open` | most the expire transaction may keep as fee (`swap.expireFeeSatoshis`) |
 | `makerKey` | generated on `open` | key whose signature is the only way to cancel |
 | `takerLockingScript` | taker on `fill` | where the taker receives the offered satoshis |
 
@@ -102,6 +107,9 @@ XO tools is [template/swap-intent.json](template/swap-intent.json).
    npx tsx scripts/run.ts fill run1
    npx tsx scripts/run.ts open run2
    npx tsx scripts/run.ts cancel run2
+   npx tsx scripts/run.ts open run4
+   # once the offer is swap.expireAfterBlocks blocks old (see Chipnet runs):
+   npx tsx scripts/run.ts expire run4
    ```
 
 The token, deposit and run commands accept `--dry-run` (build and check without broadcasting), and
@@ -125,6 +133,13 @@ its own process and the accounts exchange only invitation files:
 instead, `npx tsx scripts/run.ts cancel <run>` (maker, same engine as `open`) spends the offer back to the maker's
 locking script, less the template's `cancelFeeSatoshis`.
 
+`npx tsx scripts/run.ts expire <run>` returns an offer that is at least `expireAfter` blocks old to the maker's locking
+script: one input with sequence `expireAfter`, one output of `offeredSatoshis` less `expireFeeSatoshis`, no signature.
+The script reads the offer coin from Electrum and refuses while it is younger. The step runs with the maker account:
+the XO engine completes an input only for a coin its own account tracks, and an account without `makerKey` cannot
+rebuild the offer script to track it. The chipnet nodes refused the expire as `non-BIP68-final` for a while after
+Electrum showed enough confirmations (see the journal); a refused attempt is archived so the step can be run again.
+
 Every step accepts `--dry-run` (build and check without broadcasting). The chipnet transactions:
 
 | Run | Action | Txid |
@@ -137,6 +152,8 @@ Every step accepts `--dry-run` (build and check without broadcasting). The chipn
 | run3 | fill | [f6d03597...a7a2](https://chipnet.imaginary.cash/tx/f6d0359759159ac189383ea76155d2bc7dad63d153c67f95ca9162df6ab0a7a2) |
 | browser1 | open | [7f3896ae...1101](https://chipnet.imaginary.cash/tx/7f3896aed87a94eb1b9dee9dd938f5c6567ad97766cca8a702af2a8e54151101) |
 | browser1 | fill | [f9215922...18a6](https://chipnet.imaginary.cash/tx/f92159229f9ec6b3b55feeb43ffc48cd67e297075d259671c8d6d41a71c118a6) |
+| run4 | open | [d76f3c9f...f367](https://chipnet.imaginary.cash/tx/d76f3c9f2a190dcddd8c0c28dae338d0fc5f69ecb48d0d1195faa2dc11ecf367) |
+| run4 | expire | [4d92f782...5f48](https://chipnet.imaginary.cash/tx/4d92f782949444f9751ce3dcbd685696319f474f129893fc617f5792f5b35f48) |
 
 The saved invitations are in [invitations/](invitations/); the full list, failures included, is in
 [docs/CHIPNET-RUNS.md](docs/CHIPNET-RUNS.md).
@@ -181,6 +198,8 @@ transactions without an invitation (the token mint and the plain deposits) and f
 | chipnet | landing3 | land | [af2ba18fd27ca75c6fa5422a73bf602900be6019850efa3d57877e01eae0c9db](https://chipnet.imaginary.cash/tx/af2ba18fd27ca75c6fa5422a73bf602900be6019850efa3d57877e01eae0c9db) | [invitations/landing3-land.json](invitations/landing3-land.json) | [template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json](template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json) |
 | chipnet | landing3 | convert | [5c15f12c1e4fe868a5c0761c4592b019c07d71106e3faba99a00c8e240dfabe1](https://chipnet.imaginary.cash/tx/5c15f12c1e4fe868a5c0761c4592b019c07d71106e3faba99a00c8e240dfabe1) | [invitations/landing3-convert.json](invitations/landing3-convert.json) | [template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json](template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json) |
 | chipnet | landing4 | giveBack | [84db84e9a1bc8d6f959432eddb91d52b368ffd1872722cf87723e717c273164d](https://chipnet.imaginary.cash/tx/84db84e9a1bc8d6f959432eddb91d52b368ffd1872722cf87723e717c273164d) | [invitations/landing4-giveBack.json](invitations/landing4-giveBack.json) | [template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json](template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json) |
+| chipnet | run4 | open | [d76f3c9f2a190dcddd8c0c28dae338d0fc5f69ecb48d0d1195faa2dc11ecf367](https://chipnet.imaginary.cash/tx/d76f3c9f2a190dcddd8c0c28dae338d0fc5f69ecb48d0d1195faa2dc11ecf367) | [invitations/run4-open.json](invitations/run4-open.json) | [template/used/8f0fb78d266c54d77852910b1ed8fb3772a1a7cd625dde6b548a247f9896712e.json](template/used/8f0fb78d266c54d77852910b1ed8fb3772a1a7cd625dde6b548a247f9896712e.json) |
+| chipnet | run4 | expire | [4d92f782949444f9751ce3dcbd685696319f474f129893fc617f5792f5b35f48](https://chipnet.imaginary.cash/tx/4d92f782949444f9751ce3dcbd685696319f474f129893fc617f5792f5b35f48) | [invitations/run4-expire.json](invitations/run4-expire.json) | [template/used/8f0fb78d266c54d77852910b1ed8fb3772a1a7cd625dde6b548a247f9896712e.json](template/used/8f0fb78d266c54d77852910b1ed8fb3772a1a7cd625dde6b548a247f9896712e.json) |
 | mainnet | mainnet1 | land | [7307ceebe247f57b177f8dbcb69cad97a3a05055712d74934b65f0713551b8ef](https://blockchair.com/bitcoin-cash/transaction/7307ceebe247f57b177f8dbcb69cad97a3a05055712d74934b65f0713551b8ef) | [invitations/mainnet1-land.json](invitations/mainnet1-land.json) | [template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json](template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json) |
 <!-- runs-table:end -->
 
@@ -235,6 +254,8 @@ exported its part of the fill. To do the same:
 - Template version 2 adds `expire`: once an offer is `expireAfter` blocks old, anyone can return it to the maker
   without a key (docs/decisions/0003-swap-intent-expiry.md). Offers opened with version 1 (run1 to run3, browser1)
   have no expire branch and stay open until they are filled or cancelled.
+- The expire transaction needs no key, but through the XO engine only an account that tracks the offer coin (the
+  maker's) can build it. A third party would build it outside the engine.
 - Through the XO engine in this repository, a fill is interactive: only the maker's engine tracks the offer coin, so the
   maker adds the offer input (`fill-start`) and its unlocking bytecode (`fill-finish`) around the taker's step.
 - The cancel fee is a fixed template constant (`cancelFeeSatoshis`, 500 satoshis).

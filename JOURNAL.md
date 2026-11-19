@@ -860,3 +860,53 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
 - Not tried yet: an expire through the XO engine on chipnet. The expirer's engine has no record of the offer coin, so
   `src/swap-expire.ts` finds it through Electrum and calls `signInvitation` for the keyless input. Whether the engine
   completes an input it does not own is measured in the run.
+
+## 2026-11-19 19:20 UTC: Chipnet run4, open then expire
+
+- 19:05 `npx tsx scripts/run.ts open run4` (maker, template version 2) broadcast
+  `d76f3c9f2a190dcddd8c0c28dae338d0fc5f69ecb48d0d1195faa2dc11ecf367`, saved `invitations/run4-open.json`. Mined at
+  338558 (both chipnet Electrum servers, `blockchain.transaction.get`).
+- 19:06 first expire by the taker account, verbatim:
+  `InputUnspentOutputUnavailableError: Unspent output d76f3c9f2a190dcddd8c0c28dae338d0fc5f69ecb48d0d1195faa2dc11ecf367:0 of merged input 0 in invitation "99dc6dc3f313ff99e24aead1abc8270a" not tracked by this account, expected an output this account tracks that is free or reserved by this invitation`
+  (the message above is from the second try; the first was the same error for invitation `76b8fce858b955482e95cc9128992ee3`).
+- Cause, from the engine source (`prepareInputUnlockingCompilation`, `listInvitationScriptHashesToTrack` in
+  `@xo-cash/engine` dist): the engine builds an unlocking script only for a coin its own account tracks. Storing the
+  open invitation first (`engine.acceptInvitation(open)`, tried at 19:08, not kept) did not make it track the offer,
+  because tracking recompiles the offer locking script and that needs `makerKey.public_key`, which the open invitation
+  does not publish. The engine documentation does not say that a keyless input still has to be tracked by the account
+  that completes it. About 10 minutes to find.
+- Way out: `scripts/run.ts expire` and `expire-early` now run with the maker account, whose engine tracks the offer
+  coin. The expire transaction still carries no signature: the unlocking script is the branch selector only. A keyless
+  expire by an account that never saw the maker key would need the template to publish the maker key hash, or a
+  transaction built outside the engine; neither was done.
+- 19:10 `expire-early run4` (maker, offer at 1 to 2 confirmations) refused, verbatim:
+  `Failed to broadcast transaction: Error: Failed to request 'blockchain.transaction.broadcast': the transaction was rejected by network rules.`
+  `non-BIP68-final (code 64)`.
+- The refused invitation kept the offer coin reserved (`reservedBy f5c02bd3011fbcf9d1c5c547f62e0e08`), the same as
+  landing2. Archived it once by hand. Then `finishAction` (`src/swap-open.ts`) was changed to archive the invitation
+  itself when the node refuses the broadcast (`TransactionBroadcastFailedError`); regression test in
+  `tests/swap-expire-run.test.ts`, red on the old code (`expected [] to deeply equal [ 'expire1' ]`).
+- 19:13 `expire run4` (age check passed, Electrum: mined 338558) refused with the same `non-BIP68-final (code 64)`.
+  At 19:16 the offer had 12 confirmations by Electrum height and the coin was not reserved afterwards, so the new
+  archive step worked on chipnet. Same lag as the Landing giveBack runs (journal 2026-11-16 and 2026-11-18).
+- 19:26 (offer 20 confirmations by Electrum height) `expire run4` broadcast
+  `4d92f782949444f9751ce3dcbd685696319f474f129893fc617f5792f5b35f48`, the txid refused at 19:13, and saved
+  `invitations/run4-expire.json`. Read back from both chipnet Electrum servers at 19:28 (`blockchain.transaction.get`,
+  verbose): version 2, one input `d76f3c9f...:0` with sequence 2 and a 159 byte unlocking script, one output of
+  0.000195 BCH to `bchtest:qpn2gvvm7m5wztt3q3yyx747g060dmvt05s3u7cee3` (the `makerLockingScript` of the open
+  invitation), no token, 4 confirmations by 19:31.
+- `used-templates --write` added the version 2 template file; `runs-table --write` added the two run4 rows.
+- 20:02 XO debug tool (https://blaze.xo.cash/, new disposable chipnet account): template version 2 imported, both
+  run4 invitations shown by "View invitation" (the expire with a commit of role `expirer`), "Inspect" on chipnet
+  SUCCESS for both txids, with the finding "Transaction is already known on chipnet". The address
+  `/inspect-transaction` now opens the home page; the Inspect page is reached from the sidebar. The `chipnet` network
+  button has no accessible name `chipnet` (`get_by_role('button', name='chipnet', exact=True)` timed out), matched by
+  its text instead. About 15 minutes.
+- 19:20 to 20:10 the public explorer https://chipnet.imaginary.cash/ did not answer (`curl: (28) Connection timed out`,
+  browser `Page.goto: Timeout 40000ms exceeded`), while its Electrum port answered.
+  https://chipnet.chaingraph.cash/ showed only "Performing security verification" (Cloudflare), and
+  https://cbch.loping.net/ answered `Failed to load transaction` with an `RpcError` for this and for older run2 txids.
+- 20:51 both run4 txids opened on the public chipnet explorer https://explorer.selene.cash/ (linked from the
+  chipnet.bch.ninja faucet page): expire `4d92f782...5f48` 90 confirmations, 1 input, 1 output, total outputs
+  0.000195 BCH, fee 0.000005 BCH, 244 B; open `d76f3c9f...f367` 112 confirmations. Only then were the run4 rows in
+  docs/CHIPNET-RUNS.md committed as `ok`.

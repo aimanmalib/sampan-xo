@@ -50,6 +50,18 @@ inside the XO debug tool".
 | [browser1-08-completed.png](swap-intent/browser1-08-completed.png) | Fill offer shown as COMPLETED | [invitations/browser1-fill.json](../../invitations/browser1-fill.json) |
 | [browser1-09-inspect-fill.png](swap-intent/browser1-09-inspect-fill.png) | "Inspect" of the fill transaction, status SUCCESS | [f92159229f9ec6b3b55feeb43ffc48cd67e297075d259671c8d6d41a71c118a6](https://chipnet.imaginary.cash/tx/f92159229f9ec6b3b55feeb43ffc48cd67e297075d259671c8d6d41a71c118a6) |
 
+### run4: open -> expire (template version 2)
+
+Taken on 2026-11-19 with a new disposable chipnet account: import the version 2 [template/swap-intent.json](../../template/swap-intent.json),
+"Join Invitation" and "View invitation" (not accepted) for both run4 files, then "Inspect" on `chipnet` for both transactions.
+
+| Image | What it shows | Invitation or txid |
+|---|---|---|
+| [run4-01-view-open.png](swap-intent/run4-01-view-open.png) | "Join Invitation" review of the open, broadcast transaction hash | [invitations/run4-open.json](../../invitations/run4-open.json) |
+| [run4-02-view-expire.png](swap-intent/run4-02-view-expire.png) | "Join Invitation" review of the expire: action `expire`, a commit with role `expirer`, the input extending the open commit, result transaction | [invitations/run4-expire.json](../../invitations/run4-expire.json) |
+| [run4-03-inspect-open.png](swap-intent/run4-03-inspect-open.png) | "Inspect" script debugger, status SUCCESS | [d76f3c9f2a190dcddd8c0c28dae338d0fc5f69ecb48d0d1195faa2dc11ecf367](https://chipnet.imaginary.cash/tx/d76f3c9f2a190dcddd8c0c28dae338d0fc5f69ecb48d0d1195faa2dc11ecf367) |
+| [run4-04-inspect-expire.png](swap-intent/run4-04-inspect-expire.png) | "Inspect" of the expire: redeem script with the `OP_2 OP_CHECKSEQUENCEVERIFY` branch, status SUCCESS, "Transaction is already known on chipnet" | [4d92f782949444f9751ce3dcbd685696319f474f129893fc617f5792f5b35f48](https://chipnet.imaginary.cash/tx/4d92f782949444f9751ce3dcbd685696319f474f129893fc617f5792f5b35f48) |
+
 ## Landing
 
 Taken on 2026-11-18 with a fresh account: import [template/landing.json](../../template/landing.json) (the

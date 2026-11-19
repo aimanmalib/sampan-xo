@@ -32,6 +32,11 @@ opened on a public chipnet explorer (https://chipnet.imaginary.cash/tx/). Invita
 | 2026-11-18 19:05 | landing3 | convert | 5c15f12c1e4fe868a5c0761c4592b019c07d71106e3faba99a00c8e240dfabe1 | invitations/landing3-convert.json | ok |
 | 2026-11-18 19:07 | landing4 | giveBack | - (rejected: `non-BIP68-final (code 64)`; built txid 84db84e9a1bc8d6f959432eddb91d52b368ffd1872722cf87723e717c273164d, land coin 6 blocks old) | - | fail |
 | 2026-11-18 20:12 | landing4 | giveBack | 84db84e9a1bc8d6f959432eddb91d52b368ffd1872722cf87723e717c273164d | invitations/landing4-giveBack.json | ok |
+| 2026-11-19 19:05 | run4 | open | d76f3c9f2a190dcddd8c0c28dae338d0fc5f69ecb48d0d1195faa2dc11ecf367 | invitations/run4-open.json | ok |
+| 2026-11-19 19:06 | run4 | expire | - (not built, taker account: `InputUnspentOutputUnavailableError: Unspent output d76f3c9f2a190dcddd8c0c28dae338d0fc5f69ecb48d0d1195faa2dc11ecf367:0 of merged input 0 in invitation "76b8fce858b955482e95cc9128992ee3" not tracked by this account`) | - | fail |
+| 2026-11-19 19:10 | run4 | expire | - (expire-early, rejected: `non-BIP68-final (code 64)`; offer 1 to 2 blocks old) | - | fail |
+| 2026-11-19 19:13 | run4 | expire | - (rejected: `non-BIP68-final (code 64)`; built txid 4d92f782949444f9751ce3dcbd685696319f474f129893fc617f5792f5b35f48, offer 12 or more blocks old by Electrum height; refused again at 19:21, 19:22 and 19:25) | - | fail |
+| 2026-11-19 19:26 | run4 | expire | 4d92f782949444f9751ce3dcbd685696319f474f129893fc617f5792f5b35f48 | invitations/run4-expire.json | ok |
 
 run2 is the open -> cancel run: the offer opened at 19:30 was cancelled by the maker at 19:56. The fill steps in between are saved as `<run>-fill-start.json` (maker adds
 the offer coin) and `<run>-fill-taken.json` (taker adds the payment and signs).
@@ -57,3 +62,12 @@ started the fill (`browser1-fill-start.json`). In the debug tool the taker joine
 script, both outputs, its two coins and change, signed its two inputs and exported the invitation
 (`browser1-fill-taken.json`: the tool's "Copy invitation" JSON, pretty printed). The maker then completed the offer input and broadcast
 (`browser1-fill.json`). The failed row is the first finish attempt, before the fix described in the journal.
+
+run4 is the open -> expire run with template version 2. The maker opened the offer at 19:05 with `expireAfter` 2.
+The expire step was first run with the taker account, which the engine refused because only the maker's account
+tracks the offer coin (see the journal); it then ran with the maker account. The expire transaction has one input
+with sequence 2 and no signature, and one output of 19500 sat (20000 offered, 500 fee) to the maker's locking script,
+no token. The chipnet nodes refused it as `non-BIP68-final` until 19:26, when the offer had 20 confirmations by
+Electrum height; the accepted transaction is the same txid that was refused at 19:13.
+Both run4 rows were opened on https://explorer.selene.cash/ (chipnet) at 20:51: https://chipnet.imaginary.cash/
+did not answer from 19:20 to 20:50 (see the journal). The links in the README still point to chipnet.imaginary.cash.
