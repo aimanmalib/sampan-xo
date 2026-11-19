@@ -208,6 +208,7 @@ transactions without an invitation (the token mint and the plain deposits) and f
 | chipnet | run4 | open | [d76f3c9f2a190dcddd8c0c28dae338d0fc5f69ecb48d0d1195faa2dc11ecf367](https://chipnet.imaginary.cash/tx/d76f3c9f2a190dcddd8c0c28dae338d0fc5f69ecb48d0d1195faa2dc11ecf367) | [invitations/run4-open.json](invitations/run4-open.json) | [template/used/8f0fb78d266c54d77852910b1ed8fb3772a1a7cd625dde6b548a247f9896712e.json](template/used/8f0fb78d266c54d77852910b1ed8fb3772a1a7cd625dde6b548a247f9896712e.json) |
 | chipnet | run4 | expire | [4d92f782949444f9751ce3dcbd685696319f474f129893fc617f5792f5b35f48](https://chipnet.imaginary.cash/tx/4d92f782949444f9751ce3dcbd685696319f474f129893fc617f5792f5b35f48) | [invitations/run4-expire.json](invitations/run4-expire.json) | [template/used/8f0fb78d266c54d77852910b1ed8fb3772a1a7cd625dde6b548a247f9896712e.json](template/used/8f0fb78d266c54d77852910b1ed8fb3772a1a7cd625dde6b548a247f9896712e.json) |
 | mainnet | mainnet1 | land | [7307ceebe247f57b177f8dbcb69cad97a3a05055712d74934b65f0713551b8ef](https://blockchair.com/bitcoin-cash/transaction/7307ceebe247f57b177f8dbcb69cad97a3a05055712d74934b65f0713551b8ef) | [invitations/mainnet1-land.json](invitations/mainnet1-land.json) | [template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json](template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json) |
+| mainnet | mainnet1 | giveBack | [80387030d47911bb9fa144892cf853a61cb3e4e8bc5f3ce948e78e99e67ca8d8](https://blockchair.com/bitcoin-cash/transaction/80387030d47911bb9fa144892cf853a61cb3e4e8bc5f3ce948e78e99e67ca8d8) | [invitations/mainnet1-giveBack.json](invitations/mainnet1-giveBack.json) | [template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json](template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json) |
 <!-- runs-table:end -->
 
 ## Open a saved invitation in the XO debug tool
@@ -363,6 +364,21 @@ satoshis with no token. The first giveBack attempts were refused by the chipnet 
 an hour after the land coin was mined; the refusals are rows in [docs/CHIPNET-RUNS.md](docs/CHIPNET-RUNS.md) and the
 measurements are in the [journal](JOURNAL.md). The exact template each invitation names is linked from
 [Runs, invitations and templates](#runs-invitations-and-templates).
+
+### Mainnet run (Landing)
+
+One minimum mainnet run, `mainnet1`, with the byte-identical template (`e0e9b742...e03e`) and the values in
+`config/mainnet.json`; every row is in [docs/MAINNET-RUNS.md](docs/MAINNET-RUNS.md).
+
+| Run | Action | Txid | Invitation |
+| --- | --- | --- | --- |
+| mainnet1 | land | [7307ceeb...b8ef](https://blockchair.com/bitcoin-cash/transaction/7307ceebe247f57b177f8dbcb69cad97a3a05055712d74934b65f0713551b8ef) | [mainnet1-land.json](invitations/mainnet1-land.json) |
+| mainnet1 | giveBack | [80387030...a8d8](https://blockchair.com/bitcoin-cash/transaction/80387030d47911bb9fa144892cf853a61cb3e4e8bc5f3ce948e78e99e67ca8d8) | [mainnet1-giveBack.json](invitations/mainnet1-giveBack.json) |
+
+The land locked 5000 sat at the landing address. The giveBack, sent once the land coin was more than six blocks
+old, paid the owner account 4000 sat (5000 landed, 1000 fee) as BCH with no token. Token category, `rateNum`, `rateDen` and `returnAfter` are those of the
+deployed Sampan contract (`tests/fixtures/landing-deployed.json`); only `ownerLockingScript` differs, so the coin
+returned to this run's owner account. No convert ran on mainnet.
 
 ### Reproduce the invitations
 

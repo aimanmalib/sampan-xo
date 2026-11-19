@@ -976,3 +976,19 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
   the landing5 rows in docs/CHIPNET-RUNS.md committed as `ok`.
 - The landing5 work had been kept aside since 15:38 while the explorer was down; merging it with the later run4 rows
   kept both, landing5 rows first by time. The README runs table was written again with `scripts/runs-table.ts --write`.
+
+## 2026-11-19 23:13 UTC: Mainnet giveBack
+
+- giveBack dry run 23:13 UTC: `timeout 400 npx tsx scripts/landing-run.ts giveBack mainnet1 --network mainnet --dry-run`,
+  exit 0 in about one minute (the `.xo-mainnet` engine database had synced headers in the 14:01 run, so no long first
+  sync this time). Built txid `80387030…`: one input (the land coin `7307ceeb…:0`, sequence 6), one output of 4000 sat
+  to P2PKH `71fee6e81afd47fa08525e99b63206966039d062`. Decoding `config/mainnet.json` `landing.ownerAddress` with libauth
+  `decodeCashAddress` gives `p2pkhWithTokens` with the same hash, so the output pays the owner account.
+- giveBack 23:14 UTC: `timeout 400 npx tsx scripts/landing-run.ts giveBack mainnet1 --network mainnet`, exit 0, txid
+  `80387030d47911bb9fa144892cf853a61cb3e4e8bc5f3ce948e78e99e67ca8d8`, saved `invitations/mainnet1-giveBack.json`.
+  No `non-BIP68-final` refusal: the land coin was mined in block 978029, more than six blocks earlier.
+- Read from the blockchair API at 23:15 UTC: in the mempool, input 5000 sat from `7307ceeb…`, one output of 4000 sat to
+  `qpclaehgrt7507sg2f0fnd3jq6txqwwsvgadvh427s` (the owner address without the token prefix), fee 1000 sat. The blockchair
+  web page returns HTTP 401 to `curl`, so the API was used, as for the land row.
+- `scripts/used-templates.ts --write` wrote no new template: the invitation names `e0e9b742…`, the same as mainnet1 land.
+  `scripts/runs-table.ts --write` added the giveBack row to the README table.
