@@ -910,3 +910,17 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
   chipnet.bch.ninja faucet page): expire `4d92f782...5f48` 90 confirmations, 1 input, 1 output, total outputs
   0.000195 BCH, fee 0.000005 BCH, 244 B; open `d76f3c9f...f367` 112 confirmations. Only then were the run4 rows in
   docs/CHIPNET-RUNS.md committed as `ok`.
+
+## 2026-11-19 21:05 UTC: judge entry for Build with XO
+
+- Added `BUILD-WITH-XO.md` and a `## For judges` section near the top of the README that points to it.
+- Submitted invitation: `invitations/browser1-fill.json` rather than `run3-fill.json`. Reason: it is the fill, the
+  action that makes the swap, and its commits come from two separate wallets, the XO engine in this repository
+  (maker) and an account inside the XO debug tool (taker). run3-fill was built by two engine accounts of this
+  repository. Both name template version 1 (`c4f2cf94...a456`), stored in `template/used/`.
+- Found while writing: README step "Import Template" still said the tool reports `c4f2cf94...a456` for
+  `template/swap-intent.json`. Since template version 2 (run4) that file hashes to `8f0fb78d...712e`
+  (`cmp template/swap-intent.json template/used/8f0fb78d...json` identical). The step now names both ids and which
+  invitations use each.
+- `npx tsx scripts/used-templates.ts --check`: `template/used: complete`. `npx tsx scripts/runs-table.ts --check`:
+  `README.md: runs table up to date`.

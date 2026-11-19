@@ -5,6 +5,10 @@ the Sampan landing contract as an XO template, see [Migrate to XO](#migrate-to-x
 
 Build journal, written by the AI coding agent while it worked. The feedback in FEEDBACK.md was written by the entrant, by hand.
 
+## For judges
+
+- Build with XO: [BUILD-WITH-XO.md](BUILD-WITH-XO.md) (submitted invitation, the four chipnet flows, how to check).
+
 ## What it is
 
 Swap Intent is an XO template with three roles:
@@ -210,8 +214,10 @@ disposable account there; no funds are needed to view.
 
 1. Open https://blaze.xo.cash/, choose "Create new account", set the network to `chipnet`, then "Save and use account".
 2. "Import Template", paste the contents of [template/swap-intent.json](template/swap-intent.json) and choose
-   "Import JSON". The tool reports `Template imported: Swap Intent (c4f2cf94...a456)`. Regenerate the file with
-   `npx tsx scripts/export-template.ts` after changing `template/swap-intent.ts`.
+   "Import JSON". The tool reports `Template imported: Swap Intent (8f0fb78d...712e)`, template version 2, named by
+   the run4 invitations. The invitations of run1 to run3 and browser1 name version 1: import
+   `template/used/c4f2cf9439468e95f8a43852b2c874d336ebb082652467766ed4cf03275aa456.json` for those. Regenerate
+   `template/swap-intent.json` with `npx tsx scripts/export-template.ts` after changing `template/swap-intent.ts`.
 3. "Join Invitation", paste a file from [invitations/](invitations/) (for example `run2-cancel.json`) and choose
    "View invitation". The tool lists the action, each commit with its role, and the broadcast result. Choose "Cancel"
    to leave without accepting.
