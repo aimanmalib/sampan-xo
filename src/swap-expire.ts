@@ -48,8 +48,8 @@ export interface OfferCoin {
 }
 
 /**
- * Finds the unspent offer coin of an open invitation through Electrum, by the offer address. The expirer needs no
- * engine record of the coin: it holds no key for the offer and did not take part in open.
+ * Finds the unspent offer coin of an open invitation through Electrum, by the offer address, with its height, so the
+ * age can be checked before anything is built. The engine itself does not check the age of a coin.
  */
 export const locateOffer = async (open: XOInvitation, config: Pick<ChipnetConfig, 'electrumServers' | 'network' | 'addressPrefix'>): Promise<OfferCoin> => {
   const openHash = readOpenTransactionHash(open);

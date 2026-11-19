@@ -9,7 +9,7 @@
  *   npx tsx scripts/run.ts fill-finish <run>   maker completes the offer input, broadcasts -> <run>-fill.json
  *   npx tsx scripts/run.ts fill        <run>   the four steps above, each in its own process
  *   npx tsx scripts/run.ts cancel      <run>   maker spends its open offer back            -> <run>-cancel.json
- *   npx tsx scripts/run.ts expire      <run>   taker returns an old enough offer to the maker, no key -> <run>-expire.json
+ *   npx tsx scripts/run.ts expire      <run>   returns an old enough offer to the maker, no key -> <run>-expire.json
  *   npx tsx scripts/run.ts expire-early <run>  the same without the age check, to record the node's rejection
  *   npx tsx scripts/run.ts --help              prints the usage line
  *
@@ -50,9 +50,11 @@ const steps: Record<string, Step> = {
   },
   'fill-finish': { account: 'maker', reads: 'fill-taken', writes: 'fill', act: (account, taken) => finishFill(account, taken!, broadcast) },
   cancel: { account: 'maker', reads: 'open', writes: 'cancel', act: (account, open) => cancelOffer(account, open!, broadcast) },
-  expire: { account: 'taker', reads: 'open', writes: 'expire', act: async (account, open) => expireOffer(account, open!, await locateOffer(open!, config), broadcast) },
+  // The expire path takes no key, but the XO engine only completes inputs for coins its own account tracks, and an
+  // account that holds no makerKey cannot rebuild the offer locking script to track it. So the maker's engine runs it.
+  expire: { account: 'maker', reads: 'open', writes: 'expire', act: async (account, open) => expireOffer(account, open!, await locateOffer(open!, config), broadcast) },
   'expire-early': {
-    account: 'taker',
+    account: 'maker',
     reads: 'open',
     writes: 'expire',
     act: async (account, open) => expireOffer(account, open!, await locateOffer(open!, config), broadcast, true),

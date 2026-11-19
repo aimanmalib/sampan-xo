@@ -19,8 +19,7 @@ no longer wants the trade has no way back without that key.
    - exactly one input and one output;
    - output 0 pays `makerLockingScript`, carries no token, and holds at least `offeredSatoshis - expireFeeSatoshis`.
 3. No signature. The branch can only send the coin back to the maker, so anyone may broadcast it, and the expirer needs
-   no key and no record of the offer in its own engine: `src/swap-expire.ts` finds the coin through Electrum by the
-   offer address from the open invitation. The template names this party with a separate role, `expirer`.
+   no key: `src/swap-expire.ts` finds the coin through Electrum by the offer address from the open invitation. The template names this party with a separate role, `expirer`.
 4. Relative, not absolute: the lock counts from the block that confirms the offer, so the maker does not have to
    predict a block height when opening. The same pattern as the Landing template `giveBack`.
 5. `expireAfter` and `expireFeeSatoshis` are offer variables set by the maker at `open` (values in
@@ -35,6 +34,12 @@ no longer wants the trade has no way back without that key.
   offers opened with version 2.
 - An offer can be returned to the maker by anyone once it is old enough, while a taker may still be trying to fill it.
   Whichever valid transaction is mined first wins, as with fill against cancel before.
+- Measured on chipnet in run4 (journal 2026-11-19 19:20): the XO engine completes an input only for a coin its own
+  account tracks, and tracking the offer means recompiling its script, which needs `makerKey.public_key`. The open
+  invitation does not publish it, so an account other than the maker's cannot build the expire through the engine.
+  `scripts/run.ts expire` therefore runs with the maker account; the transaction itself still carries no signature.
+  Publishing the maker key hash in the open invitation would let any engine track the offer; not done, because it
+  changes the template again and the keyless spend is already shown by the transaction.
 
 ## Way back
 

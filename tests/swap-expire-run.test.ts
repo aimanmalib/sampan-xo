@@ -36,8 +36,8 @@ const open = (expireAfter: unknown = 2n): XOInvitation =>
 const coin = (minedHeight: number, tipHeight: number): OfferCoin => ({ outpointTransactionHash: openHash, outpointIndex: 0, minedHeight, tipHeight });
 
 /** A stand-in engine recording what expireOffer appends, signs and executes. */
-const fakeAccount = (missingSignature: boolean) => {
-  const calls = { appended: [] as Record<string, unknown>[], signed: [] as number[], executed: [] as unknown[] };
+const fakeAccount = (missingSignature: boolean, refuse = false) => {
+  const calls = { appended: [] as Record<string, unknown>[], signed: [] as number[], executed: [] as unknown[], archived: [] as string[] };
   const account = {
     swapTemplateIdentifier: 't1',
     engine: {
@@ -56,8 +56,11 @@ const fakeAccount = (missingSignature: boolean) => {
       buildInvitationTransactionFromMergedCommit: async () => ({ transactionHash: builtHash, serializedTransaction: '00' }),
       executeAction: async (_id: string, params: unknown) => {
         calls.executed.push(params);
+        if (refuse) throw Object.assign(new Error('rejected by network rules. non-BIP68-final (code 64)'), { name: 'TransactionBroadcastFailedError' });
       },
-      archiveInvitation: async () => undefined,
+      archiveInvitation: async (id: string) => {
+        calls.archived.push(id);
+      },
       getInvitation: async () => ({ invitation: { invitationIdentifier: 'expire1' } }),
     },
   } as unknown as AccountEngine;
@@ -126,5 +129,14 @@ describe('expire through the engine', () => {
     await expireOffer(early.account, open(), coin(100, 100), false, true);
     expect(early.calls.signed).toEqual([]);
     expect(early.calls.executed).toEqual([{ broadcastTransaction: false }]);
+  });
+
+  it('archives the expire invitation when the node refuses it, so the offer coin is free for the next attempt', async () => {
+    const refused = fakeAccount(false, true);
+    await expect(expireOffer(refused.account, open(), coin(100, 100), true, true)).rejects.toThrow(/non-BIP68-final/);
+    expect(refused.calls.archived).toEqual(['expire1']);
+    const accepted = fakeAccount(true);
+    await expireOffer(accepted.account, open(), coin(100, 101), true);
+    expect(accepted.calls.archived).toEqual([]);
   });
 });

@@ -35,6 +35,10 @@ export const assertComplete = async ({ engine }: AccountEngine, invitationIdenti
 export const isLateReservationError = (error: unknown): boolean =>
   error instanceof Error && error.name === 'UnspentOutputNotFoundInStoreError';
 
+/** The node refused the transaction (for example `non-BIP68-final`); nothing was broadcast. */
+export const isBroadcastRefusedError = (error: unknown): boolean =>
+  error instanceof Error && error.name === 'TransactionBroadcastFailedError';
+
 const hasBroadcastResult = (invitation: XOInvitation, transactionHash: string): boolean =>
   Object.values(invitation.result?.transactions ?? {}).some(
     (result) => result.transactionHash === transactionHash && 'broadcastedAtTimestamp' in result,
@@ -48,6 +52,8 @@ export const finishAction = async (account: AccountEngine, invitationIdentifier:
   try {
     await engine.executeAction(invitationIdentifier, { broadcastTransaction: broadcast });
   } catch (error) {
+    // A refused broadcast leaves the invitation holding its coins; archive it so the same step can be run again.
+    if (isBroadcastRefusedError(error)) await engine.archiveInvitation(invitationIdentifier);
     const stored = await engine.getInvitation(invitationIdentifier);
     if (!broadcast || !isLateReservationError(error) || !stored || !hasBroadcastResult(stored.invitation, built.transactionHash)) throw error;
     console.error(`note: broadcast recorded; the engine then failed to clear a spent coin reservation: ${String(error)}`);
