@@ -55,7 +55,8 @@ XO tools is [template/swap-intent.json](template/swap-intent.json).
   `@xo-cash/engine` 0.1.1-next.18029697917, `@xo-cash/templates` 0.0.12, `@xo-cash/types` 0.0.8,
   `@xo-cash/utils` 0.0.10, `@bitauth/libauth` 3.1.0-next.8, `@electrum-cash/network` 4.4.8, `typescript` 5.9.3,
   `tsx` 4.23.15, `vitest` 3.2.7.
-- Chipnet only. Nothing in this repository targets mainnet.
+- The Swap Intent runs on chipnet only. The Landing template has one minimum mainnet run (land, then giveBack),
+  recorded in `docs/MAINNET-RUNS.md`; its amounts are limited in `src/landing-network.ts`.
 
 ## Setup, step by step
 
@@ -180,6 +181,7 @@ transactions without an invitation (the token mint and the plain deposits) and f
 | chipnet | landing3 | land | [af2ba18fd27ca75c6fa5422a73bf602900be6019850efa3d57877e01eae0c9db](https://chipnet.imaginary.cash/tx/af2ba18fd27ca75c6fa5422a73bf602900be6019850efa3d57877e01eae0c9db) | [invitations/landing3-land.json](invitations/landing3-land.json) | [template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json](template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json) |
 | chipnet | landing3 | convert | [5c15f12c1e4fe868a5c0761c4592b019c07d71106e3faba99a00c8e240dfabe1](https://chipnet.imaginary.cash/tx/5c15f12c1e4fe868a5c0761c4592b019c07d71106e3faba99a00c8e240dfabe1) | [invitations/landing3-convert.json](invitations/landing3-convert.json) | [template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json](template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json) |
 | chipnet | landing4 | giveBack | [84db84e9a1bc8d6f959432eddb91d52b368ffd1872722cf87723e717c273164d](https://chipnet.imaginary.cash/tx/84db84e9a1bc8d6f959432eddb91d52b368ffd1872722cf87723e717c273164d) | [invitations/landing4-giveBack.json](invitations/landing4-giveBack.json) | [template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json](template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json) |
+| mainnet | mainnet1 | land | [7307ceebe247f57b177f8dbcb69cad97a3a05055712d74934b65f0713551b8ef](https://blockchair.com/bitcoin-cash/transaction/7307ceebe247f57b177f8dbcb69cad97a3a05055712d74934b65f0713551b8ef) | [invitations/mainnet1-land.json](invitations/mainnet1-land.json) | [template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json](template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json) |
 <!-- runs-table:end -->
 
 ## Open a saved invitation in the XO debug tool

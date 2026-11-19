@@ -784,3 +784,42 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
 - Measured at 13:14 UTC with `npx tsx scripts/wallets.ts balance --network mainnet`: payer `confirmed=7000
   unconfirmed=0`, owner `confirmed=0 unconfirmed=0`.
 - Added `docs/MAINNET-RUNS.md` with the `fund` row.
+
+## 2026-11-19 13:58 UTC: Mainnet deposit, and the engine's header sync on mainnet
+
+- Added `--network mainnet` to `scripts/landing-run.ts` (steps land and giveBack only, run names `mainnet<n>`) and to
+  `scripts/deposit.ts` (account `payer`). The mainnet config is mapped onto the same settings shape as chipnet
+  (`src/landing-run-config.ts`), so land and giveBack run the same code on both networks.
+- Deposit 13:20 to 13:24 UTC: `npx tsx scripts/deposit.ts payer --network mainnet` moved the 7000 sat into the payer's
+  XO engine wallet, txid `c8ab57d9279b2920c46b278bec131b127ecc5a02511b5f045083288c8e247599` (one input, one output of
+  6815 sat, fee 185 sat), accepted by both configured servers. Read from the blockchair API: mined in block 978021.
+- Land dry run, first try 13:25 UTC under `timeout 200`: no output, ended by the timeout (`Terminated`, exit 143).
+- Land dry run, second try 13:34 to 13:42 UTC under `timeout 540`: no land output; the process ended on its own with
+  exit 1 and, verbatim:
+  `SocketWriteError: Could not write: WebSocket: Socket is disconnecting.`
+  `at <anonymous> (.../node_modules/@electrum-cash/web-socket/source/web.ts:503:12)`
+- Cause found in the engine database: on mainnet the engine's Electrum layer (`@electrum-cash/application`) verifies
+  every block header from its built-in checkpoint before it reports any coin. The mainnet checkpoint in
+  `@electrum-cash/checkpoint` is block 960000; the chain tip is near 978021, so about 18000 headers. Headers are
+  requested in batches of 1008 (one week of blocks) and stored only when a whole batch is processed. After the two runs
+  above the stored checkpoint was at height 961008 (one batch) and the address history table was empty, so the engine
+  could not yet see the deposited coin. On chipnet the checkpoint is close to the tip, which is why this was never seen
+  there. Nothing in the XO documentation mentions this first sync or its length.
+
+## 2026-11-19 14:08 UTC: Mainnet land
+
+- A process that only started the payer engine and kept it running (14:01 to 14:05 UTC) took the stored checkpoint
+  from 961008 to 978027 in about three minutes, so the earlier slowness was not the header count alone. While it
+  synced, the engine printed four times, verbatim (heights 966048, 967056, 968064, 969072):
+  `Failed to process transaction update: Error: Could not validate a block header on height 978021: The requested header is ahead of the current checkpoint at height 969072`
+  Block 978021 holds the deposit; the engine saw the coin once the sync reached the tip.
+- Land dry run 14:05 UTC: built txid `5f76d879…`, one input (the deposit coin), output 0 = 5000 sat to
+  `aa2061c8a50939fadbaf1b11747f1670caeefb4854cf42d6ad7c938c384c2cbef78087`, output 1 = 1415 sat change, fee 400 sat.
+  Output 0 is byte for byte the `templateLocking` printed by
+  `npx tsx scripts/check-bytecode.ts --params config/mainnet.json --json` (`identical: true`; the only parameter
+  that differs from the deployed contract is `ownerLockingScript`, which pays this run's owner account).
+- Land 14:06 UTC: `npx tsx scripts/landing-run.ts land mainnet1 --network mainnet`, txid
+  `7307ceebe247f57b177f8dbcb69cad97a3a05055712d74934b65f0713551b8ef`, saved `invitations/mainnet1-land.json`.
+  Read from the blockchair API at 14:07 UTC: in the mempool, output 0 of 5000 sat to the same script hash, fee
+  400 sat. `scripts/used-templates.ts --write` matched it to template `e0e9b742…`, the same final template as the
+  chipnet runs landing3 and landing4. giveBack needs 6 confirmations of this transaction.
