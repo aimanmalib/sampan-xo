@@ -823,3 +823,13 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
   Read from the blockchair API at 14:07 UTC: in the mempool, output 0 of 5000 sat to the same script hash, fee
   400 sat. `scripts/used-templates.ts --write` matched it to template `e0e9b742…`, the same final template as the
   chipnet runs landing3 and landing4. giveBack needs 6 confirmations of this transaction.
+
+## 2026-11-19 14:21 UTC: Before and after table
+
+- Added `MIGRATE-TO-XO.md` with a before and after table (original Sampan contract against the XO template).
+- sha256 of the redeem bytecode, computed twice: with Python `hashlib` from `redeemBytecode` in
+  `tests/fixtures/landing-deployed.json`, and with Node `crypto` from `deployedRedeem`, `templateRedeem` and
+  `cashcRedeem` printed by `npx tsx scripts/check-bytecode.ts --json` at HEAD `57ff4c4`. All four values:
+  `1901bbb619676836ffa58180113e57612d01e47caad8d8a1fb1aedbff586f01d`. The same run printed `identical: true`.
+- The redeem bytecode is 136 bytes. Versions in the table are from `package.json` and the cashc artifact (`cashc` 0.14.0).
+- README `## Migrate to XO` links to the table in one line.

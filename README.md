@@ -253,6 +253,7 @@ Sampan, ported to an XO template named "Landing" and run on chipnet with two fol
 - Evidence: the locking script is byte-identical to the deployed Sampan contract ([Proof the port is faithful](#proof-the-port-is-faithful)),
   the chipnet runs of `land`, `convert` and `giveBack` are [below](#chipnet-runs-landing), and debug tool screenshots
   of each invitation and transaction are in [docs/debug-tool/](docs/debug-tool/README.md#landing).
+- Before and after, side by side (source, compiler, redeem bytecode hash, P2SH wrapper, transactions): [MIGRATE-TO-XO.md](MIGRATE-TO-XO.md#before-and-after).
 
 The original contract: anyone pays BCH to the landing address, and the coin can then leave only to the owner, either
 converted to tokens at or above a minimum rate (`convert`) or returned as BCH once it is a few blocks old (`giveBack`).
