@@ -9,6 +9,8 @@
  *   npx tsx scripts/run.ts fill-finish <run>   maker completes the offer input, broadcasts -> <run>-fill.json
  *   npx tsx scripts/run.ts fill        <run>   the four steps above, each in its own process
  *   npx tsx scripts/run.ts cancel      <run>   maker spends its open offer back            -> <run>-cancel.json
+ *   npx tsx scripts/run.ts expire      <run>   taker returns an old enough offer to the maker, no key -> <run>-expire.json
+ *   npx tsx scripts/run.ts expire-early <run>  the same without the age check, to record the node's rejection
  *   npx tsx scripts/run.ts --help              prints the usage line
  *
  * Add --dry-run to build and check without broadcasting; the step's invitation is then archived so its coins are
@@ -21,6 +23,7 @@ import { loadConfig, type AccountName } from '../src/config.js';
 import { readMnemonic } from '../src/env.js';
 import { loadInvitation, saveInvitation } from '../src/invitation-file.js';
 import { cancelOffer } from '../src/swap-cancel.js';
+import { expireOffer, locateOffer } from '../src/swap-expire.js';
 import { finishFill, startFill, takeFill } from '../src/swap-fill.js';
 import { openOffer } from '../src/swap-open.js';
 import { startAccountEngine, stopAccountEngine, type AccountEngine } from '../src/xo-engine.js';
@@ -47,6 +50,13 @@ const steps: Record<string, Step> = {
   },
   'fill-finish': { account: 'maker', reads: 'fill-taken', writes: 'fill', act: (account, taken) => finishFill(account, taken!, broadcast) },
   cancel: { account: 'maker', reads: 'open', writes: 'cancel', act: (account, open) => cancelOffer(account, open!, broadcast) },
+  expire: { account: 'taker', reads: 'open', writes: 'expire', act: async (account, open) => expireOffer(account, open!, await locateOffer(open!, config), broadcast) },
+  'expire-early': {
+    account: 'taker',
+    reads: 'open',
+    writes: 'expire',
+    act: async (account, open) => expireOffer(account, open!, await locateOffer(open!, config), broadcast, true),
+  },
 };
 
 // The whole open -> fill flow; each step is a separate process, as two separate parties would run it.

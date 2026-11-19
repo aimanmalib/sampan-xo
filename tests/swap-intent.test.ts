@@ -20,14 +20,14 @@ import {
 describe('Swap Intent template', () => {
   it('passes the XO template parser and gets a stable identifier', () => {
     const parsed = parseTemplate(swapIntentTemplate);
-    expect(Object.keys(parsed.actions).sort()).toEqual(['cancel', 'fill', 'open']);
+    expect(Object.keys(parsed.actions).sort()).toEqual(['cancel', 'expire', 'fill', 'open']);
     expect(parsed.start).toEqual([{ action: 'open', role: 'maker', generate: ['makerKey'] }]);
     expect(generateTemplateIdentifier(parsed)).toBe(generateTemplateIdentifier(parseTemplate(swapIntentTemplate)));
   });
 
-  it('declares the four offer variables from the specification, each with a name and description', () => {
+  it('declares the four offer variables from the specification and the two expire variables, each with a name and description', () => {
     const variables = swapIntentTemplate.variables;
-    for (const id of ['offeredSatoshis', 'wantedCategory', 'wantedAmount', 'makerLockingScript'] as const) {
+    for (const id of ['offeredSatoshis', 'wantedCategory', 'wantedAmount', 'makerLockingScript', 'expireAfter', 'expireFeeSatoshis'] as const) {
       expect(variables[id].name.length).toBeGreaterThan(0);
       expect(variables[id].description.length).toBeGreaterThan(0);
     }
@@ -36,6 +36,8 @@ describe('Swap Intent template', () => {
       'wantedCategory',
       'wantedAmount',
       'makerLockingScript',
+      'expireAfter',
+      'expireFeeSatoshis',
     ]);
   });
 
@@ -48,6 +50,8 @@ describe('Swap Intent template', () => {
         wantedCategory: defaultOffer.wantedCategoryHex,
         wantedAmount: defaultOffer.wantedAmount,
         makerLockingScript: binToHex(defaultOffer.makerLockingScript),
+        expireAfter: defaultOffer.expireAfter,
+        expireFeeSatoshis: defaultOffer.expireFeeSatoshis,
         'makerKey.public_key': publicKeyHex(makerPrivateKey),
       },
     );

@@ -46,6 +46,9 @@ export interface Offer {
   wantedCategoryHex: string;
   wantedAmount: bigint;
   makerLockingScript: Uint8Array;
+  /** Blocks before anyone may return the offer to the maker. */
+  expireAfter: bigint;
+  expireFeeSatoshis: bigint;
 }
 
 export const defaultOffer: Offer = {
@@ -53,6 +56,8 @@ export const defaultOffer: Offer = {
   wantedCategoryHex,
   wantedAmount: 1_000n,
   makerLockingScript: makerLockingBytecode,
+  expireAfter: 2n,
+  expireFeeSatoshis: 500n,
 };
 
 const variableTypes = Object.fromEntries(
@@ -63,7 +68,11 @@ export const offerCompiler: CompilerBch = createCompilerBch({
   scripts: template.scripts,
   variables: variableTypes as never,
   lockingScriptTypes: { [lockingScriptId]: 'p2sh32' },
-  unlockingScripts: { fillUnlockingBytecode: lockingScriptId, cancelUnlockingBytecode: lockingScriptId },
+  unlockingScripts: {
+    fillUnlockingBytecode: lockingScriptId,
+    cancelUnlockingBytecode: lockingScriptId,
+    expireUnlockingBytecode: lockingScriptId,
+  },
 });
 
 export const offerData = (offer: Offer, signingKey: Uint8Array = makerPrivateKey): CompilationData<never> => ({
@@ -72,6 +81,8 @@ export const offerData = (offer: Offer, signingKey: Uint8Array = makerPrivateKey
     wantedCategory: hexToBin(offer.wantedCategoryHex),
     wantedAmount: bigIntToVmNumber(offer.wantedAmount),
     makerLockingScript: offer.makerLockingScript,
+    expireAfter: bigIntToVmNumber(offer.expireAfter),
+    expireFeeSatoshis: bigIntToVmNumber(offer.expireFeeSatoshis),
   },
   keys: { privateKeys: { makerKey: signingKey } },
 });

@@ -8,6 +8,9 @@ import type { XOTemplate } from '@xo-cash/types';
  *   it must pay the maker's locking script at least `wantedAmount` tokens of category `wantedCategory`.
  *   Whoever fills keeps the offered BCH. No signature is needed on this path.
  * - `cancel` (maker): spends the offer back with the maker's signature.
+ * - `expire` (expirer, anyone): once the offer coin is `expireAfter` blocks old, spends it back to the maker with no key.
+ *   One input and one output: the maker's locking script, no tokens, at least `offeredSatoshis - expireFeeSatoshis`.
+ *   The relative lock (BIP68) is carried in the input sequence number and checked with OP_CHECKSEQUENCEVERIFY.
  *
  * The offer script is wrapped as pay to script hash 32 by the `p2sh` locking type.
  * Token categories are written in the usual display byte order (as shown by block explorers). The VM pushes
@@ -18,9 +21,10 @@ export const swapIntentTemplate = {
   name: 'Swap Intent',
   description:
     'Lock BCH in an offer that anyone can fill by paying the maker a stated amount of one fungible CashToken. ' +
-    'The maker can cancel the offer at any time before it is filled.',
+    'The maker can cancel the offer at any time before it is filled. Once the offer is a set number of blocks old, ' +
+    'anyone can return it to the maker without a key.',
   icon: 'swap',
-  version: '1',
+  version: '2',
   supported: ['BCH_2023_05', 'BCH_2024_05', 'BCH_2025_05', 'BCH_2026_05'],
   roles: {
     maker: {
@@ -31,6 +35,11 @@ export const swapIntentTemplate = {
     taker: {
       name: 'Taker',
       description: 'Fills the offer by paying the wanted tokens to the maker and receives the offered BCH.',
+      icon: 'user',
+    },
+    expirer: {
+      name: 'Expirer',
+      description: 'Anyone. Returns an offer that is old enough to the maker. Needs no key and receives nothing.',
       icon: 'user',
     },
   },
@@ -48,7 +57,7 @@ export const swapIntentTemplate = {
           generate: ['makerKey'],
           requirements: {
             secrets: ['makerKey'],
-            variables: ['offeredSatoshis', 'wantedCategory', 'wantedAmount', 'makerLockingScript'],
+            variables: ['offeredSatoshis', 'wantedCategory', 'wantedAmount', 'makerLockingScript', 'expireAfter', 'expireFeeSatoshis'],
           },
         },
       },
@@ -85,6 +94,20 @@ export const swapIntentTemplate = {
       requirements: { participants: [{ role: 'maker', slots: { min: 1, max: 1 } }] },
       transaction: 'cancelTransaction',
     },
+    expire: {
+      name: 'Expire offer',
+      description: 'Return the $(<offeredSatoshis>) offered satoshis to the maker, less $(<expireFeeSatoshis>), once the offer is $(<expireAfter>) blocks old.',
+      icon: 'cancel',
+      roles: {
+        expirer: {
+          name: 'Expire offer',
+          description: 'Anyone may do this once the offer is $(<expireAfter>) blocks old. No key is needed.',
+          icon: 'user',
+        },
+      },
+      requirements: { participants: [{ role: 'expirer', slots: { min: 1, max: 1 } }] },
+      transaction: 'expireTransaction',
+    },
   },
   transactions: {
     openTransaction: {
@@ -120,6 +143,16 @@ export const swapIntentTemplate = {
       locktime: 0,
       composable: false,
     },
+    expireTransaction: {
+      name: 'Offer expired',
+      description: 'The offer was old enough and its satoshis were returned to the maker without a key.',
+      icon: 'cancel',
+      inputs: [{ input: 'expireInput', inputIndex: 0 }],
+      outputs: [{ output: 'expireOutput', outputIndex: 0 }],
+      version: 2,
+      locktime: 0,
+      composable: false,
+    },
   },
   inputs: {
     fillInput: {
@@ -137,6 +170,15 @@ export const swapIntentTemplate = {
       valueSatoshis: '$(<offeredSatoshis>)',
       token: null,
       unlockingScript: 'cancelUnlockingBytecode',
+    },
+    expireInput: {
+      name: 'Offer',
+      description: 'The open offer being expired. Its sequence number carries the relative lock of $(<expireAfter>) blocks.',
+      icon: 'cancel',
+      valueSatoshis: '$(<offeredSatoshis>)',
+      token: null,
+      sequenceNumber: '$(<expireAfter>)',
+      unlockingScript: 'expireUnlockingBytecode',
     },
   },
   outputs: {
@@ -174,17 +216,25 @@ export const swapIntentTemplate = {
       valueSatoshis: '$(refundSatoshis)',
       token: null,
     },
+    expireOutput: {
+      name: 'Return to maker',
+      description: 'The offered satoshis returned to the maker after the offer expired, less the expire fee.',
+      icon: 'receive',
+      lockingScript: '$(<makerLockingScript>)',
+      valueSatoshis: '$(expireSatoshis)',
+      token: null,
+    },
   },
   lockingScripts: {
     offerLockingScript: {
       name: 'Swap offer',
       description:
         'Pays out to anyone who sends the wanted tokens to the maker at the same output index, ' +
-        'or back to the maker with the maker signature.',
+        'back to the maker with the maker signature, or back to the maker without a key once it is $(<expireAfter>) blocks old.',
       icon: 'swap',
       lockingType: 'p2sh',
       lockingBytecode: 'offerLockingBytecode',
-      state: { variables: ['offeredSatoshis', 'wantedCategory', 'wantedAmount', 'makerLockingScript'] },
+      state: { variables: ['offeredSatoshis', 'wantedCategory', 'wantedAmount', 'makerLockingScript', 'expireAfter', 'expireFeeSatoshis'] },
       selectable: false,
       roles: {
         maker: {
@@ -198,6 +248,11 @@ export const swapIntentTemplate = {
           balance: { satoshis: 0n, fungibleTokens: 0n, nonfungibleTokens: 0 },
           selectable: false,
         },
+        expirer: {
+          actions: [{ action: 'expire', role: 'expirer' }],
+          balance: { satoshis: 0n, fungibleTokens: 0n, nonfungibleTokens: 0 },
+          selectable: false,
+        },
       },
     },
   },
@@ -208,9 +263,21 @@ export const swapIntentTemplate = {
     enforceWantedAmount: 'OP_INPUTINDEX OP_OUTPUTTOKENAMOUNT <wantedAmount> OP_GREATERTHANOREQUAL',
     fillPath: 'enforcePaysMaker enforceWantedCategory enforceWantedAmount',
     cancelPath: 'OP_DUP OP_HASH160 <$(<makerKey.public_key> OP_HASH160)> OP_EQUALVERIFY OP_CHECKSIG',
-    offerLockingBytecode: 'OP_IF fillPath OP_ELSE cancelPath OP_ENDIF',
+    expireSatoshis: '<offeredSatoshis> <expireFeeSatoshis> OP_SUB',
+    // The input sequence number must carry a relative lock of at least expireAfter blocks (transaction version 2).
+    enforceExpireAge: '<expireAfter> OP_CHECKSEQUENCEVERIFY OP_DROP',
+    enforceOneInOneOut: 'OP_TXINPUTCOUNT OP_1 OP_NUMEQUALVERIFY OP_TXOUTPUTCOUNT OP_1 OP_NUMEQUALVERIFY',
+    enforceReturnToMaker:
+      'OP_0 OP_OUTPUTBYTECODE <makerLockingScript> OP_EQUALVERIFY ' +
+      // No token category: the output carries no tokens.
+      'OP_0 OP_OUTPUTTOKENCATEGORY OP_0 OP_EQUALVERIFY ' +
+      'OP_0 OP_OUTPUTVALUE <offeredSatoshis> <expireFeeSatoshis> OP_SUB OP_GREATERTHANOREQUAL',
+    expirePath: 'enforceExpireAge enforceOneInOneOut enforceReturnToMaker',
+    // Selectors on top of the unlocking stack: 1 is fill; 0 then 1 is expire; 0 then 0 is cancel.
+    offerLockingBytecode: 'OP_IF fillPath OP_ELSE OP_IF expirePath OP_ELSE cancelPath OP_ENDIF OP_ENDIF',
     fillUnlockingBytecode: 'OP_1',
-    cancelUnlockingBytecode: '<makerKey.schnorr_signature.all_outputs> <makerKey.public_key> OP_0',
+    expireUnlockingBytecode: 'OP_1 OP_0',
+    cancelUnlockingBytecode: '<makerKey.schnorr_signature.all_outputs> <makerKey.public_key> OP_0 OP_0',
   },
   constants: {
     tokenOutputSatoshis: {
@@ -249,8 +316,18 @@ export const swapIntentTemplate = {
     },
     makerLockingScript: {
       name: 'Maker receiving locking script',
-      description: 'Where the maker receives the wanted tokens on fill and the refund on cancel.',
+      description: 'Where the maker receives the wanted tokens on fill and the satoshis on cancel or expire.',
       type: 'locking_script',
+    },
+    expireAfter: {
+      name: 'Expire age',
+      description: 'Blocks the offer must wait, counted from the block that confirms it, before anyone can return it to the maker.',
+      type: 'integer',
+    },
+    expireFeeSatoshis: {
+      name: 'Expire fee',
+      description: 'Satoshis kept back from the returned value to pay the network fee of the expire transaction.',
+      type: 'satoshis',
     },
     takerLockingScript: {
       name: 'Taker receiving locking script',

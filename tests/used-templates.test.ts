@@ -32,6 +32,8 @@ const copyOfRepo = (): string => {
 
 const swapJson = templateJson(swapIntentTemplate);
 const swapId = identifierOf(swapJson);
+/** The Swap Intent template the run1 to run3 invitations name (before the expire action was added). */
+const runSwapId = (JSON.parse(readFileSync(join(repo, 'invitations', 'run1-open.json'), 'utf8')) as { templateIdentifier: string }).templateIdentifier;
 
 describe('template/used', () => {
   it('has a file for every saved invitation, each named by the identifier the XO engine computes', () => {
@@ -40,20 +42,20 @@ describe('template/used', () => {
 
   it('fails when one byte of a stored template changes', () => {
     const root = copyOfRepo();
-    const file = join(root, usedFolder, `${swapId}.json`);
+    const file = join(root, usedFolder, `${runSwapId}.json`);
     const text = readFileSync(file, 'utf8');
     const index = text.indexOf('Swap Intent');
     expect(index).toBeGreaterThan(-1);
     writeFileSync(file, text.slice(0, index) + 's' + text.slice(index + 1));
-    expect(checkUsedTemplates(root)).toEqual([expect.stringContaining(`${swapId}.json: content has identifier`)]);
+    expect(checkUsedTemplates(root)).toEqual([expect.stringContaining(`${runSwapId}.json: content has identifier`)]);
   });
 
   it('fails when an invitation has no stored template', () => {
     const root = copyOfRepo();
-    rmSync(join(root, usedFolder, `${swapId}.json`));
+    rmSync(join(root, usedFolder, `${runSwapId}.json`));
     const problems = checkUsedTemplates(root);
     expect(problems.length).toBeGreaterThan(0);
-    expect(problems.every((problem) => problem.includes(`${swapId}.json is missing`))).toBe(true);
+    expect(problems.every((problem) => problem.includes(`${runSwapId}.json is missing`))).toBe(true);
     expect(problems).toContainEqual(expect.stringContaining('invitations/run1-open.json'));
   });
 

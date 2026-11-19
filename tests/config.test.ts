@@ -58,6 +58,19 @@ describe('test token config', () => {
   });
 });
 
+describe('swap expiry config', () => {
+  it('rejects an expire age outside 1 to 65535 blocks and an expire fee outside 0 to 1000', () => {
+    const base = loadConfig();
+    for (const expireAfterBlocks of [0, 65536, 1.5]) {
+      expect(() => loadConfig(write({ ...base, swap: { ...base.swap, expireAfterBlocks } }))).toThrow(/expireAfterBlocks/);
+    }
+    for (const expireFeeSatoshis of [-1, 1001, 0.5]) {
+      expect(() => loadConfig(write({ ...base, swap: { ...base.swap, expireFeeSatoshis } }))).toThrow(/expireFeeSatoshis/);
+    }
+    expect(loadConfig(write({ ...base, swap: { ...base.swap, expireAfterBlocks: 1, expireFeeSatoshis: 0 } })).swap.expireFeeSatoshis).toBe(0);
+  });
+});
+
 describe('landing config', () => {
   it('ships the landing values with a six block return age', () => {
     const { landing, accounts } = loadConfig();

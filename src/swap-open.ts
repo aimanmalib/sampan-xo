@@ -60,7 +60,7 @@ export const finishAction = async (account: AccountEngine, invitationIdentifier:
 
 /**
  * open (maker): locks swap.offeredSatoshis in a new offer asking for swap.wantedAmount test tokens, paid to a fresh
- * maker receive script. Funded from one plain engine coin; the engine adds the change and the fee.
+ * maker receive script; anyone may return it to that script after swap.expireAfterBlocks blocks. Funded from one plain engine coin; the engine adds the change and the fee.
  */
 export const openOffer = async (account: AccountEngine, config: ChipnetConfig, broadcast: boolean): Promise<ActionResult> => {
   const { engine, swapTemplateIdentifier: templateIdentifier } = account;
@@ -80,6 +80,8 @@ export const openOffer = async (account: AccountEngine, config: ChipnetConfig, b
       { variableIdentifier: 'wantedCategory', value: config.testToken.category, ...role },
       { variableIdentifier: 'wantedAmount', value: BigInt(config.swap.wantedAmount), ...role },
       { variableIdentifier: 'makerLockingScript', value: makerLockingScript, ...role },
+      { variableIdentifier: 'expireAfter', value: BigInt(config.swap.expireAfterBlocks), ...role },
+      { variableIdentifier: 'expireFeeSatoshis', value: BigInt(config.swap.expireFeeSatoshis), ...role },
     ],
     outputs: [{ outputIdentifier: 'offerOutput', ...role }],
   });

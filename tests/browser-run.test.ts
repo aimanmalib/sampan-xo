@@ -5,7 +5,7 @@ import { deserializeInvitation, generateTemplateIdentifier, parseTemplate } from
 import { describe, expect, it } from 'vitest';
 import { addressToLockingBytecode } from '../src/send.js';
 import { fillInputTransactionIndex, finishFill } from '../src/swap-fill.js';
-import { swapIntentTemplate } from '../template/swap-intent.js';
+import { identifierOf } from '../src/used-templates.js';
 import type { AccountEngine } from '../src/xo-engine.js';
 
 const hash = 'cd'.repeat(32);
@@ -65,10 +65,14 @@ describe('addresses for scripts/send.ts', () => {
 
 describe('browser1 run files (taker part done in the XO debug tool)', () => {
   const load = (step: string) => deserializeInvitation(readFileSync(new URL(`../invitations/browser1-${step}.json`, import.meta.url), 'utf8'));
-  const swapIdentifier = generateTemplateIdentifier(parseTemplate(swapIntentTemplate));
   const walletIdentifier = generateTemplateIdentifier(parseTemplate(p2pkhTemplate));
 
-  it('names the Swap Intent template for the swap steps and the wallet template for the two transfers', () => {
+  it('names one Swap Intent template, kept in template/used, for the swap steps and the wallet template for the two transfers', () => {
+    // The run used the template before the expire action was added; its exact JSON is kept under its identifier.
+    const swapIdentifier = load('open').templateIdentifier;
+    const used = readFileSync(new URL(`../template/used/${swapIdentifier}.json`, import.meta.url), 'utf8');
+    expect(identifierOf(used)).toBe(swapIdentifier);
+    expect((JSON.parse(used) as { name: string }).name).toBe('Swap Intent');
     for (const step of ['open', 'fill-start', 'fill-taken', 'fill']) expect(load(step).templateIdentifier, step).toBe(swapIdentifier);
     for (const step of ['fund-sats', 'fund-tokens']) expect(load(step).templateIdentifier, step).toBe(walletIdentifier);
   });

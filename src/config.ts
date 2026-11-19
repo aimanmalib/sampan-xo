@@ -57,6 +57,10 @@ export interface SwapConfig {
   wantedAmount: string;
   /** Longest wait for Engine.stop() before a script exits anyway. */
   engineStopTimeoutSeconds: number;
+  /** Blocks after which anyone may return an offer to the maker (`expire`); set by the maker at `open`. */
+  expireAfterBlocks: number;
+  /** Satoshis kept from the returned value as the fee of `expire`; set by the maker at `open`. */
+  expireFeeSatoshis: number;
 }
 
 /** The fungible test token used as the wanted token. Created outside XO by `scripts/mint-test-token.ts`. */
@@ -96,6 +100,7 @@ export const loadConfig = (path: string = defaultConfigPath): ChipnetConfig => {
   if (!swap || typeof swap.engineDatabasePath !== 'string' || !(swap.offeredSatoshis > 0) || !/^[1-9]\d*$/.test(String(swap.wantedAmount)) || !(swap.engineStopTimeoutSeconds > 0)) {
     throw new Error(`config ${path}: swap needs engineDatabasePath, a positive offeredSatoshis, a positive decimal wantedAmount and a positive engineStopTimeoutSeconds`);
   }
+  checkSwapExpiry(swap, path);
   checkLanding(raw.landing, path);
   const sources = raw.runsTable?.sources;
   if (!Array.isArray(sources) || sources.length === 0 || !sources.every((s) => typeof s.runs === 'string' && typeof s.network === 'string' && /^https:\/\//.test(String(s.explorer)))) {
@@ -105,6 +110,17 @@ export const loadConfig = (path: string = defaultConfigPath): ChipnetConfig => {
 };
 
 const positiveInteger = (value: unknown): boolean => Number.isSafeInteger(value) && (value as number) > 0;
+
+const checkSwapExpiry = (swap: Partial<SwapConfig>, path: string): void => {
+  // BIP68 block-based relative locks carry the age in the low 16 bits of the sequence number.
+  if (!positiveInteger(swap.expireAfterBlocks) || (swap.expireAfterBlocks as number) > 0xffff) {
+    throw new Error(`config ${path}: swap.expireAfterBlocks must be an integer from 1 to 65535`);
+  }
+  const fee = swap.expireFeeSatoshis;
+  if (!Number.isSafeInteger(fee) || (fee as number) < 0 || (fee as number) > 1000 || (fee as number) >= (swap.offeredSatoshis as number)) {
+    throw new Error(`config ${path}: swap.expireFeeSatoshis must be an integer from 0 to 1000, below swap.offeredSatoshis`);
+  }
+};
 
 const checkLanding = (landing: Partial<LandingConfig> | undefined, path: string): void => {
   if (!landing) throw new Error(`config ${path}: landing section is missing`);

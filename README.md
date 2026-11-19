@@ -232,7 +232,9 @@ exported its part of the fill. To do the same:
 - The covenant checks only the output at the same index as the offer input. One offer is filled as a whole; there are
   no partial fills.
 - The fill path needs no signature, so anyone who sees an open offer can fill it; the first valid transaction wins.
-- Offers do not expire. An offer stays open until it is filled or the maker cancels it.
+- Template version 2 adds `expire`: once an offer is `expireAfter` blocks old, anyone can return it to the maker
+  without a key (docs/decisions/0003-swap-intent-expiry.md). Offers opened with version 1 (run1 to run3, browser1)
+  have no expire branch and stay open until they are filled or cancelled.
 - Through the XO engine in this repository, a fill is interactive: only the maker's engine tracks the offer coin, so the
   maker adds the offer input (`fill-start`) and its unlocking bytecode (`fill-finish`) around the taker's step.
 - The cancel fee is a fixed template constant (`cancelFeeSatoshis`, 500 satoshis).

@@ -833,3 +833,30 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
   `1901bbb619676836ffa58180113e57612d01e47caad8d8a1fb1aedbff586f01d`. The same run printed `identical: true`.
 - The redeem bytecode is 136 bytes. Versions in the table are from `package.json` and the cashc artifact (`cashc` 0.14.0).
 - README `## Migrate to XO` links to the table in one line.
+
+## 2026-11-19 18:55 UTC: Swap Intent expire action (template version 2)
+
+- Tried: a third branch in the offer locking script, `expire`, following the Landing `giveBack` pattern: input
+  `sequenceNumber: '$(<expireAfter>)'`, `<expireAfter> OP_CHECKSEQUENCEVERIFY OP_DROP`, one input, one output to
+  `makerLockingScript` with no token and at least `offeredSatoshis - expireFeeSatoshis`. No signature. Reasons in
+  docs/decisions/0003-swap-intent-expiry.md.
+- `expireAfter` and `expireFeeSatoshis` are new offer variables set at `open`; `config/chipnet.json` holds 2 blocks
+  and 500 satoshis. New role `expirer` (anyone); `parseTemplate` from `@xo-cash/utils` accepted a role with no
+  `requirements`.
+- Template identifier changed from `c4f2cf94…a456` to the identifier of template version 2. `used-templates --write`
+  rewrote the four stored templates unchanged; `used-templates --check` printed `template/used: complete`.
+- First test run, verbatim, from the existing engine compile test before it passed the two new variables:
+  `Identifier "expireAfter" refers to a WalletData, but "expireAfter" was not provided in the CompilationData "bytecode".`
+- Two harness cases failed for reasons outside the covenant and were rebuilt: a second output that made outputs exceed
+  inputs (`Unable to verify transaction: the sum…`), and a token output with no token input
+  (`Transaction violates token validation…`). The token case now creates a new category from the offer input (outpoint
+  index 0), so only the covenant can reject it. A 100 satoshi second output failed standardness
+  (`Unable to verify standard transaction…`); the case now uses a 1000 satoshi fee and a 600 satoshi second output.
+- `tests/swap-expire.test.ts`: 11 VM cases, all pass. Sabotage, each restored after: removing `enforceExpireAge` from
+  `expirePath` turned 3 cases red (shorter lock, final sequence, version 1); replacing
+  `<makerLockingScript> OP_EQUALVERIFY` with `OP_DROP` turned 1 case red (other locking script).
+- Tests that named the old template identifier or the four offer variables were updated: browser1 and run1 to run3 are
+  now checked against their stored template in `template/used/`.
+- Not tried yet: an expire through the XO engine on chipnet. The expirer's engine has no record of the offer coin, so
+  `src/swap-expire.ts` finds it through Electrum and calls `signInvitation` for the keyless input. Whether the engine
+  completes an input it does not own is measured in the run.

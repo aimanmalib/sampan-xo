@@ -3,8 +3,8 @@ import type { XOInvitation, XOInvitationVariable } from '@xo-cash/types';
 import { finishAction, signOwnInputs, type ActionResult } from './swap-open.js';
 import type { AccountEngine } from './xo-engine.js';
 
-/** The four offer variables, as the maker committed them in the open invitation. */
-export const offerVariableIdentifiers = ['offeredSatoshis', 'wantedCategory', 'wantedAmount', 'makerLockingScript'] as const;
+/** The six offer variables, as the maker committed them in the open invitation. */
+export const offerVariableIdentifiers = ['offeredSatoshis', 'wantedCategory', 'wantedAmount', 'makerLockingScript', 'expireAfter', 'expireFeeSatoshis'] as const;
 
 /** Transaction index of the offer coin in a fill; the covenant pays the maker at the same output index. */
 export const fillInputTransactionIndex = 0;

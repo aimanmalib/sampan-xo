@@ -25,6 +25,8 @@ const invitation = (extra: Partial<XOInvitation> = {}): XOInvitation =>
             { variableIdentifier: 'wantedCategory', value: 'cd'.repeat(32), roleIdentifier: 'maker' },
             { variableIdentifier: 'wantedAmount', value: 1000n, roleIdentifier: 'maker' },
             { variableIdentifier: 'makerLockingScript', value: '76a9', roleIdentifier: 'maker' },
+            { variableIdentifier: 'expireAfter', value: 2n, roleIdentifier: 'maker' },
+            { variableIdentifier: 'expireFeeSatoshis', value: 500n, roleIdentifier: 'maker' },
             { variableIdentifier: 'other', value: 1n },
           ],
         },
@@ -50,12 +52,14 @@ const fakeAccount = (executeError: Error | undefined, stored: XOInvitation): Acc
   }) as unknown as AccountEngine;
 
 describe('fill inputs read from the open invitation', () => {
-  it('takes the four offer variables without role or merge fields, in template order', () => {
+  it('takes the six offer variables without role or merge fields, in template order', () => {
     expect(readOfferVariables(invitation())).toEqual([
       { variableIdentifier: 'offeredSatoshis', value: 20000n },
       { variableIdentifier: 'wantedCategory', value: 'cd'.repeat(32) },
       { variableIdentifier: 'wantedAmount', value: 1000n },
       { variableIdentifier: 'makerLockingScript', value: '76a9' },
+      { variableIdentifier: 'expireAfter', value: 2n },
+      { variableIdentifier: 'expireFeeSatoshis', value: 500n },
     ]);
   });
 

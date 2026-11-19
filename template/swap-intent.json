@@ -1,9 +1,9 @@
 {
   "name": "Swap Intent",
-  "description": "Lock BCH in an offer that anyone can fill by paying the maker a stated amount of one fungible CashToken. The maker can cancel the offer at any time before it is filled.",
+  "description": "Lock BCH in an offer that anyone can fill by paying the maker a stated amount of one fungible CashToken. The maker can cancel the offer at any time before it is filled. Once the offer is a set number of blocks old, anyone can return it to the maker without a key.",
   "icon": "swap",
   "$schema": "https://libauth.org/schemas/wallet-template-v0.schema.json",
-  "version": "1",
+  "version": "2",
   "supported": [
     "BCH_2023_05",
     "BCH_2024_05",
@@ -19,6 +19,11 @@
     "taker": {
       "name": "Taker",
       "description": "Fills the offer by paying the wanted tokens to the maker and receives the offered BCH.",
+      "icon": "user"
+    },
+    "expirer": {
+      "name": "Expirer",
+      "description": "Anyone. Returns an offer that is old enough to the maker. Needs no key and receives nothing.",
       "icon": "user"
     }
   },
@@ -49,7 +54,9 @@
               "offeredSatoshis",
               "wantedCategory",
               "wantedAmount",
-              "makerLockingScript"
+              "makerLockingScript",
+              "expireAfter",
+              "expireFeeSatoshis"
             ],
             "secrets": [
               "makerKey"
@@ -127,6 +134,30 @@
         ]
       },
       "transaction": "cancelTransaction"
+    },
+    "expire": {
+      "name": "Expire offer",
+      "description": "Return the $(<offeredSatoshis>) offered satoshis to the maker, less $(<expireFeeSatoshis>), once the offer is $(<expireAfter>) blocks old.",
+      "icon": "cancel",
+      "roles": {
+        "expirer": {
+          "name": "Expire offer",
+          "description": "Anyone may do this once the offer is $(<expireAfter>) blocks old. No key is needed.",
+          "icon": "user"
+        }
+      },
+      "requirements": {
+        "participants": [
+          {
+            "role": "expirer",
+            "slots": {
+              "min": 1,
+              "max": 1
+            }
+          }
+        ]
+      },
+      "transaction": "expireTransaction"
     }
   },
   "transactions": {
@@ -186,6 +217,26 @@
         }
       ],
       "composable": false
+    },
+    "expireTransaction": {
+      "name": "Offer expired",
+      "description": "The offer was old enough and its satoshis were returned to the maker without a key.",
+      "icon": "cancel",
+      "version": 2,
+      "locktime": 0,
+      "inputs": [
+        {
+          "input": "expireInput",
+          "inputIndex": 0
+        }
+      ],
+      "outputs": [
+        {
+          "output": "expireOutput",
+          "outputIndex": 0
+        }
+      ],
+      "composable": false
     }
   },
   "inputs": {
@@ -204,6 +255,15 @@
       "valueSatoshis": "$(<offeredSatoshis>)",
       "token": null,
       "unlockingScript": "cancelUnlockingBytecode"
+    },
+    "expireInput": {
+      "name": "Offer",
+      "description": "The open offer being expired. Its sequence number carries the relative lock of $(<expireAfter>) blocks.",
+      "icon": "cancel",
+      "valueSatoshis": "$(<offeredSatoshis>)",
+      "token": null,
+      "sequenceNumber": "$(<expireAfter>)",
+      "unlockingScript": "expireUnlockingBytecode"
     }
   },
   "outputs": {
@@ -252,12 +312,20 @@
       "lockingScript": "$(<makerLockingScript>)",
       "valueSatoshis": "$(refundSatoshis)",
       "token": null
+    },
+    "expireOutput": {
+      "name": "Return to maker",
+      "description": "The offered satoshis returned to the maker after the offer expired, less the expire fee.",
+      "icon": "receive",
+      "lockingScript": "$(<makerLockingScript>)",
+      "valueSatoshis": "$(expireSatoshis)",
+      "token": null
     }
   },
   "lockingScripts": {
     "offerLockingScript": {
       "name": "Swap offer",
-      "description": "Pays out to anyone who sends the wanted tokens to the maker at the same output index, or back to the maker with the maker signature.",
+      "description": "Pays out to anyone who sends the wanted tokens to the maker at the same output index, back to the maker with the maker signature, or back to the maker without a key once it is $(<expireAfter>) blocks old.",
       "icon": "swap",
       "lockingType": "p2sh",
       "lockingBytecode": "offerLockingBytecode",
@@ -266,7 +334,9 @@
           "offeredSatoshis",
           "wantedCategory",
           "wantedAmount",
-          "makerLockingScript"
+          "makerLockingScript",
+          "expireAfter",
+          "expireFeeSatoshis"
         ]
       },
       "selectable": false,
@@ -308,6 +378,20 @@
             "nonfungibleTokens": 0
           },
           "selectable": false
+        },
+        "expirer": {
+          "actions": [
+            {
+              "role": "expirer",
+              "action": "expire"
+            }
+          ],
+          "balance": {
+            "satoshis": "<bigint: 0n>",
+            "fungibleTokens": "<bigint: 0n>",
+            "nonfungibleTokens": 0
+          },
+          "selectable": false
         }
       }
     }
@@ -319,9 +403,15 @@
     "enforceWantedAmount": "OP_INPUTINDEX OP_OUTPUTTOKENAMOUNT <wantedAmount> OP_GREATERTHANOREQUAL",
     "fillPath": "enforcePaysMaker enforceWantedCategory enforceWantedAmount",
     "cancelPath": "OP_DUP OP_HASH160 <$(<makerKey.public_key> OP_HASH160)> OP_EQUALVERIFY OP_CHECKSIG",
-    "offerLockingBytecode": "OP_IF fillPath OP_ELSE cancelPath OP_ENDIF",
+    "expireSatoshis": "<offeredSatoshis> <expireFeeSatoshis> OP_SUB",
+    "enforceExpireAge": "<expireAfter> OP_CHECKSEQUENCEVERIFY OP_DROP",
+    "enforceOneInOneOut": "OP_TXINPUTCOUNT OP_1 OP_NUMEQUALVERIFY OP_TXOUTPUTCOUNT OP_1 OP_NUMEQUALVERIFY",
+    "enforceReturnToMaker": "OP_0 OP_OUTPUTBYTECODE <makerLockingScript> OP_EQUALVERIFY OP_0 OP_OUTPUTTOKENCATEGORY OP_0 OP_EQUALVERIFY OP_0 OP_OUTPUTVALUE <offeredSatoshis> <expireFeeSatoshis> OP_SUB OP_GREATERTHANOREQUAL",
+    "expirePath": "enforceExpireAge enforceOneInOneOut enforceReturnToMaker",
+    "offerLockingBytecode": "OP_IF fillPath OP_ELSE OP_IF expirePath OP_ELSE cancelPath OP_ENDIF OP_ENDIF",
     "fillUnlockingBytecode": "OP_1",
-    "cancelUnlockingBytecode": "<makerKey.schnorr_signature.all_outputs> <makerKey.public_key> OP_0"
+    "expireUnlockingBytecode": "OP_1 OP_0",
+    "cancelUnlockingBytecode": "<makerKey.schnorr_signature.all_outputs> <makerKey.public_key> OP_0 OP_0"
   },
   "constants": {
     "tokenOutputSatoshis": {
@@ -360,8 +450,18 @@
     },
     "makerLockingScript": {
       "name": "Maker receiving locking script",
-      "description": "Where the maker receives the wanted tokens on fill and the refund on cancel.",
+      "description": "Where the maker receives the wanted tokens on fill and the satoshis on cancel or expire.",
       "type": "locking_script"
+    },
+    "expireAfter": {
+      "name": "Expire age",
+      "description": "Blocks the offer must wait, counted from the block that confirms it, before anyone can return it to the maker.",
+      "type": "integer"
+    },
+    "expireFeeSatoshis": {
+      "name": "Expire fee",
+      "description": "Satoshis kept back from the returned value to pay the network fee of the expire transaction.",
+      "type": "satoshis"
     },
     "takerLockingScript": {
       "name": "Taker receiving locking script",

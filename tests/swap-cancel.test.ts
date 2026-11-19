@@ -19,6 +19,8 @@ const openInvitation = {
           { variableIdentifier: 'wantedCategory', value: 'ef'.repeat(32), roleIdentifier: 'maker' },
           { variableIdentifier: 'wantedAmount', value: 1000n, roleIdentifier: 'maker' },
           { variableIdentifier: 'makerLockingScript', value: '76a9', roleIdentifier: 'maker' },
+          { variableIdentifier: 'expireAfter', value: 2n, roleIdentifier: 'maker' },
+          { variableIdentifier: 'expireFeeSatoshis', value: 500n, roleIdentifier: 'maker' },
         ],
       },
     },
@@ -76,6 +78,8 @@ describe('cancel through the engine', () => {
       ['wantedCategory', 'maker'],
       ['wantedAmount', 'maker'],
       ['makerLockingScript', 'maker'],
+      ['expireAfter', 'maker'],
+      ['expireFeeSatoshis', 'maker'],
     ]);
     expect(params.inputs).toMatchObject([{ inputIdentifier: 'cancelInput', transactionIndex: 0, outpointIndex: 0, roleIdentifier: 'maker' }]);
     expect(params.outputs).toMatchObject([{ outputIdentifier: 'refundOutput', transactionIndex: 0 }]);

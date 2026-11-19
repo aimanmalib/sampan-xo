@@ -25,7 +25,9 @@
     "engineDatabasePath": ".xo",
     "offeredSatoshis": 20000,
     "wantedAmount": "1000",
-    "engineStopTimeoutSeconds": 20
+    "engineStopTimeoutSeconds": 20,
+    "expireAfterBlocks": 2,
+    "expireFeeSatoshis": 500
   },
   "landing": {
     "ownerAddress": "bchtest:zz4rr7mn324zdkeav5v3gpqvlf3jx9u68q0vhr6hgz",
