@@ -39,7 +39,7 @@ const config = loadRunConfig(network);
 const [step, run, flag] = withoutNetworkArg(process.argv.slice(2));
 const broadcast = flag !== '--dry-run';
 
-type Outcome = { invitation: XOInvitation; transactionHash?: string };
+type Outcome = { invitation: XOInvitation; transactionHash?: string; serializedTransaction?: string };
 type Step = {
   account: AccountName;
   reads?: string;
@@ -96,6 +96,8 @@ const account = await startAccountEngine(accountName, readMnemonic(accountName, 
 try {
   const outcome = await selected.act(account, previous);
   if (outcome.transactionHash !== undefined) console.log(`${step} ${broadcast ? 'broadcast' : 'built (dry run)'} txid ${outcome.transactionHash}`);
+  // A dry run prints the built transaction so its outputs can be checked before the real broadcast.
+  if (!broadcast && outcome.serializedTransaction !== undefined) console.log(`transaction ${outcome.serializedTransaction}`);
   if (broadcast || outcome.transactionHash === undefined) console.log(`saved ${saveInvitation(outcome.invitation, run, selected.writes)}`);
 } finally {
   await stopAccountEngine(account, config);
