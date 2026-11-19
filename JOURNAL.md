@@ -1061,3 +1061,11 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
   a browser on https://explorer.selene.cash/tx/<txid>?network=chipnet: land 3 confirmations, convert unconfirmed with
   "Created 2 token-bearing outputs". Only then were the landing6 rows written as `ok`.
 - README (requirements pin, run names), MIGRATE-TO-XO.md (compiler row) and ADR 0001 now name the new engine version.
+- 23:45 the gate's full suite (Depot) failed in `tests/template-json.test.ts`, "has the identifier named by every saved
+  invitation whose file name starts with "landing"": `expected Set{ …(2) } to deeply equal Set{ 'e0e9b742197a31a69c65ce6b378ef4…' }`,
+  extra identifier `a31eb85891dbf248f1709a92b0fa7e3e6fdc518e6b34e376b197ed7f12dbc672`. The cause is
+  `invitations/landing5-fund-tokens.json` (committed with landing5), a funding step made with the stock "Wallet (P2PKH)"
+  template; the test was red since that commit. The test now checks `<run>-fund-<what>.json` files against the wallet
+  template identifier and every other `landing*` file against Landing. Sabotage: a wallet invitation copied to
+  `landing9-convert.json`, and a Landing invitation copied to `landing9-fund-sats.json`, each made the test fail
+  (copies removed).

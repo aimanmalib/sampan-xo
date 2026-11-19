@@ -15,6 +15,13 @@ const earlierRuns: Record<string, { runs: string[]; identifier: string }> = {
   landing: { runs: ['landing1-', 'landing2-'], identifier: '03fad65372a2941104b9256de44ed263452ea26e26b4a6bef39b9d44d20e3515' },
 };
 
+/**
+ * Funding steps (`<run>-fund-<what>.json`, made by scripts/send.ts) use the stock XO wallet template "Wallet (P2PKH)",
+ * not the run's own template; they are checked against that identifier instead.
+ */
+const fundingFile = /^[a-z]+[0-9]+-fund-[a-z]+\.json$/;
+const walletTemplateIdentifier = 'a31eb85891dbf248f1709a92b0fa7e3e6fdc518e6b34e376b197ed7f12dbc672';
+
 const savedIdentifier = (file: string): string =>
   (JSON.parse(readFileSync(new URL(file, invitationsFolder), 'utf8')) as { templateIdentifier: string }).templateIdentifier;
 
@@ -32,7 +39,10 @@ describe.each(exportedTemplates)('template JSON export: $name', ({ template, jso
   it(`has the identifier named by every saved invitation whose file name starts with "${invitationPrefix}"`, () => {
     const identifier = generateTemplateIdentifier(parseTemplate(saved));
     const earlier = earlierRuns[name];
-    const files = readdirSync(invitationsFolder).filter((file) => file.startsWith(invitationPrefix) && file.endsWith('.json'));
+    const prefixed = readdirSync(invitationsFolder).filter((file) => file.startsWith(invitationPrefix) && file.endsWith('.json'));
+    const funding = prefixed.filter((file) => fundingFile.test(file));
+    expect(new Set(funding.map(savedIdentifier))).toEqual(new Set(funding.length > 0 ? [walletTemplateIdentifier] : []));
+    const files = prefixed.filter((file) => !fundingFile.test(file));
     const isEarlier = (file: string) => earlier?.runs.some((run) => file.startsWith(run)) === true;
     const named = files.filter((file) => !isEarlier(file)).map(savedIdentifier);
     expect(new Set(named)).toEqual(new Set(named.length > 0 ? [identifier] : []));
