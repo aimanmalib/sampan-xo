@@ -103,8 +103,8 @@ export const loadConfig = (path: string = defaultConfigPath): ChipnetConfig => {
   checkSwapExpiry(swap, path);
   checkLanding(raw.landing, path);
   const sources = raw.runsTable?.sources;
-  if (!Array.isArray(sources) || sources.length === 0 || !sources.every((s) => typeof s.runs === 'string' && typeof s.network === 'string' && /^https:\/\//.test(String(s.explorer)))) {
-    throw new Error(`config ${path}: runsTable.sources must list runs files with a network and an https explorer`);
+  if (!Array.isArray(sources) || sources.length === 0 || !sources.every((s) => typeof s.runs === 'string' && typeof s.network === 'string' && /^https:\/\//.test(String(s.explorer)) && (s.explorer2 === undefined || /^https:\/\//.test(String(s.explorer2))))) {
+    throw new Error(`config ${path}: runsTable.sources must list runs files with a network, an https explorer and, if set, an https explorer2`);
   }
   return raw as ChipnetConfig;
 };

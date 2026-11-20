@@ -1337,3 +1337,21 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
 - The payer address on mainnet stays at 0 sat. The second mainnet run (`mainnet2`: land, then giveBack on engine
   `0.1.1-next.18170561234`) is not started and no row for it is added to `docs/MAINNET-RUNS.md`. The only mainnet
   Landing run remains `mainnet1` (land `7307ceeb...`, giveBack `80387030...`, engine `0.1.1-next.18029697917`).
+
+## 2026-11-20 15:25 UTC: second mainnet explorer (3xpl) next to Blockchair
+
+- Goal: a reader whose network blocks Blockchair can still open every mainnet txid. Blockchair answered HTTP 401 to
+  requests from our host on 20 Nov; 3xpl renders the transaction in the page body.
+- `src/runs-table.ts` takes an optional `explorer2` per source; `config/chipnet.json` sets it to
+  `https://3xpl.com/bitcoin-cash/transaction/` for the two mainnet runs lists. The README table cell is now
+  `[<txid>](<blockchair>) ([3xpl](<3xpl>))`; chipnet rows are unchanged byte for byte. `scripts/runs-table.ts --write`
+  rewrote the README table.
+- `tests/runs-table.test.ts`: two new cases. With `src/runs-table.ts` of the previous commit, two tests failed
+  (`adds a 3xpl link after the txid only for a source with explorer2`, `README holds exactly what --write would
+  write`); with the change, the runs-table, swap-network and config tests passed (29 tests).
+- `docs/MAINNET-SWAP-RUNS.md`: columns `Engine` and `Explorers` before `Result`, as in `docs/MAINNET-RUNS.md`. Engine
+  `0.1.1-next.18170561234` for all three swapmain1 rows, read from `package.json` in commits 219fca1 and ea966d7.
+- `BUILD-WITH-XO.md` (the two raw swapmain1 txids are now links), `docs/debug-tool/README.md` and the README prose:
+  a 3xpl link after every Blockchair txid link.
+- `curl -L -A 'Mozilla/5.0'` on each new 3xpl link, 15:24 UTC: HTTP 200 and the txid in the body for 06e1273d...,
+  1a0ce51b..., 5671fd92..., 7307ceeb..., 80387030..., fde04dc1....

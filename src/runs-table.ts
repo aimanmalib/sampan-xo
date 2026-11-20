@@ -8,6 +8,8 @@ export interface RunsSource {
   network: string;
   /** Explorer URL the txid is appended to. */
   explorer: string;
+  /** Optional second explorer; when set, the txid cell also links it, as ` ([3xpl](<explorer2><txid>))`. */
+  explorer2?: string;
 }
 
 /** One `ok` row of a runs list that names a saved invitation. */
@@ -69,8 +71,9 @@ export const buildRunsTable = (root: string, sources: RunsSource[]): string => {
     if (!existsSync(path)) continue;
     for (const row of runsRows(readFileSync(path, 'utf8'))) {
       const template = `template/used/${templateIdOf(root, row.invitation)}.json`;
+      const second = source.explorer2 === undefined ? '' : ` ([3xpl](${source.explorer2}${row.txid}))`;
       lines.push(
-        `| ${source.network} | ${row.run} | ${row.action} | [${row.txid}](${source.explorer}${row.txid}) | ` +
+        `| ${source.network} | ${row.run} | ${row.action} | [${row.txid}](${source.explorer}${row.txid})${second} | ` +
           `[${row.invitation}](${row.invitation}) | [${template}](${template}) |`,
       );
     }

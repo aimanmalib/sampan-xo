@@ -60,6 +60,26 @@ describe('runs table', () => {
     expect(withRunsTable(readme, buildRunsTable(repo, sources))).toBe(readme);
   });
 
+  it('adds a 3xpl link after the txid only for a source with explorer2', () => {
+    const root = copyOfRepo();
+    const chipnet = sources.find((source) => source.runs === 'docs/CHIPNET-RUNS.md')!;
+    expect(chipnet.explorer2).toBeUndefined();
+    const plain = buildRunsTable(root, [chipnet]);
+    expect(plain).not.toContain('3xpl');
+    const second = buildRunsTable(root, [{ ...chipnet, explorer2: 'https://second.example/tx/' }]);
+    const rows = runsRows(readFileSync(join(root, 'docs', 'CHIPNET-RUNS.md'), 'utf8'));
+    for (const row of rows) {
+      expect(second).toContain(`(${chipnet.explorer}${row.txid}) ([3xpl](https://second.example/tx/${row.txid})) | [${row.invitation}]`);
+    }
+    expect(second.replace(/ \(\[3xpl\]\([^)]*\)\)/g, '')).toBe(plain);
+  });
+
+  it('links every mainnet txid of the README table on 3xpl too', () => {
+    const mainnet = sources.filter((source) => source.network === 'mainnet');
+    expect(mainnet.length).toBeGreaterThan(0);
+    for (const source of mainnet) expect(source.explorer2).toBe('https://3xpl.com/bitcoin-cash/transaction/');
+  });
+
   it('skips a runs list that does not exist and fails when no row is left', () => {
     const root = copyOfRepo();
     const missing: RunsSource = { runs: 'docs/NONE.md', network: 'x', explorer: 'https://example.invalid/' };

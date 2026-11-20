@@ -56,11 +56,11 @@ One minimum run on mainnet (`swapmain1`, 2000 sat, rows in [docs/MAINNET-SWAP-RU
 
 | Flow | Action | Txid | Invitation | Template |
 | --- | --- | --- | --- | --- |
-| open -> expire on mainnet (swapmain1) | open | 06e1273d217e3b2e4c4f009d1f33009f141116cc59e0abb9bb5d16f04d3ee6ba | [invitations/swapmain1-open.json](invitations/swapmain1-open.json) | [template/used/8f0fb78d266c54d77852910b1ed8fb3772a1a7cd625dde6b548a247f9896712e.json](template/used/8f0fb78d266c54d77852910b1ed8fb3772a1a7cd625dde6b548a247f9896712e.json) |
-| | expire | 1a0ce51bcafda1328a2045aaadbdadb4d74486bd86672ad46e4161a767a2d511 | [invitations/swapmain1-expire.json](invitations/swapmain1-expire.json) | same as swapmain1 open |
+| open -> expire on mainnet (swapmain1) | open | [06e1273d217e3b2e4c4f009d1f33009f141116cc59e0abb9bb5d16f04d3ee6ba](https://blockchair.com/bitcoin-cash/transaction/06e1273d217e3b2e4c4f009d1f33009f141116cc59e0abb9bb5d16f04d3ee6ba) ([3xpl](https://3xpl.com/bitcoin-cash/transaction/06e1273d217e3b2e4c4f009d1f33009f141116cc59e0abb9bb5d16f04d3ee6ba)) | [invitations/swapmain1-open.json](invitations/swapmain1-open.json) | [template/used/8f0fb78d266c54d77852910b1ed8fb3772a1a7cd625dde6b548a247f9896712e.json](template/used/8f0fb78d266c54d77852910b1ed8fb3772a1a7cd625dde6b548a247f9896712e.json) |
+| | expire | [1a0ce51bcafda1328a2045aaadbdadb4d74486bd86672ad46e4161a767a2d511](https://blockchair.com/bitcoin-cash/transaction/1a0ce51bcafda1328a2045aaadbdadb4d74486bd86672ad46e4161a767a2d511) ([3xpl](https://3xpl.com/bitcoin-cash/transaction/1a0ce51bcafda1328a2045aaadbdadb4d74486bd86672ad46e4161a767a2d511)) | [invitations/swapmain1-expire.json](invitations/swapmain1-expire.json) | same as swapmain1 open |
 
-The maker got 1500 sat back with no key; all mainnet fees of the run were 1085 sat. Mainnet explorer:
-`https://blockchair.com/bitcoin-cash/transaction/<txid>`.
+The maker got 1500 sat back with no key; all mainnet fees of the run were 1085 sat. Mainnet explorers:
+`https://blockchair.com/bitcoin-cash/transaction/<txid>` or `https://3xpl.com/bitcoin-cash/transaction/<txid>`.
 
 Explorers: `https://chipnet.imaginary.cash/tx/<txid>` or `https://explorer.selene.cash/tx/<txid>`.
 run1 is an earlier open -> fill with the same template as run3. run1 to run4 and browser1 used `@xo-cash/engine`
