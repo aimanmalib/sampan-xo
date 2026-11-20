@@ -1328,3 +1328,12 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
     fixture as hex (`grep -c` on the full hex and on its first 20 bytes: 0).
 - Added one timeline paragraph (two sentences) to `MIGRATE-TO-XO.md` after `Original project:`. The Sampan commit link is
   on GitHub and returns 404 while that repository is private.
+
+## 2026-11-20 14:50 UTC: mainnet2 funding refused, mainnet2 not run
+
+- Status of the 5900 sat request to the shared test wallet, read at 14:49 UTC: `KURANG` (insufficient), recorded at
+  14:39:35 UTC with amount 0 sat and shortfall 5900 sat. The shared wallet held less than the reserve it keeps, so
+  nothing was available to send.
+- The payer address on mainnet stays at 0 sat. The second mainnet run (`mainnet2`: land, then giveBack on engine
+  `0.1.1-next.18170561234`) is not started and no row for it is added to `docs/MAINNET-RUNS.md`. The only mainnet
+  Landing run remains `mainnet1` (land `7307ceeb...`, giveBack `80387030...`, engine `0.1.1-next.18029697917`).
