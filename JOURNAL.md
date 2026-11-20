@@ -1229,3 +1229,23 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
   and template version 2 (with expire), and its taker side can be watched in the clip.
 - Time: about 2 hours, most of it waiting for browser slots on the shared host (each browser call waited up to 8 minutes).
 - `npx tsx scripts/used-templates.ts --write` (no new template id) and `npx tsx scripts/runs-table.ts --write` (4 rows).
+
+## 2026-11-20 04:16 UTC: clean clone, transactions opened again, mainnet Swap Intent not funded
+
+- 04:03 UTC `npx tsx scripts/wallets.ts balance --network mainnet`: payer funding address `confirmed=0 unconfirmed=0`.
+  The payer's engine still holds only the 1415 sat change coin of the Landing land transaction, too small for the
+  2000 sat offer (dry run at 00:38, entry above).
+- 04:03 UTC a new request for 4000 sat to the payer address went to the shared test wallet; its answer was again
+  `KURANG` (nothing available above the wallet's reserve), as at 00:38. No mainnet Swap Intent transaction was
+  broadcast, so `docs/MAINNET-SWAP-RUNS.md` has no rows and the README and `BUILD-WITH-XO.md` claim no Swap Intent
+  run on mainnet. Mainnet cost of the Swap Intent work so far: 0 sat.
+- 04:04 UTC the first clean clone check ran on Node 24 by mistake (the newest Node installed on the host); it passed but
+  does not count. Run again on Node 22, as `.nvmrc` says: `git archive HEAD` (912b3a4) into an empty temporary folder,
+  04:06 to 04:08 UTC, Node 22.23.5, npm 10.9.9: `npm ci` rc 0, `npx vitest run` 22 files and 161 tests passed,
+  `npx tsx scripts/run.ts --help` rc 0. The folder was removed.
+- https://chipnet.imaginary.cash/ still did not answer (`curl` code 28, connection timed out after 20 s). One txid of
+  each flow in `BUILD-WITH-XO.md` was opened again on https://explorer.selene.cash/tx/<txid>?network=chipnet at about
+  04:10 UTC and found in the page: run3 fill `f6d03597...a7a2`, run2 cancel `8472ca5d...e110`, run4 expire
+  `4d92f782...5f48`, run5 fill `565cc19f...8103`, browser1 fill `f9215922...18a6`, browser2 fill `c145510b...c195`.
+- Style check of README.md and BUILD-WITH-XO.md: BUILD-WITH-XO.md passed; README.md only flagged the capitals of
+  `SUCCESS` (the tool's own status word) and `FEEDBACK` (the file name), both left as they are.
