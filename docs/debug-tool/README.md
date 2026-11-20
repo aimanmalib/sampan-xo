@@ -85,6 +85,24 @@ Taken on 2026-11-20 in the same way as run5, for both run6 files and both transa
 | [run6-03-inspect-open.png](swap-intent/run6-03-inspect-open.png) | "Inspect" script debugger, status SUCCESS | [cc29d1c8151b91de2a7fa899412d61686b2d25afec0f650002fb1797baba04d4](https://explorer.selene.cash/tx/cc29d1c8151b91de2a7fa899412d61686b2d25afec0f650002fb1797baba04d4?network=chipnet) |
 | [run6-04-inspect-cancel.png](swap-intent/run6-04-inspect-cancel.png) | "Inspect" of the cancel, status SUCCESS | [2670cc505471e5692f37ba7c1bd05bc38b92d44e7d9ac2e9fc8e8e49083fd355](https://explorer.selene.cash/tx/2670cc505471e5692f37ba7c1bd05bc38b92d44e7d9ac2e9fc8e8e49083fd355?network=chipnet) |
 
+### browser2: the taker side recorded (engine 0.1.1-next.18170561234)
+
+Taken on 2026-11-20 during run `browser2`, the same flow as browser1 with template version 2: a new disposable account
+joined [invitations/browser2-fill-start.json](../../invitations/browser2-fill-start.json) as `taker`, added its receiving script,
+both outputs, its two coins and change, signed its two inputs and exported the invitation; the maker completed and
+broadcast the fill. The session was recorded after the account was created and funded:
+[taker-clip.mp4](swap-intent/taker-clip.mp4) (33 s, no audio), [taker-clip.gif](swap-intent/taker-clip.gif) and the
+poster [taker-clip.png](swap-intent/taker-clip.png).
+
+| Image | What it shows | Invitation or txid |
+|---|---|---|
+| [browser2-01-join-view.png](swap-intent/browser2-01-join-view.png) | "Join Invitation" review before accepting, role `Taker` | [invitations/browser2-fill-start.json](../../invitations/browser2-fill-start.json) |
+| [browser2-02-receiving-script.png](swap-intent/browser2-02-receiving-script.png) | The account's address pasted as `takerLockingScript` | [invitations/browser2-fill-start.json](../../invitations/browser2-fill-start.json) |
+| [browser2-03-select-coins.png](swap-intent/browser2-03-select-coins.png) | "Select coins": the BCH coin and the test token coin | [invitations/browser2-fill-start.json](../../invitations/browser2-fill-start.json) |
+| [browser2-04-signed.png](swap-intent/browser2-04-signed.png) | Taker inputs signed and appended to the invitation | [invitations/browser2-fill-taken.json](../../invitations/browser2-fill-taken.json) |
+| [browser2-05-completed.png](swap-intent/browser2-05-completed.png) | After "Update invitation" with the maker's final file: COMPLETED | [invitations/browser2-fill.json](../../invitations/browser2-fill.json) |
+| [browser2-06-inspect-fill.png](swap-intent/browser2-06-inspect-fill.png) | "Inspect" of the fill transaction, status SUCCESS | [c145510b5a1080e6e48755b7cd7bb08d6551cd6483c49d1b38832cb9b072c195](https://explorer.selene.cash/tx/c145510b5a1080e6e48755b7cd7bb08d6551cd6483c49d1b38832cb9b072c195?network=chipnet) |
+
 ## Landing
 
 Taken on 2026-11-18 with a fresh account: import [template/landing.json](../../template/landing.json) (the

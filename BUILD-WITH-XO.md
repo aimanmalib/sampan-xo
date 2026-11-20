@@ -7,12 +7,21 @@ and expired offers return to the maker without a key.
 
 New project. First commit after the 14 November start: [1ac2691](https://github.com/aimanmalib/sampan-xo/commit/1ac2691e4c699dcc3563fafcd2815bf6eadd6b94) (2026-11-14 17:40 UTC).
 
-Submitted invitation: `invitations/browser1-fill.json`
+Submitted invitation: `invitations/browser2-fill.json`
 
-That invitation is the fill of run `browser1`: the maker side was built by `@xo-cash/engine` in this repository, the
-taker side was built and signed by a separate account inside the XO debug tool (https://blaze.xo.cash/), and the
-final transaction was broadcast on chipnet. It names template `c4f2cf94...a456`, stored as
-[template/used/c4f2cf9439468e95f8a43852b2c874d336ebb082652467766ed4cf03275aa456.json](template/used/c4f2cf9439468e95f8a43852b2c874d336ebb082652467766ed4cf03275aa456.json).
+That invitation is the fill of run `browser2`: the maker side was built by `@xo-cash/engine` 0.1.1-next.18170561234 in
+this repository, the taker side was built and signed by a separate account inside the XO debug tool
+(https://blaze.xo.cash/), and the final transaction was broadcast on chipnet. It names template version 2,
+`8f0fb78d...712e`, stored as [template/used/8f0fb78d266c54d77852910b1ed8fb3772a1a7cd625dde6b548a247f9896712e.json](template/used/8f0fb78d266c54d77852910b1ed8fb3772a1a7cd625dde6b548a247f9896712e.json).
+The earlier run `browser1` did the same with template version 1 and the older engine.
+
+[![Taker side of the browser2 fill inside the XO debug tool](docs/debug-tool/swap-intent/taker-clip.gif)](docs/debug-tool/swap-intent/taker-clip.mp4)
+
+The taker side of run browser2 in the XO debug tool, cut to 33 seconds: join the maker's fill invitation as `Taker`,
+give a receiving address, set up both outputs, add a token coin and a BCH coin, add change, sign its two inputs, copy the
+invitation back to the maker; after the maker broadcast, "Update invitation" shows it completed and "Inspect" reports
+`SUCCESS`. [MP4](docs/debug-tool/swap-intent/taker-clip.mp4) (no audio); the frames come from a fresh disposable chipnet
+account, recorded after it was created and funded.
 
 ## What Swap Intent is
 
@@ -40,16 +49,18 @@ Every txid is an `ok` row in [docs/CHIPNET-RUNS.md](docs/CHIPNET-RUNS.md), which
 | | fill | 565cc19f701d41f6dae8fe48b0a0de0ed7fae492b45c7610e47549d336ca8103 | [invitations/run5-fill.json](invitations/run5-fill.json) | same as run5 open |
 | fill from the debug tool (browser1) | open | 7f3896aed87a94eb1b9dee9dd938f5c6567ad97766cca8a702af2a8e54151101 | [invitations/browser1-open.json](invitations/browser1-open.json) | [template/used/c4f2cf9439468e95f8a43852b2c874d336ebb082652467766ed4cf03275aa456.json](template/used/c4f2cf9439468e95f8a43852b2c874d336ebb082652467766ed4cf03275aa456.json) |
 | | fill | f92159229f9ec6b3b55feeb43ffc48cd67e297075d259671c8d6d41a71c118a6 | [invitations/browser1-fill.json](invitations/browser1-fill.json) | same |
+| fill from the debug tool, recorded (browser2) | open | 0b712fdf8958d3df4f6904dfb266f7d9c0919f906aca80b2850726551186d93e | [invitations/browser2-open.json](invitations/browser2-open.json) | [template/used/8f0fb78d266c54d77852910b1ed8fb3772a1a7cd625dde6b548a247f9896712e.json](template/used/8f0fb78d266c54d77852910b1ed8fb3772a1a7cd625dde6b548a247f9896712e.json) |
+| | fill | c145510b5a1080e6e48755b7cd7bb08d6551cd6483c49d1b38832cb9b072c195 | [invitations/browser2-fill.json](invitations/browser2-fill.json) | same as browser2 open |
 
 Explorers: `https://chipnet.imaginary.cash/tx/<txid>` or `https://explorer.selene.cash/tx/<txid>`.
 run1 is an earlier open -> fill with the same template as run3. run1 to run4 and browser1 used `@xo-cash/engine`
-0.1.1-next.18029697917; run5, and run6 (open -> cancel), used 0.1.1-next.18170561234, the `next` tag on
+0.1.1-next.18029697917; run5, run6 (open -> cancel) and browser2 used 0.1.1-next.18170561234, the `next` tag on
 20 November. All runs are in the [README](README.md#runs-invitations-and-templates).
 
 ## Screenshots of the XO debug tool
 
 [docs/debug-tool/swap-intent/](docs/debug-tool/swap-intent/) holds each saved Swap Intent invitation opened with
-"View invitation", "Inspect" with status `SUCCESS` for each transaction, and each step of the browser1 taker side. The
+"View invitation", "Inspect" with status `SUCCESS` for each transaction, and each step of the browser1 and browser2 taker sides. The
 index is [docs/debug-tool/README.md](docs/debug-tool/README.md).
 
 ## Check it yourself

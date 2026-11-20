@@ -1181,3 +1181,51 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
   before anything was committed.
 - `npx tsx scripts/used-templates.ts --write` (no new template id: run5 and run6 use `8f0fb78d...712e`) and
   `npx tsx scripts/runs-table.ts --write` (4 new README rows).
+
+## 2026-11-20 04:05 Run browser2: taker side in the XO debug tool, recorded as a clip
+
+- Goal: the browser1 flow again on engine 0.1.1-next.18170561234 with template version 2, the taker side done inside
+  https://blaze.xo.cash/ and recorded, so a reader can watch the tool join, pay and sign without running anything.
+- 02:20 to 02:57: new disposable chipnet account in the tool (Playwright Chromium, kept profile), template version 2 imported,
+  Receive and Change defaults set to `Wallet (P2PKH)` as in browser1. Receive address
+  `bchtest:qqv4d3ttmyarhxnuyl0yzdsrfsa2umrmmvfgj3zmwr`. The receive dialog said `Creating a receive address…` for more
+  than 2.5 seconds before the address appeared; the script now waits up to 60 seconds.
+- The tool's start page (https://blaze.xo.cash/) is the account screen, which shows the account's phrase. The first
+  setup script printed that page's text to a local, git-ignored log; the log and a screenshot of it were deleted and
+  page text is no longer printed. The account is a chipnet throwaway. The recordings start on that page too, so each
+  script first clicks "Home" and checks that the account screen is gone, and the clip is cut from the first step mark.
+- 02:33 `npx tsx scripts/run.ts open browser2`: offer `0b712fdf...d93e` broadcast and `browser2-open.json` saved, then
+  the process exited with an unhandled rejection whose stack ended in `subscribeToDoublespendUpdates`
+  (`@electrum-cash/protocol`), as for the browser1 token transfer on 18 November. `npx tsx scripts/run.ts fill-start
+  browser2` then completed normally.
+- Funding from the project's taker (the plan's choice; browser1 had used the maker): `send.ts taker <address> tokens 1000
+  browser2` broadcast `d8a5128b...f47d` (03:02, one coin of 800 sat with the 1000 units). The first `send.ts taker
+  <address> sats 30000 browser2` was stopped by its 200 second timeout with no output and no broadcast (the address
+  held only the token coin afterwards); the second try with 400 seconds broadcast `8892eb73...87cd` (03:10) in 100
+  seconds. The host was heavily loaded during this run.
+- Recorded taker session, 03:16 to 03:20 (236 seconds of steps): "Join Invitation" with `browser2-fill-start.json`,
+  "View invitation", role `Taker`, "Accept invitation", "Add to invitation"; the address as `takerLockingScript`;
+  "Set up output" twice (payment to maker 1000 sat with 1000 tokens, payout to taker 20000 sat); "Add input",
+  "Select all" (the 30000 sat coin and the 800 sat token coin); "Add change" (28960 sat, 840 sat estimated fee);
+  "Sign", "Generate selected (2)", "Append to invitation"; "Copy invitation" (7371 bytes), saved as
+  `browser2-fill-taken.json` through the XO utils (10 commits). The tool then read "You have signed 2 inputs."
+- 03:23 `npx tsx scripts/run.ts fill-finish browser2` broadcast fill `c145510b...c195` and saved `browser2-fill.json`,
+  then exited with `Error: The server answered 'blockchain.transaction.subscribe' with a status that is not the shape the protocol defines.`
+  Both chipnet Electrum servers knew the fill at once (0 confirmations).
+- Second recording, 03:38 to 03:40: "Update invitation" with `browser2-fill.json` previewed "Stored commits 10,
+  Incoming commits 11, New commits 1 (to append)", "Apply update" showed `COMPLETED` and "1000 tokens paid to the maker
+  for 20000 satoshis."; "Inspect" on chipnet with the fill txid reported `SUCCESS` (input 0, 20000 sats). The first try
+  of this script found no "Home" button within 30 seconds (the page stayed on the account screen); loading /home
+  directly worked.
+- Checks: https://chipnet.imaginary.cash/ did not answer (`curl` code 000 after 25 s). All four browser2 txids were
+  opened on https://explorer.selene.cash/tx/<txid>?network=chipnet at 03:35 and 03:36 and found in the page; only then
+  were the rows written as `ok`.
+- Clip: 16 segments around the step marks of the two recordings (2 or 3 seconds each, waiting cut out), a short
+  English label on each, 15 fps, 1280x800, H.264 without audio: `taker-clip.mp4` 33.3 s, 699741 bytes;
+  `taker-clip.gif` 960 px wide, 8 fps, 2828302 bytes; poster `taker-clip.png` from the completed view. All 33 frames at
+  one per second were looked at: no phrase, no account creation or Settings screen, no other tab; the only key
+  material shown is the public `tpub` entity id the tool prints for each commit.
+- Submitted invitation is now `browser2-fill.json` instead of `browser1-fill.json`: same flow, but the current engine
+  and template version 2 (with expire), and its taker side can be watched in the clip.
+- Time: about 2 hours, most of it waiting for browser slots on the shared host (each browser call waited up to 8 minutes).
+- `npx tsx scripts/used-templates.ts --write` (no new template id) and `npx tsx scripts/runs-table.ts --write` (4 rows).

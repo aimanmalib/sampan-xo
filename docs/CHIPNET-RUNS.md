@@ -47,6 +47,10 @@ opened on a public chipnet explorer (https://chipnet.imaginary.cash/tx/). Invita
 | 2026-11-20 00:58 | run5 | open | 70e14b031f3571ac477fc2634b6517f60f6bcad5374b53daa4634c4141dc1545 | invitations/run5-open.json | ok |
 | 2026-11-20 01:00 | run5 | fill | 565cc19f701d41f6dae8fe48b0a0de0ed7fae492b45c7610e47549d336ca8103 | invitations/run5-fill.json | ok |
 | 2026-11-20 01:14 | run6 | cancel | 2670cc505471e5692f37ba7c1bd05bc38b92d44e7d9ac2e9fc8e8e49083fd355 | invitations/run6-cancel.json | ok |
+| 2026-11-20 02:33 | browser2 | open | 0b712fdf8958d3df4f6904dfb266f7d9c0919f906aca80b2850726551186d93e | invitations/browser2-open.json | ok |
+| 2026-11-20 03:02 | browser2 | fund | d8a5128b774cb28693466d59141ed78930c159d6472cb14f1e7102c76dd6f47d | invitations/browser2-fund-tokens.json | ok |
+| 2026-11-20 03:10 | browser2 | fund | 8892eb73414c3f1816cbe671e809dea5d44bb2924055f03fdb29b1f64ada87cd | invitations/browser2-fund-sats.json | ok |
+| 2026-11-20 03:23 | browser2 | fill | c145510b5a1080e6e48755b7cd7bb08d6551cd6483c49d1b38832cb9b072c195 | invitations/browser2-fill.json | ok |
 
 run2 is the open -> cancel run: the offer opened at 19:30 was cancelled by the maker at 19:56. The fill steps in between are saved as `<run>-fill-start.json` (maker adds
 the offer coin) and `<run>-fill-taken.json` (taker adds the payment and signs).
@@ -111,3 +115,12 @@ mistake: `run.ts open run5` was run first and then `run.ts fill run5`, which ope
 still in the maker's engine and was exported again as `run6-open.json`; the maker then cancelled it, and output 0 of the
 cancel returns 19500 sat (20000 offered, 500 fee) to the maker. All four rows were opened on
 https://explorer.selene.cash/ (chipnet) between 01:04 and 01:24 on 2026-11-20; https://chipnet.imaginary.cash/ did not answer.
+
+browser2 repeats browser1 on engine 0.1.1-next.18170561234 with template version 2 (`8f0fb78d...712e`), and the
+taker side was recorded as a video ([docs/debug-tool/swap-intent/taker-clip.mp4](debug-tool/swap-intent/taker-clip.mp4)).
+A new disposable chipnet account was created in the XO debug tool; the project's taker sent it 1000 test tokens and
+30000 sat (the two `fund` rows). The maker opened the offer and started the fill (`browser2-fill-start.json`). In the
+debug tool the taker joined, added its receiving script, both outputs, its two coins and change, signed its two inputs
+and exported the invitation (`browser2-fill-taken.json`). The maker completed the offer input and broadcast
+(`browser2-fill.json`). All four rows were opened on https://explorer.selene.cash/ (chipnet) on 2026-11-20 at 03:35 and 03:36
+UTC; https://chipnet.imaginary.cash/ did not answer.
