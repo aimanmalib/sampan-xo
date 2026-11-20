@@ -103,6 +103,20 @@ poster [taker-clip.png](swap-intent/taker-clip.png).
 | [browser2-05-completed.png](swap-intent/browser2-05-completed.png) | After "Update invitation" with the maker's final file: COMPLETED | [invitations/browser2-fill.json](../../invitations/browser2-fill.json) |
 | [browser2-06-inspect-fill.png](swap-intent/browser2-06-inspect-fill.png) | "Inspect" of the fill transaction, status SUCCESS | [c145510b5a1080e6e48755b7cd7bb08d6551cd6483c49d1b38832cb9b072c195](https://explorer.selene.cash/tx/c145510b5a1080e6e48755b7cd7bb08d6551cd6483c49d1b38832cb9b072c195?network=chipnet) |
 
+### swapmain1: open -> expire on mainnet
+
+Taken on 2026-11-20 with a new disposable `mainnet` account of the tool, after importing the version 2
+[template/swap-intent.json](../../template/swap-intent.json): "Join Invitation" and "View invitation" (not accepted) for
+both swapmain1 files, then "Inspect" on `mainnet` for both transactions. Rows are in
+[docs/MAINNET-SWAP-RUNS.md](../MAINNET-SWAP-RUNS.md).
+
+| Image | What it shows | Invitation or txid |
+|---|---|---|
+| [swapmain1-01-view-open.png](swap-intent/swapmain1-01-view-open.png) | "Join Invitation" review of the mainnet open, result `openTransaction` | [invitations/swapmain1-open.json](../../invitations/swapmain1-open.json) |
+| [swapmain1-02-view-expire.png](swap-intent/swapmain1-02-view-expire.png) | "Join Invitation" review of the expire | [invitations/swapmain1-expire.json](../../invitations/swapmain1-expire.json) |
+| [swapmain1-03-inspect-open.png](swap-intent/swapmain1-03-inspect-open.png) | "Inspect" on `mainnet`, status SUCCESS | [06e1273d217e3b2e4c4f009d1f33009f141116cc59e0abb9bb5d16f04d3ee6ba](https://blockchair.com/bitcoin-cash/transaction/06e1273d217e3b2e4c4f009d1f33009f141116cc59e0abb9bb5d16f04d3ee6ba) |
+| [swapmain1-04-inspect-expire.png](swap-intent/swapmain1-04-inspect-expire.png) | "Inspect" of the expire on `mainnet`: the offer input spent with no signature, status SUCCESS | [1a0ce51bcafda1328a2045aaadbdadb4d74486bd86672ad46e4161a767a2d511](https://blockchair.com/bitcoin-cash/transaction/1a0ce51bcafda1328a2045aaadbdadb4d74486bd86672ad46e4161a767a2d511) |
+
 ## Landing
 
 Taken on 2026-11-18 with a fresh account: import [template/landing.json](../../template/landing.json) (the

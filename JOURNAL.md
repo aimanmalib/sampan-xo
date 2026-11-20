@@ -1264,3 +1264,21 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
 - 07:20 UTC open broadcast: `06e1273d...e6ba`, invitation `invitations/swapmain1-open.json`. Both txids were found on
   https://blockchair.com/bitcoin-cash/transaction/ (API, in the mempool at 07:22 UTC). Fees so far 585 sat; locked in
   the offer 2000 sat.
+
+## 2026-11-20 08:28 UTC: mainnet run swapmain1, expire
+
+- The open `06e1273d...e6ba` was mined in block 978135 (about 07:50 UTC); block 978136 gave the second confirmation at
+  about 08:04 UTC. The funding transaction had paid the 1 sat per byte minimum, and block 978134 did not include either.
+- The first `npx tsx scripts/run.ts expire swapmain1 --network mainnet --dry-run` after that printed nothing and was
+  stopped by `timeout 500` (exit 124); no process was left. The same command run again finished in under 2 minutes.
+  Read before the broadcast: one input, the offer coin `06e1273d...e6ba:0` (2000 sat); one output, 1500 sat to the
+  maker locking script committed in the open (`76a914418c7ac8...97db88ac`); fee 500 sat; no signature (unlocking
+  `OP_1 OP_0` and the redeem script).
+- 08:27 UTC expire broadcast: `1a0ce51b...d511`, invitation `invitations/swapmain1-expire.json`. Found on
+  https://blockchair.com/bitcoin-cash/transaction/ (API) at 08:28 UTC with input `06e1273d...` and the one 1500 sat output.
+- Mainnet cost of swapmain1: 185 (fund) + 400 (open) + 500 (expire) = 1085 sat. At most 2000 sat was locked in the offer.
+- XO debug tool on a new disposable `mainnet` account: "View invitation" of both files and "Inspect" on `mainnet` of
+  both transactions; both report `MAINNET` and `SUCCESS` with "Transaction is already known on mainnet". Four images
+  `docs/debug-tool/swap-intent/swapmain1-*.png`, reduced to 128 colours, each under 110 KB.
+- To keep README.md within its 500 line limit, the short chipnet txid table under "Chipnet runs" was replaced by a
+  link to the generated table in "Runs, invitations and templates", which lists the same transactions.

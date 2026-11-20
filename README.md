@@ -1,4 +1,4 @@
-# Swap Intent: an XO template for CashTokens swaps on chipnet
+# Swap Intent: an XO template for CashTokens swaps, on chipnet and mainnet
 
 OTC offers of BCH for CashTokens without an online maker or escrow: whoever pays the wanted tokens fills the offer,
 and expired offers return to the maker without a key.
@@ -149,22 +149,8 @@ The script reads the offer coin from Electrum and refuses while it is younger. T
 the XO engine completes an input only for a coin its own account tracks, and an account without `makerKey` cannot
 rebuild the offer script to track it. A refused attempt is archived so the step can be run again.
 
-Every step accepts `--dry-run` (build and check without broadcasting). The chipnet transactions:
-
-| Run | Action | Txid |
-| --- | --- | --- |
-| run1 | open | [74fb6c7b...3b99](https://chipnet.imaginary.cash/tx/74fb6c7b5299ec2be0e0b4832ab4c4bd6837f8904505fe0905b932c0c77c3b99) |
-| run1 | fill | [326ee1c1...6862](https://chipnet.imaginary.cash/tx/326ee1c18edae7a42317c062237028150145d6f8e8cd5579baa3653e094d6862) |
-| run2 | open | [66b0a6d5...8d85](https://chipnet.imaginary.cash/tx/66b0a6d5cb7b263e960bfa4ed9d9c8ec3952501dc4d7ae3f8a22edcaa2768d85) |
-| run2 | cancel | [8472ca5d...e110](https://chipnet.imaginary.cash/tx/8472ca5d982bff800fa471f0811b5c9a3af597c96b8dd0e73d555a7ed44de110) |
-| run3 | open | [c96a9289...88ce](https://chipnet.imaginary.cash/tx/c96a928911e301a808859080fbd842004ab47e79992f63023110a5f3884388ce) |
-| run3 | fill | [f6d03597...a7a2](https://chipnet.imaginary.cash/tx/f6d0359759159ac189383ea76155d2bc7dad63d153c67f95ca9162df6ab0a7a2) |
-| browser1 | open | [7f3896ae...1101](https://chipnet.imaginary.cash/tx/7f3896aed87a94eb1b9dee9dd938f5c6567ad97766cca8a702af2a8e54151101) |
-| browser1 | fill | [f9215922...18a6](https://chipnet.imaginary.cash/tx/f92159229f9ec6b3b55feeb43ffc48cd67e297075d259671c8d6d41a71c118a6) |
-| run4 | open | [d76f3c9f...f367](https://chipnet.imaginary.cash/tx/d76f3c9f2a190dcddd8c0c28dae338d0fc5f69ecb48d0d1195faa2dc11ecf367) |
-| run4 | expire | [4d92f782...5f48](https://chipnet.imaginary.cash/tx/4d92f782949444f9751ce3dcbd685696319f474f129893fc617f5792f5b35f48) |
-
-run5 (open -> fill), run6 (open -> cancel) and browser2 are listed in the table further down. The saved invitations are in
+Every step accepts `--dry-run` (build and check without broadcasting). Every transaction of every run, with its
+invitation and template, is in [Runs, invitations and templates](#runs-invitations-and-templates). The saved invitations are in
 [invitations/](invitations/); the full list, failures included, is in [docs/CHIPNET-RUNS.md](docs/CHIPNET-RUNS.md).
 Each invitation names its template by id; the exact template is in `template/used/<id>.json`. The id is the one the
 XO engine computes (sha256 of the serialized template); `npx tsx scripts/used-templates.ts --check` confirms that every
@@ -173,6 +159,16 @@ invitation has its file and that each file hashes to its own name.
 One exception: the P2PKH wallet template of `@xo-cash/templates` (`a31eb858...c672`, the fund invitations) has a public
 example private key in its test scenario, replaced by a placeholder in the stored copy. That file is checked against the
 package export with the same replacement, and the unchanged export must hash to the file's name.
+
+### Swap Intent on mainnet
+
+One minimum mainnet run, `swapmain1`: `open` (2000 sat, `expireAfter` 2 blocks, values in `config/mainnet-swap.json`,
+limits in `src/swap-network.ts`, which also refuses `fill` on mainnet), then the keyless `expire`, which returned 1500 sat
+to the same maker account. No token was created on mainnet, so no fill ran. All mainnet fees of the run were 1085 sat.
+Rows: [docs/MAINNET-SWAP-RUNS.md](docs/MAINNET-SWAP-RUNS.md); open
+[06e1273d...e6ba](https://blockchair.com/bitcoin-cash/transaction/06e1273d217e3b2e4c4f009d1f33009f141116cc59e0abb9bb5d16f04d3ee6ba),
+expire [1a0ce51b...d511](https://blockchair.com/bitcoin-cash/transaction/1a0ce51bcafda1328a2045aaadbdadb4d74486bd86672ad46e4161a767a2d511);
+screenshots: [docs/debug-tool/](docs/debug-tool/README.md#swapmain1-open---expire-on-mainnet).
 
 ## Runs, invitations and templates
 
@@ -220,6 +216,7 @@ transactions without an invitation (token mint, plain deposits) and failed attem
 | mainnet | mainnet1 | land | [7307ceebe247f57b177f8dbcb69cad97a3a05055712d74934b65f0713551b8ef](https://blockchair.com/bitcoin-cash/transaction/7307ceebe247f57b177f8dbcb69cad97a3a05055712d74934b65f0713551b8ef) | [invitations/mainnet1-land.json](invitations/mainnet1-land.json) | [template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json](template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json) |
 | mainnet | mainnet1 | giveBack | [80387030d47911bb9fa144892cf853a61cb3e4e8bc5f3ce948e78e99e67ca8d8](https://blockchair.com/bitcoin-cash/transaction/80387030d47911bb9fa144892cf853a61cb3e4e8bc5f3ce948e78e99e67ca8d8) | [invitations/mainnet1-giveBack.json](invitations/mainnet1-giveBack.json) | [template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json](template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json) |
 | mainnet | swapmain1 | open | [06e1273d217e3b2e4c4f009d1f33009f141116cc59e0abb9bb5d16f04d3ee6ba](https://blockchair.com/bitcoin-cash/transaction/06e1273d217e3b2e4c4f009d1f33009f141116cc59e0abb9bb5d16f04d3ee6ba) | [invitations/swapmain1-open.json](invitations/swapmain1-open.json) | [template/used/8f0fb78d266c54d77852910b1ed8fb3772a1a7cd625dde6b548a247f9896712e.json](template/used/8f0fb78d266c54d77852910b1ed8fb3772a1a7cd625dde6b548a247f9896712e.json) |
+| mainnet | swapmain1 | expire | [1a0ce51bcafda1328a2045aaadbdadb4d74486bd86672ad46e4161a767a2d511](https://blockchair.com/bitcoin-cash/transaction/1a0ce51bcafda1328a2045aaadbdadb4d74486bd86672ad46e4161a767a2d511) | [invitations/swapmain1-expire.json](invitations/swapmain1-expire.json) | [template/used/8f0fb78d266c54d77852910b1ed8fb3772a1a7cd625dde6b548a247f9896712e.json](template/used/8f0fb78d266c54d77852910b1ed8fb3772a1a7cd625dde6b548a247f9896712e.json) |
 <!-- runs-table:end -->
 
 ## Open a saved invitation in the XO debug tool
@@ -282,7 +279,8 @@ signed and exported its part of the fill; browser2 is recorded in
 - The cancel fee is a fixed template constant (`cancelFeeSatoshis`, 500 satoshis).
 - `Engine.stop()` did not always settle during the chipnet runs, so the scripts wait at most
   `swap.engineStopTimeoutSeconds` for it and then exit.
-- Chipnet test wallets only. The code has not been reviewed for use with real funds.
+- Chipnet test wallets, plus one minimum mainnet run (`swapmain1`, 2000 sat, open and expire). The code has not been
+  reviewed for use with real funds.
 
 ## Migrate to XO
 

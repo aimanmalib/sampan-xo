@@ -52,6 +52,16 @@ Every txid is an `ok` row in [docs/CHIPNET-RUNS.md](docs/CHIPNET-RUNS.md), which
 | fill from the debug tool, recorded (browser2) | open | 0b712fdf8958d3df4f6904dfb266f7d9c0919f906aca80b2850726551186d93e | [invitations/browser2-open.json](invitations/browser2-open.json) | [template/used/8f0fb78d266c54d77852910b1ed8fb3772a1a7cd625dde6b548a247f9896712e.json](template/used/8f0fb78d266c54d77852910b1ed8fb3772a1a7cd625dde6b548a247f9896712e.json) |
 | | fill | c145510b5a1080e6e48755b7cd7bb08d6551cd6483c49d1b38832cb9b072c195 | [invitations/browser2-fill.json](invitations/browser2-fill.json) | same as browser2 open |
 
+One minimum run on mainnet (`swapmain1`, 2000 sat, rows in [docs/MAINNET-SWAP-RUNS.md](docs/MAINNET-SWAP-RUNS.md)):
+
+| Flow | Action | Txid | Invitation | Template |
+| --- | --- | --- | --- | --- |
+| open -> expire on mainnet (swapmain1) | open | 06e1273d217e3b2e4c4f009d1f33009f141116cc59e0abb9bb5d16f04d3ee6ba | [invitations/swapmain1-open.json](invitations/swapmain1-open.json) | [template/used/8f0fb78d266c54d77852910b1ed8fb3772a1a7cd625dde6b548a247f9896712e.json](template/used/8f0fb78d266c54d77852910b1ed8fb3772a1a7cd625dde6b548a247f9896712e.json) |
+| | expire | 1a0ce51bcafda1328a2045aaadbdadb4d74486bd86672ad46e4161a767a2d511 | [invitations/swapmain1-expire.json](invitations/swapmain1-expire.json) | same as swapmain1 open |
+
+The maker got 1500 sat back with no key; all mainnet fees of the run were 1085 sat. Mainnet explorer:
+`https://blockchair.com/bitcoin-cash/transaction/<txid>`.
+
 Explorers: `https://chipnet.imaginary.cash/tx/<txid>` or `https://explorer.selene.cash/tx/<txid>`.
 run1 is an earlier open -> fill with the same template as run3. run1 to run4 and browser1 used `@xo-cash/engine`
 0.1.1-next.18029697917; run5, run6 (open -> cancel) and browser2 used 0.1.1-next.18170561234, the `next` tag on
@@ -101,4 +111,4 @@ The last command refuses until the offer is `swap.expireAfterBlocks` blocks old 
 
 The covenant checks one output, so there are no partial fills. Through the XO engine only the maker's account tracks
 the offer coin, so a fill is interactive (the maker adds the offer input) and the keyless expire is built by the
-maker's account. Chipnet test wallets only. The full list is in the [README](README.md#known-limits).
+maker's account. Chipnet test wallets, plus the one minimum mainnet run above. The full list is in the [README](README.md#known-limits).

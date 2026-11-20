@@ -1,0 +1,112 @@
+{
+  "invitationIdentifier": "13499892ee6de540032c4ca0f19ff763",
+  "templateIdentifier": "8f0fb78d266c54d77852910b1ed8fb3772a1a7cd625dde6b548a247f9896712e",
+  "actionIdentifier": "expire",
+  "createdAtTimestamp": 1795163293968,
+  "commits": [
+    {
+      "commitIdentifier": "b64dd9cc0a2cc6468bed14e834288a47",
+      "createdAtTimestamp": 1795163293969,
+      "data": {},
+      "expiresAtTimestamp": 1795181293968,
+      "signature": "fba086f64e24b46b500b59711a5cdd7427ebc24a85cece7c94ef83c36e5196eac1d7c19c62a7e1c5fbb4d00e1121777a62ea495c9e4360853cc3bc7811f6738e",
+      "entityIdentifier": "xpub6EzdumzSh4agzrGJiz9NDmRiv9bpf3kmtHe2mGgB9KWGVkrJjNGHMHtj926ZH9FgFVmoU1c6cQfb9Y376WmTULxx2rxJ1AYeRQJms3hzMdT"
+    },
+    {
+      "commitIdentifier": "828963bf5080b2ad4f7b0b42ab612d39",
+      "previousCommitIdentifier": "b64dd9cc0a2cc6468bed14e834288a47",
+      "createdAtTimestamp": 1795163294270,
+      "data": {
+        "variables": [
+          {
+            "variableIdentifier": "offeredSatoshis",
+            "value": "<bigint: 2000n>"
+          },
+          {
+            "variableIdentifier": "wantedCategory",
+            "value": "2469acc5afa4b10cb5b5c04afb89c3a3ffd61c5da9c01e26d00951cae2a02544"
+          },
+          {
+            "variableIdentifier": "wantedAmount",
+            "value": "<bigint: 1000n>"
+          },
+          {
+            "variableIdentifier": "makerLockingScript",
+            "value": "76a914418c7ac80d163f24e104bcfcecc12529c17297db88ac"
+          },
+          {
+            "variableIdentifier": "expireAfter",
+            "value": "<bigint: 2n>"
+          },
+          {
+            "variableIdentifier": "expireFeeSatoshis",
+            "value": "<bigint: 500n>"
+          }
+        ],
+        "inputs": [
+          {
+            "inputIdentifier": "expireInput",
+            "transactionIndex": 0,
+            "outpointTransactionHash": "<uint8array: 06e1273d217e3b2e4c4f009d1f33009f141116cc59e0abb9bb5d16f04d3ee6ba>",
+            "outpointIndex": 0,
+            "sequenceNumber": 2
+          }
+        ]
+      },
+      "expiresAtTimestamp": 1795181294270,
+      "signature": "18272b2d7bb842649a114906869aafc626c57d509ae9df08aa38fa3896244c161b2bd2218483e155ef52b0fbf225ae685ac6e4940f810aab46c1055bd9871d47",
+      "entityIdentifier": "xpub6EzdumzSh4agzrGJiz9NDmRiv9bpf3kmtHe2mGgB9KWGVkrJjNGHMHtj926ZH9FgFVmoU1c6cQfb9Y376WmTULxx2rxJ1AYeRQJms3hzMdT"
+    },
+    {
+      "commitIdentifier": "0e8c812a5254bb60f3550d700e6a3790",
+      "previousCommitIdentifier": "828963bf5080b2ad4f7b0b42ab612d39",
+      "createdAtTimestamp": 1795163295049,
+      "data": {
+        "outputs": [
+          {
+            "outputIdentifier": "expireOutput",
+            "transactionIndex": 0,
+            "roleIdentifier": "expirer",
+            "lockingBytecode": "<uint8array: 76a914418c7ac80d163f24e104bcfcecc12529c17297db88ac>"
+          }
+        ],
+        "roleIdentifier": "expirer"
+      },
+      "expiresAtTimestamp": 1795181295049,
+      "signature": "ab9e5c2d6cc3351f7306d91dcb3858ddc49661a58480d9627454596ad08cca302e73afc814206eec0dea50a758c6f6180ce040094816e52ff693e13d230028d3",
+      "entityIdentifier": "xpub6EzdumzSh4agzrGJiz9NDmRiv9bpf3kmtHe2mGgB9KWGVkrJjNGHMHtj926ZH9FgFVmoU1c6cQfb9Y376WmTULxx2rxJ1AYeRQJms3hzMdT"
+    },
+    {
+      "commitIdentifier": "491d3ad2e133117287351929ab858595",
+      "previousCommitIdentifier": "0e8c812a5254bb60f3550d700e6a3790",
+      "createdAtTimestamp": 1795163296762,
+      "data": {
+        "inputs": [
+          {
+            "mergesWith": {
+              "commitIdentifier": "828963bf5080b2ad4f7b0b42ab612d39",
+              "itemIndex": 0
+            },
+            "unlockingBytecode": "<uint8array: 51004c9b63c0cd1976a914418c7ac80d163f24e104bcfcecc12529c17297db88ac88c0d1bc202469acc5afa4b10cb5b5c04afb89c3a3ffd61c5da9c01e26d00951cae2a0254488c0d302e803a2676352b275c3519dc4519d00cd1976a914418c7ac80d163f24e104bcfcecc12529c17297db88ac8800d1008800cc02d00702f40194a26776a914518feab9a6a23a415dee333bb2e3d03cd2f2612e88ac6868>"
+          }
+        ]
+      },
+      "expiresAtTimestamp": 1795181296762,
+      "signature": "fad3be5ab2f36bbe4cdf4f707c58edf53dc6bc1038b9c3200b39249ccd84b6a2742fd6a9607a34348afba3c45eae80a062a4676bf074bfa722f8fa714fdcfe14",
+      "entityIdentifier": "xpub6EzdumzSh4agzrGJiz9NDmRiv9bpf3kmtHe2mGgB9KWGVkrJjNGHMHtj926ZH9FgFVmoU1c6cQfb9Y376WmTULxx2rxJ1AYeRQJms3hzMdT"
+    }
+  ],
+  "result": {
+    "transactions": {
+      "expireTransaction": {
+        "transactionHash": "1a0ce51bcafda1328a2045aaadbdadb4d74486bd86672ad46e4161a767a2d511",
+        "createdAtTimestamp": 1795163297767,
+        "createdByEntityIdentifier": "xpub6EzdumzSh4agzrGJiz9NDmRiv9bpf3kmtHe2mGgB9KWGVkrJjNGHMHtj926ZH9FgFVmoU1c6cQfb9Y376WmTULxx2rxJ1AYeRQJms3hzMdT",
+        "createdBySignature": "27bb4f44945f5a4a937540fb562c10492976f2153848fa6b984cf921aedb81f2e4ab9bea2bbe41345fb98477057bffac611cf98660e90fc76765a4528331e7ac",
+        "broadcastedAtTimestamp": 1795163300466,
+        "broadcastedByEntityIdentifier": "xpub6EzdumzSh4agzrGJiz9NDmRiv9bpf3kmtHe2mGgB9KWGVkrJjNGHMHtj926ZH9FgFVmoU1c6cQfb9Y376WmTULxx2rxJ1AYeRQJms3hzMdT",
+        "broadcastedBySignature": "8f9883f45914655e642e640624e5e7bf702d6a752c75dea88187d7593e14ce2a59f5d9638cac438f4874557c0c666e7e48b91367d0957b595bddc38cda829a38"
+      }
+    }
+  }
+}
