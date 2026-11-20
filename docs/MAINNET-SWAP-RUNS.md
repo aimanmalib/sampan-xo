@@ -10,3 +10,5 @@ public mainnet explorer (https://blockchair.com/bitcoin-cash/transaction/). Invi
 
 | Date (UTC) | Run | Action | Txid | Invitation | Result |
 | --- | --- | --- | --- | --- | --- |
+| 2026-11-20 07:19 | swapmain1 | fund | fde04dc1d9ad0179595ad50950448793f3a5d0c0b6490bcece32a972621d855f | - | ok |
+| 2026-11-20 07:20 | swapmain1 | open | 06e1273d217e3b2e4c4f009d1f33009f141116cc59e0abb9bb5d16f04d3ee6ba | invitations/swapmain1-open.json | ok |

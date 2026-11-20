@@ -1249,3 +1249,18 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
   `4d92f782...5f48`, run5 fill `565cc19f...8103`, browser1 fill `f9215922...18a6`, browser2 fill `c145510b...c195`.
 - Style check of README.md and BUILD-WITH-XO.md: BUILD-WITH-XO.md passed; README.md only flagged the capitals of
   `SUCCESS` (the tool's own status word) and `FEEDBACK` (the file name), both left as they are.
+
+## 2026-11-20 07:19 UTC: mainnet run swapmain1, fund and open
+
+- The shared test wallet sent 4000 sat to the payer funding address (tx `8bedb5eb...`). 07:18 UTC
+  `npx tsx scripts/wallets.ts balance --network mainnet`: payer `confirmed=4000 unconfirmed=0`.
+- `npx tsx scripts/deposit.ts payer --network mainnet --dry-run`: one input, fee 185 sat, 3815 sat to the payer's
+  engine wallet. The engine logged `Failed to process transaction update: AggregateError: All promises were rejected`
+  several times during sync, as on earlier runs; the deposit was still built.
+- 07:19 UTC deposit broadcast, accepted by bch.imaginary.cash and bch.loping.net: `fde04dc1...855f`, row `fund`.
+- 07:20 UTC `npx tsx scripts/run.ts open swapmain1 --network mainnet --dry-run` read before the broadcast: input
+  `fde04dc1...855f:0` (3815 sat); output 0, 2000 sat to the offer P2SH32 address (bytecode `aa20c90e...fdae9487`);
+  output 1, 1415 sat change to the payer's engine P2PKH address; fee 400 sat. The values match `config/mainnet-swap.json`.
+- 07:20 UTC open broadcast: `06e1273d...e6ba`, invitation `invitations/swapmain1-open.json`. Both txids were found on
+  https://blockchair.com/bitcoin-cash/transaction/ (API, in the mempool at 07:22 UTC). Fees so far 585 sat; locked in
+  the offer 2000 sat.
