@@ -14,26 +14,32 @@
  *   npx tsx scripts/run.ts --help              prints the usage line
  *
  * Add --dry-run to build and check without broadcasting; the step's invitation is then archived so its coins are
- * released, and only the steps before the broadcast write their file.
+ * released, and only the steps before the broadcast write their file. A dry run prints the outputs it built.
+ *
+ * Add --network mainnet for the one minimum mainnet run: steps open, expire and cancel only, run names swapmain<n>,
+ * values from config/mainnet-swap.json (limits in src/swap-network.ts), the MAINNET_PAYER phrase as the maker.
  */
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import type { XOInvitation } from '@xo-cash/types';
-import { loadConfig, type AccountName } from '../src/config.js';
+import type { AccountName } from '../src/config.js';
 import { readMnemonic } from '../src/env.js';
 import { loadInvitation, saveInvitation } from '../src/invitation-file.js';
 import { cancelOffer } from '../src/swap-cancel.js';
 import { expireOffer, locateOffer } from '../src/swap-expire.js';
 import { finishFill, startFill, takeFill } from '../src/swap-fill.js';
+import { parseNetworkArg, withoutNetworkArg } from '../src/landing-network.js';
 import { openOffer } from '../src/swap-open.js';
+import { checkSwapStep, describeOutputs, loadSwapRunConfig, swapAccount } from '../src/swap-network.js';
 import { startAccountEngine, stopAccountEngine, type AccountEngine } from '../src/xo-engine.js';
 
 const envPath = fileURLToPath(new URL('../.env', import.meta.url));
-const config = loadConfig();
-const [step, run, flag] = process.argv.slice(2);
+const network = parseNetworkArg(process.argv.slice(2));
+const config = loadSwapRunConfig(network);
+const [step, run, flag] = withoutNetworkArg(process.argv.slice(2));
 const broadcast = flag !== '--dry-run';
 
-type Outcome = { invitation: XOInvitation; transactionHash?: string };
+type Outcome = { invitation: XOInvitation; transactionHash?: string; serializedTransaction?: string };
 type Step = { account: AccountName; reads?: string; writes: string; act: (account: AccountEngine, previous?: XOInvitation) => Promise<Outcome> };
 const steps: Record<string, Step> = {
   open: { account: 'maker', writes: 'open', act: (account) => openOffer(account, config, broadcast) },
@@ -62,7 +68,7 @@ const steps: Record<string, Step> = {
 };
 
 // The whole open -> fill flow; each step is a separate process, as two separate parties would run it.
-if (step === 'fill' && run !== undefined && flag === undefined) {
+if (step === 'fill' && run !== undefined && flag === undefined && network === 'chipnet') {
   for (const part of ['open', 'fill-start', 'fill-take', 'fill-finish']) {
     console.log(`== ${part}`);
     const child = spawnSync(process.execPath, [...process.execArgv, fileURLToPath(import.meta.url), part, run], { stdio: 'inherit' });
@@ -71,7 +77,8 @@ if (step === 'fill' && run !== undefined && flag === undefined) {
   process.exit(0);
 }
 
-const usage = `usage: run.ts ${Object.keys(steps).join('|')} <run> [--dry-run]  or  run.ts fill <run>`;
+const usage = `usage: run.ts ${Object.keys(steps).join('|')} <run> [--dry-run]  or  run.ts fill <run>
+       run.ts open|expire|cancel swapmain<n> --network mainnet [--dry-run]`;
 if (step === '--help' || step === '-h') {
   console.log(usage);
   process.exit(0);
@@ -82,13 +89,25 @@ if (selected === undefined || run === undefined || (flag !== undefined && flag !
   console.error(usage);
   process.exit(2);
 }
+try {
+  checkSwapStep(step!, run, network);
+} catch (error) {
+  console.error(`${String(error)}\n${usage}`);
+  process.exit(2);
+}
 
 const previous = selected.reads === undefined ? undefined : loadInvitation(run, selected.reads);
-const account = await startAccountEngine(selected.account, readMnemonic(selected.account, envPath), config);
+const accountName = swapAccount(selected.account, network);
+const account = await startAccountEngine(accountName, readMnemonic(accountName, envPath, network), config);
 try {
   const outcome = await selected.act(account, previous);
   if (outcome.transactionHash !== undefined) {
-    console.log(`${step} ${broadcast ? 'broadcast' : 'built (dry run)'} txid ${outcome.transactionHash}`);
+    console.log(`${step} ${broadcast ? 'broadcast' : 'built (dry run)'} txid ${outcome.transactionHash} on ${network}`);
+  }
+  // A dry run prints what it built, so the outputs can be checked before the real broadcast.
+  if (!broadcast && outcome.serializedTransaction !== undefined) {
+    for (const line of describeOutputs(outcome.serializedTransaction, config.addressPrefix)) console.log(line);
+    console.log(`transaction ${outcome.serializedTransaction}`);
   }
   if (broadcast || outcome.transactionHash === undefined) console.log(`saved ${saveInvitation(outcome.invitation, run, selected.writes)}`);
 } finally {

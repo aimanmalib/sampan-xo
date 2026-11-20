@@ -51,7 +51,7 @@ export interface OfferCoin {
  * Finds the unspent offer coin of an open invitation through Electrum, by the offer address, with its height, so the
  * age can be checked before anything is built. The engine itself does not check the age of a coin.
  */
-export const locateOffer = async (open: XOInvitation, config: Pick<ChipnetConfig, 'electrumServers' | 'network' | 'addressPrefix'>): Promise<OfferCoin> => {
+export const locateOffer = async (open: XOInvitation, config: Pick<ChipnetConfig, 'electrumServers'> & { network: string; addressPrefix: string }): Promise<OfferCoin> => {
   const openHash = readOpenTransactionHash(open);
   const address = lockingBytecodeToAddress(readOfferLockingBytecode(open), config.addressPrefix);
   const client = await connectChipnet(config);

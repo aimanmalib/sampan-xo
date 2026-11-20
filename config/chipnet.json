@@ -41,7 +41,8 @@
   "runsTable": {
     "sources": [
       { "runs": "docs/CHIPNET-RUNS.md", "network": "chipnet", "explorer": "https://chipnet.imaginary.cash/tx/" },
-      { "runs": "docs/MAINNET-RUNS.md", "network": "mainnet", "explorer": "https://blockchair.com/bitcoin-cash/transaction/" }
+      { "runs": "docs/MAINNET-RUNS.md", "network": "mainnet", "explorer": "https://blockchair.com/bitcoin-cash/transaction/" },
+      { "runs": "docs/MAINNET-SWAP-RUNS.md", "network": "mainnet", "explorer": "https://blockchair.com/bitcoin-cash/transaction/" }
     ]
   }
 }

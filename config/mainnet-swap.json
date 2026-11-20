@@ -1,0 +1,10 @@
+{
+  "network": "mainnet",
+  "swap": {
+    "offeredSatoshis": 2000,
+    "expireAfterBlocks": 2,
+    "expireFeeSatoshis": 500,
+    "wantedCategory": "2469acc5afa4b10cb5b5c04afb89c3a3ffd61c5da9c01e26d00951cae2a02544",
+    "wantedAmount": "1000"
+  }
+}

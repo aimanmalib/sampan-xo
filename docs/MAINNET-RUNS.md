@@ -1,8 +1,8 @@
 # Mainnet runs
 
 Every mainnet transaction made for this repository, failures included. There is one minimum Landing run, `mainnet1`
-(land, then giveBack to the owner account), with the limits checked in `src/landing-network.ts`; nothing else touches
-mainnet. A row is marked `ok` only after the txid was opened on a public mainnet explorer
+(land, then giveBack to the owner account), with the limits checked in `src/landing-network.ts`. The one minimum
+mainnet Swap Intent run is listed apart, in `docs/MAINNET-SWAP-RUNS.md`. A row is marked `ok` only after the txid was opened on a public mainnet explorer
 (https://blockchair.com/bitcoin-cash/transaction/). Invitations are saved under `invitations/`.
 
 | Date (UTC) | Run | Action | Txid | Invitation | Result |

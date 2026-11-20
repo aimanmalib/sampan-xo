@@ -18,6 +18,18 @@ export interface RunsRow {
   invitation: string;
 }
 
+/**
+ * Every runs list of the repository: Swap Intent and Landing on chipnet, the Landing mainnet run, the Swap Intent
+ * mainnet run. The configured sources must name each, so that no list drops out of the README table.
+ */
+export const runsLists = ['docs/CHIPNET-RUNS.md', 'docs/MAINNET-RUNS.md', 'docs/MAINNET-SWAP-RUNS.md'] as const;
+
+/** Throws with the missing names when the sources leave out one of runsLists. */
+export const checkRunsSources = (sources: RunsSource[]): void => {
+  const missing = runsLists.filter((runs) => !sources.some((source) => source.runs === runs));
+  if (missing.length > 0) throw new Error(`runsTable.sources must name ${missing.join(', ')}`);
+};
+
 export const tableStart = '<!-- runs-table:start -->';
 export const tableEnd = '<!-- runs-table:end -->';
 

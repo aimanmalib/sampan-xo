@@ -1113,3 +1113,36 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
 - README.md reached 501 lines, one over the repository's 500-line limit for it. The line near the top that copied the
   journal's first line was removed. The sentence in `## AI disclosure` ended "by hand, without AI.", which the README test
   (exact sentence) rejected; it now reads "by hand. No AI was used for it."
+
+## 2026-11-20 00:50 UTC: code for one minimum mainnet Swap Intent run
+
+- Added `config/mainnet-swap.json` (offer 2000 sat, `expireAfterBlocks` 2, `expireFeeSatoshis` 500, wanted amount
+  1000 of the Landing token category, which the offer only names and is never filled with) and `src/swap-network.ts`.
+  The code checks the limits on load: offer 546 to 5000 sat, expire fee 1 to 1000 sat and below the offer, expiry 1 to
+  12 blocks. On mainnet only `open`, `expire` and `cancel` are allowed, run names must be `swapmain<n>`, and the
+  maker is the mainnet payer account. Servers, explorers and the engine folder come from `config/mainnet.json`.
+- `scripts/run.ts` takes `--network mainnet`; chipnet stays the default and its config is used unchanged (test:
+  the chipnet run settings equal `loadConfig()`). A dry run now prints each output (satoshis, address, bytecode).
+- `docs/MAINNET-SWAP-RUNS.md` added with no rows yet; it is the third runs list in `config/chipnet.json`, and
+  `scripts/runs-table.ts` refuses a config that leaves out any of the three lists. The prose of `docs/MAINNET-RUNS.md`
+  now points to it; its table rows are unchanged.
+- Sabotage: `maxOfferedSatoshis` raised from 5000 to 50000 in `src/swap-network.ts`; the test
+  `rejects offeredSatoshis outside 546 to 5000` went red; restored.
+- Payer measured at 00:30 UTC with `npx tsx scripts/wallets.ts balance --network mainnet`: funding address 0 sat.
+  The payer's engine wallet holds one coin of 1415 sat, the change of the Landing land transaction (`7307ceeb...:1`).
+- 00:37 to 00:38 UTC mainnet dry run `npx tsx scripts/run.ts open swapmain1 --network mainnet --dry-run`: the engine
+  synced and refused, verbatim:
+  `ChangeSatoshisInsufficientError: Change satoshis insufficient for the token change outputs and the fee in invitation "f5a0fb31de7a15a7f233982e059c0c89", expected at least 280 satoshis, got -585 satoshis`
+  (1415 sat coin, 2000 sat offer). Nothing was broadcast.
+- That failed open left its invitation in the engine with the 1415 sat coin reserved. It was archived by hand at
+  00:41 UTC, after which the coin was listed as spendable again. `openOffer` (`src/swap-open.ts`) now archives its
+  invitation itself when anything fails before the transaction is built; regression test in
+  `tests/swap-run.test.ts`, red on the old code.
+- The 1415 sat coin cannot hold the offer: with the engine's change rule (dust 546 sat, about 400 sat fee for one
+  input and two outputs) the largest offer it could fund is below the 546 sat dust limit. The offer stays at 2000 sat.
+  The open funds from one coin, so a new coin has to hold the offer and both fees on its own: 2000 + 2 x 1000 = 4000
+  sat were requested from the shared test wallet for the payer address at 00:37 UTC. Its answer: `KURANG`, nothing
+  available above the wallet's reserve. The mainnet run waits for that request.
+- 00:44 UTC chipnet dry run `npx tsx scripts/run.ts open dryrun --dry-run` showed the new printout: output 0 of
+  20000 sat to the offer address (P2SH32 bytecode `aa20...87`), output 1 the change to the maker. Nothing was
+  broadcast and no invitation file was written.

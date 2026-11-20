@@ -9,7 +9,7 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadConfig } from '../src/config.js';
-import { buildRunsTable, withRunsTable } from '../src/runs-table.js';
+import { buildRunsTable, checkRunsSources, withRunsTable } from '../src/runs-table.js';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const readmePath = join(root, 'README.md');
@@ -17,7 +17,9 @@ const readmePath = join(root, 'README.md');
 const mode = process.argv[2];
 if (mode === '--write' || mode === '--check') {
   const readme = readFileSync(readmePath, 'utf8');
-  const wanted = withRunsTable(readme, buildRunsTable(root, loadConfig().runsTable.sources));
+  const { sources } = loadConfig().runsTable;
+  checkRunsSources(sources);
+  const wanted = withRunsTable(readme, buildRunsTable(root, sources));
   if (mode === '--write') {
     writeFileSync(readmePath, wanted);
     console.log('README.md: runs table written');
