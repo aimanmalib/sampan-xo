@@ -62,6 +62,29 @@ Taken on 2026-11-19 with a new disposable chipnet account: import the version 2 
 | [run4-03-inspect-open.png](swap-intent/run4-03-inspect-open.png) | "Inspect" script debugger, status SUCCESS | [d76f3c9f2a190dcddd8c0c28dae338d0fc5f69ecb48d0d1195faa2dc11ecf367](https://chipnet.imaginary.cash/tx/d76f3c9f2a190dcddd8c0c28dae338d0fc5f69ecb48d0d1195faa2dc11ecf367) |
 | [run4-04-inspect-expire.png](swap-intent/run4-04-inspect-expire.png) | "Inspect" of the expire: redeem script with the `OP_2 OP_CHECKSEQUENCEVERIFY` branch, status SUCCESS, "Transaction is already known on chipnet" | [4d92f782949444f9751ce3dcbd685696319f474f129893fc617f5792f5b35f48](https://chipnet.imaginary.cash/tx/4d92f782949444f9751ce3dcbd685696319f474f129893fc617f5792f5b35f48) |
 
+### run5: open -> fill (engine 0.1.1-next.18170561234)
+
+Taken on 2026-11-20 with a new disposable chipnet account: import the version 2 [template/swap-intent.json](../../template/swap-intent.json),
+"Join Invitation" and "View invitation" (not accepted) for both run5 files, then "Inspect" on `chipnet` for both transactions.
+
+| Image | What it shows | Invitation or txid |
+|---|---|---|
+| [run5-01-view-open.png](swap-intent/run5-01-view-open.png) | "Join Invitation" review of the open | [invitations/run5-open.json](../../invitations/run5-open.json) |
+| [run5-02-view-fill.png](swap-intent/run5-02-view-fill.png) | "Join Invitation" review of the fill: commits with role `taker`, result `fillTransaction` with the broadcast transaction hash | [invitations/run5-fill.json](../../invitations/run5-fill.json) |
+| [run5-03-inspect-open.png](swap-intent/run5-03-inspect-open.png) | "Inspect" script debugger, status SUCCESS | [70e14b031f3571ac477fc2634b6517f60f6bcad5374b53daa4634c4141dc1545](https://explorer.selene.cash/tx/70e14b031f3571ac477fc2634b6517f60f6bcad5374b53daa4634c4141dc1545?network=chipnet) |
+| [run5-04-inspect-fill.png](swap-intent/run5-04-inspect-fill.png) | "Inspect" of the fill: input 0 spends the offer through the fill branch, status SUCCESS, "Transaction is already known on chipnet" | [565cc19f701d41f6dae8fe48b0a0de0ed7fae492b45c7610e47549d336ca8103](https://explorer.selene.cash/tx/565cc19f701d41f6dae8fe48b0a0de0ed7fae492b45c7610e47549d336ca8103?network=chipnet) |
+
+### run6: open -> cancel (engine 0.1.1-next.18170561234)
+
+Taken on 2026-11-20 in the same way as run5, for both run6 files and both transactions.
+
+| Image | What it shows | Invitation or txid |
+|---|---|---|
+| [run6-01-view-open.png](swap-intent/run6-01-view-open.png) | "Join Invitation" review of the open | [invitations/run6-open.json](../../invitations/run6-open.json) |
+| [run6-02-view-cancel.png](swap-intent/run6-02-view-cancel.png) | "Join Invitation" review of the cancel | [invitations/run6-cancel.json](../../invitations/run6-cancel.json) |
+| [run6-03-inspect-open.png](swap-intent/run6-03-inspect-open.png) | "Inspect" script debugger, status SUCCESS | [cc29d1c8151b91de2a7fa899412d61686b2d25afec0f650002fb1797baba04d4](https://explorer.selene.cash/tx/cc29d1c8151b91de2a7fa899412d61686b2d25afec0f650002fb1797baba04d4?network=chipnet) |
+| [run6-04-inspect-cancel.png](swap-intent/run6-04-inspect-cancel.png) | "Inspect" of the cancel, status SUCCESS | [2670cc505471e5692f37ba7c1bd05bc38b92d44e7d9ac2e9fc8e8e49083fd355](https://explorer.selene.cash/tx/2670cc505471e5692f37ba7c1bd05bc38b92d44e7d9ac2e9fc8e8e49083fd355?network=chipnet) |
+
 ## Landing
 
 Taken on 2026-11-18 with a fresh account: import [template/landing.json](../../template/landing.json) (the

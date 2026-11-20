@@ -36,12 +36,15 @@ Every txid is an `ok` row in [docs/CHIPNET-RUNS.md](docs/CHIPNET-RUNS.md), which
 | | cancel | 8472ca5d982bff800fa471f0811b5c9a3af597c96b8dd0e73d555a7ed44de110 | [invitations/run2-cancel.json](invitations/run2-cancel.json) | same |
 | open -> expire (run4) | open | d76f3c9f2a190dcddd8c0c28dae338d0fc5f69ecb48d0d1195faa2dc11ecf367 | [invitations/run4-open.json](invitations/run4-open.json) | [template/used/8f0fb78d266c54d77852910b1ed8fb3772a1a7cd625dde6b548a247f9896712e.json](template/used/8f0fb78d266c54d77852910b1ed8fb3772a1a7cd625dde6b548a247f9896712e.json) |
 | | expire | 4d92f782949444f9751ce3dcbd685696319f474f129893fc617f5792f5b35f48 | [invitations/run4-expire.json](invitations/run4-expire.json) | same as run4 open |
+| open -> fill on engine 0.1.1-next.18170561234 (run5) | open | 70e14b031f3571ac477fc2634b6517f60f6bcad5374b53daa4634c4141dc1545 | [invitations/run5-open.json](invitations/run5-open.json) | [template/used/8f0fb78d266c54d77852910b1ed8fb3772a1a7cd625dde6b548a247f9896712e.json](template/used/8f0fb78d266c54d77852910b1ed8fb3772a1a7cd625dde6b548a247f9896712e.json) |
+| | fill | 565cc19f701d41f6dae8fe48b0a0de0ed7fae492b45c7610e47549d336ca8103 | [invitations/run5-fill.json](invitations/run5-fill.json) | same as run5 open |
 | fill from the debug tool (browser1) | open | 7f3896aed87a94eb1b9dee9dd938f5c6567ad97766cca8a702af2a8e54151101 | [invitations/browser1-open.json](invitations/browser1-open.json) | [template/used/c4f2cf9439468e95f8a43852b2c874d336ebb082652467766ed4cf03275aa456.json](template/used/c4f2cf9439468e95f8a43852b2c874d336ebb082652467766ed4cf03275aa456.json) |
 | | fill | f92159229f9ec6b3b55feeb43ffc48cd67e297075d259671c8d6d41a71c118a6 | [invitations/browser1-fill.json](invitations/browser1-fill.json) | same |
 
 Explorers: `https://chipnet.imaginary.cash/tx/<txid>` or `https://explorer.selene.cash/tx/<txid>`.
-run1 is an earlier open -> fill with the same template; all runs are in the
-[README](README.md#runs-invitations-and-templates).
+run1 is an earlier open -> fill with the same template as run3. run1 to run4 and browser1 used `@xo-cash/engine`
+0.1.1-next.18029697917; run5, and run6 (open -> cancel), used 0.1.1-next.18170561234, the `next` tag on
+20 November. All runs are in the [README](README.md#runs-invitations-and-templates).
 
 ## Screenshots of the XO debug tool
 
