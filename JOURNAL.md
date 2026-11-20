@@ -1093,3 +1093,20 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
   `npx tsx scripts/landing-run.ts --help` rc 0.
 - Style check on a temporary copy: first run flagged the capitalised word "SUCCESS" (the debug tool's status text); it
   is now written as code, `SUCCESS`, and the second run passed.
+
+## 2026-11-20 00:20 UTC: hero block and flow diagram for README and BUILD-WITH-XO.md
+
+- Added `docs/swap-intent-flow.svg`, a hand-written static SVG (2897 bytes, viewBox 720 x 520, opaque white
+  background, system fonts, smallest text 20 units, `<title>` and `<desc>`, `role="img"`, no script, no external fonts or
+  images). It shows `open` (the maker locks BCH in an offer output that names the wanted tokens) and the three ways out:
+  `fill` (no maker key), `cancel` (maker key) and `expire` (after `expireAfter` blocks, anyone, no key).
+- README.md and BUILD-WITH-XO.md now open with the same block under the title: one 30-word sentence, the diagram, and
+  the line `New project. First commit after the 14 November start: ...`. The first commit was measured with
+  `git log --reverse --format='%H %cI' | sed -n 1p`: `1ac2691e4c699dcc3563fafcd2815bf6eadd6b94 2026-11-14T17:40:48+00:00`.
+  The README already had this note in a slightly different form; it was replaced, not repeated.
+- In BUILD-WITH-XO.md the `Submitted invitation:` line now follows the hero block.
+- The commit link answers 404 until the repository is public.
+- Rendered the diagram in WebKit inside an HTML page with a dark background, at 375 and 1280 pixels wide: all text
+  readable, nothing overlaps or is cut off, no horizontal scroll (`scrollWidth` 375 of 375).
+- Style check on temporary copies: BUILD-WITH-XO.md passed. README.md flagged two capitalised words that were already
+  there before this change, the file name `FEEDBACK.md` and "SUCCESS" in the Landing section; both were left as they are.

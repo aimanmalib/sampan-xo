@@ -1,5 +1,12 @@
 # Build with XO: Swap Intent
 
+OTC offers of BCH for CashTokens without an online maker or escrow: whoever pays the wanted tokens fills the offer,
+and expired offers return to the maker without a key.
+
+![Swap Intent: open, then fill, cancel or expire](docs/swap-intent-flow.svg)
+
+New project. First commit after the 14 November start: [1ac2691](https://github.com/aimanmalib/sampan-xo/commit/1ac2691e4c699dcc3563fafcd2815bf6eadd6b94) (2026-11-14 17:40 UTC).
+
 Submitted invitation: `invitations/browser1-fill.json`
 
 That invitation is the fill of run `browser1`: the maker side was built by `@xo-cash/engine` in this repository, the

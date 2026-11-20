@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 520" width="720" height="520" role="img" aria-labelledby="t d">
+  <title id="t">Swap Intent: open, then fill, cancel or expire</title>
+  <desc id="d">The maker opens an offer by locking BCH in an offer output that names the tokens it wants. Three ways out: fill, where a taker pays the wanted tokens to the maker at the same output index and takes the BCH with no maker signature; cancel, where the maker signs with its key; expire, where after expireAfter blocks anyone can send the BCH back to the maker with no key.</desc>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0 0L10 5L0 10z" fill="#1b1f24"/>
+    </marker>
+  </defs>
+  <rect x="1" y="1" width="718" height="518" rx="14" fill="#ffffff" stroke="#c7ccd4" stroke-width="2"/>
+  <g font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" fill="#1b1f24" font-size="20">
+    <rect x="150" y="20" width="420" height="124" rx="10" fill="#eef5ff" stroke="#1f5fbf" stroke-width="2"/>
+    <text x="360" y="58" font-size="26" font-weight="700" text-anchor="middle">open</text>
+    <text x="360" y="92" text-anchor="middle">maker locks BCH in an offer output</text>
+    <text x="360" y="120" text-anchor="middle">that names the tokens it wants</text>
+    <g stroke="#1b1f24" stroke-width="2.5" fill="none" marker-end="url(#a)">
+      <path d="M300 144L125 204"/>
+      <path d="M360 144L360 204"/>
+      <path d="M420 144L595 204"/>
+    </g>
+    <rect x="15" y="210" width="220" height="290" rx="10" fill="#eefaf1" stroke="#1d7a3a" stroke-width="2"/>
+    <text x="35" y="248" font-size="26" font-weight="700">fill</text>
+    <text x="35" y="286">taker pays the</text>
+    <text x="35" y="314">wanted tokens to</text>
+    <text x="35" y="342">the maker at the</text>
+    <text x="35" y="370">same output index</text>
+    <text x="35" y="398">and takes the BCH</text>
+    <text x="35" y="448" font-weight="700">no maker key</text>
+    <rect x="250" y="210" width="220" height="290" rx="10" fill="#f6f7f9" stroke="#5a626c" stroke-width="2"/>
+    <text x="270" y="248" font-size="26" font-weight="700">cancel</text>
+    <text x="270" y="286">maker signs with</text>
+    <text x="270" y="314">its key and takes</text>
+    <text x="270" y="342">the BCH back</text>
+    <text x="270" y="448" font-weight="700">any time</text>
+    <rect x="485" y="210" width="220" height="290" rx="10" fill="#fff7e8" stroke="#a35f00" stroke-width="2"/>
+    <text x="505" y="248" font-size="26" font-weight="700">expire</text>
+    <text x="505" y="286">after expireAfter</text>
+    <text x="505" y="314">blocks, anyone</text>
+    <text x="505" y="342">can send the BCH</text>
+    <text x="505" y="370">back to the maker</text>
+    <text x="505" y="448" font-weight="700">no key needed</text>
+  </g>
+</svg>
