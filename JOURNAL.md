@@ -1069,3 +1069,27 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
   template identifier and every other `landing*` file against Landing. Sabotage: a wallet invitation copied to
   `landing9-convert.json`, and a Landing invitation copied to `landing9-fund-sats.json`, each made the test fail
   (copies removed).
+
+## 2026-11-20 00:10 UTC: MIGRATE-TO-XO.md as the judges' entry point
+
+- Added to MIGRATE-TO-XO.md: `Submitted invitation: invitations/mainnet1-giveBack.json`, `Original project:` (the Sampan
+  site and the GitHub contract source, plus the mainnet spend of the deployed contract and its saved raw transaction), a
+  runs table of every transaction made with the final template (landing3 to landing6 and mainnet1: full txid,
+  invitation, template file), the debug tool steps and screenshots, and the offline check commands.
+- The table rows were taken from the `ok` rows of the README runs table (written by `scripts/runs-table.ts`); every
+  txid in the file is an `ok` row of docs/CHIPNET-RUNS.md or docs/MAINNET-RUNS.md, or the fixture txid.
+- Links checked with `curl` (user agent `Mozilla/5.0`) at 00:00: https://sampan.sasateguh.com 200, https://blaze.xo.cash/
+  200, https://explorer.selene.cash/ 200. Transaction pages: https://chipnet.imaginary.cash/tx/<txid> code 000 (no
+  answer); https://explorer.selene.cash/tx/<txid> 404 to `curl` (the page is built in the browser; opened in a browser
+  on 2026-11-19, see the entries above); https://blockchair.com/bitcoin-cash/transaction/<txid> 401 to `curl` (bot check).
+  The blockchair API (`api.blockchair.com/bitcoin-cash/dashboards/transaction/<txid>`) answered 200 for the fixture txid
+  `5671fd92...5ba6` (block 977518), mainnet1 land `7307ceeb...b8ef` (block 978029) and giveBack `80387030...a8d8`
+  (block 978090). https://cbch.loping.net/tx/<txid> answered 200 but its body was the node error "RPC is disabled. This
+  version of Bitcoin Cash Node is old and may be out of consensus with the network.", so it is not linked.
+- Chipnet links in MIGRATE-TO-XO.md now point to https://explorer.selene.cash/tx/<txid>?network=chipnet instead of
+  chipnet.imaginary.cash. The README runs table (generated) is unchanged.
+- Clean clone (`git archive HEAD` at 8c202fc into a temporary folder, removed after): `npm ci` rc 0, `npm test` rc 0
+  (21 files, 149 tests), `npx tsx scripts/check-bytecode.ts --json` rc 0 with `"identical": true`,
+  `npx tsx scripts/landing-run.ts --help` rc 0.
+- Style check on a temporary copy: first run flagged the capitalised word "SUCCESS" (the debug tool's status text); it
+  is now written as code, `SUCCESS`, and the second run passed.
