@@ -1355,3 +1355,15 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
   a 3xpl link after every Blockchair txid link.
 - `curl -L -A 'Mozilla/5.0'` on each new 3xpl link, 15:24 UTC: HTTP 200 and the txid in the body for 06e1273d...,
   1a0ce51b..., 5671fd92..., 7307ceeb..., 80387030..., fde04dc1....
+
+## 2026-11-20 15:48 UTC: positioning sentence in BUILD-WITH-XO.md
+
+- Added one sentence (40 words) after the opening lines of `BUILD-WITH-XO.md`, before the flow diagram.
+- Each claim was checked against `template/swap-intent.ts` first:
+  - taker locks nothing, fills in one transaction: `fillUnlockingBytecode` is `OP_1`, and `fillPath` only checks the
+    output at the offer's input index (maker locking script, wanted category, amount at least `wantedAmount`).
+  - no secret or preimage: the only hash in the offer script is `OP_HASH160` of the maker public key on `cancelPath`.
+  - maker can stay offline: `fillPath` has no `OP_CHECKSIG`.
+  - expired offer returns with no key: `expireUnlockingBytecode` is `OP_1 OP_0`; `expirePath` checks
+    `OP_CHECKSEQUENCEVERIFY`, one input and one output, maker locking script, no tokens.
+- README unchanged. Full vitest run: 163 passed.

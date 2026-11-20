@@ -3,6 +3,9 @@
 OTC offers of BCH for CashTokens without an online maker or escrow: whoever pays the wanted tokens fills the offer,
 and expired offers return to the maker without a key.
 
+One-sided offer: the taker locks nothing and fills in one transaction, there is no secret or preimage, the maker can
+stay offline because the fill path needs no signature, and an expired offer returns to the maker with no key.
+
 ![Swap Intent: open, then fill, cancel or expire](docs/swap-intent-flow.svg)
 
 New project. First commit after the 14 November start: [1ac2691](https://github.com/aimanmalib/sampan-xo/commit/1ac2691e4c699dcc3563fafcd2815bf6eadd6b94) (2026-11-14 17:40 UTC).
