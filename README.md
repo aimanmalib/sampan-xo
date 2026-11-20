@@ -10,8 +10,6 @@ New project. First commit after the 14 November start: [1ac2691](https://github.
 An entry for the "Build with XO" bounty at BCH BLAZE 2026. The same repository also holds the "Migrate to XO" entry:
 the Sampan landing contract as an XO template, see [Migrate to XO](#migrate-to-xo).
 
-Build journal, written by the AI coding agent while it worked. The feedback in FEEDBACK.md was written by the entrant, by hand.
-
 ## For judges
 
 - Build with XO: [BUILD-WITH-XO.md](BUILD-WITH-XO.md) (submitted invitation, the four chipnet flows, how to check).
@@ -490,7 +488,7 @@ mainnet, the XO engine compiles it to the same redeem bytecode, byte for byte.
 ## AI disclosure
 
 The code, tests, README and build journal in this repository were written by an AI coding agent working for the entrant,
-with the entrant reviewing the result. The feedback in FEEDBACK.md was written by the entrant, by hand, without AI.
+with the entrant reviewing the result. The feedback in FEEDBACK.md was written by the entrant, by hand. No AI was used for it.
 
 ## Related
 

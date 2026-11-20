@@ -1110,3 +1110,6 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
   readable, nothing overlaps or is cut off, no horizontal scroll (`scrollWidth` 375 of 375).
 - Style check on temporary copies: BUILD-WITH-XO.md passed. README.md flagged two capitalised words that were already
   there before this change, the file name `FEEDBACK.md` and "SUCCESS" in the Landing section; both were left as they are.
+- README.md reached 501 lines, one over the repository's 500-line limit for it. The line near the top that copied the
+  journal's first line was removed. The sentence in `## AI disclosure` ended "by hand, without AI.", which the README test
+  (exact sentence) rejected; it now reads "by hand. No AI was used for it."
