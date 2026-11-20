@@ -17,6 +17,8 @@ checked from a spend of it on mainnet,
 [5671fd920b3a3c74d322b23250d31a33326452e28528236227f0c89f3a585ba6](https://blockchair.com/bitcoin-cash/transaction/5671fd920b3a3c74d322b23250d31a33326452e28528236227f0c89f3a585ba6) ([3xpl](https://3xpl.com/bitcoin-cash/transaction/5671fd920b3a3c74d322b23250d31a33326452e28528236227f0c89f3a585ba6)),
 whose raw transaction is saved in [tests/fixtures/landing-deployed.json](tests/fixtures/landing-deployed.json).
 
+Timeline: `contracts/landing.cash` was committed to Sampan in [2a92ef3](https://github.com/aimanmalib/sampan/commit/2a92ef30d49a949f315cb72fffddbac18fb83798) on 15 Nov 2026 at 17:26 UTC and spent on mainnet the same day at 20:14 UTC (block 977518); the XO port in this repository started on 16 Nov (design record 3a23a94 at 08:59 UTC, first template commit 3dc31d6 at 09:11 UTC). The template is readable CashASM with named opcodes in [template/landing.ts](template/landing.ts), not a hex literal.
+
 ## Before and after
 
 <!-- before-after:start -->

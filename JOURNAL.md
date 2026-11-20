@@ -1308,3 +1308,23 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
   `5671fd92...`, `9a66aa08...`, `c8ab57d9...`, `7307ceeb...`, `80387030...`.
 - Blockchair was not refetched; an earlier measurement from this host on the same day returned HTTP 401 for its pages,
   which is why a second explorer was added.
+
+## 2026-11-20 14:41 UTC: mainnet2 funding requested, timeline line
+
+- Payer balance on mainnet at 14:38 UTC (`npx tsx scripts/wallets.ts balance --network mainnet`): payer
+  `bitcoincash:qzqhpy3rzuzmfj0ylnpky8zfvd8xhpz8xuxssgdcnh` confirmed=0 unconfirmed=0; owner confirmed=4000.
+- Need for the mainnet2 land: 5000 sat landed + 400 sat fee (the fee measured on the mainnet1 land) + 500 sat margin
+  = 5900 sat. Requested 5900 sat from a shared test wallet at 14:39 UTC; status at 14:40 UTC: waiting. mainnet2 is not
+  started until the coins arrive.
+- Timeline facts for `MIGRATE-TO-XO.md`, read again before writing:
+  - Sampan `contracts/landing.cash` first commit: `2a92ef30d49a949f315cb72fffddbac18fb83798`, 2026-11-15 17:26:34 UTC
+    (`git log -- contracts/landing.cash` in the Sampan repository).
+  - Spend of the deployed contract `5671fd92...5ba6`: Electrum `blockchain.transaction.get` verbose on
+    `bch.imaginary.cash` gives blocktime 1794773662 (2026-11-15 20:14:22 UTC), 661 confirmations at tip, block 977518.
+    The 3xpl page for the same txid returned HTTP 429 from this host at 14:40 UTC, so the block was read from Electrum.
+  - This repository: design record `3a23a94` 2026-11-16 08:59:49 UTC; first template commit `3dc31d6`
+    2026-11-16 09:11:09 UTC (also the commit that added `template/landing.ts`).
+  - `template/landing.ts` has 23 lines with `OP_` opcode names and does not contain the 136 byte redeem bytecode of the
+    fixture as hex (`grep -c` on the full hex and on its first 20 bytes: 0).
+- Added one timeline paragraph (two sentences) to `MIGRATE-TO-XO.md` after `Original project:`. The Sampan commit link is
+  on GitHub and returns 404 while that repository is private.
