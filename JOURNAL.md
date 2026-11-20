@@ -1293,3 +1293,18 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
   change, 400 sat fee) agree with the chain.
 - Suggestion: save the dry run output of each mainnet action to a file before the broadcast, so journal values can be
   checked against it.
+
+## 2026-11-20 14:30 UTC: second mainnet explorer and Engine column for the Landing mainnet rows
+
+- `docs/MAINNET-RUNS.md` now has two columns before `Result`: `Engine` and `Explorers` (Blockchair and 3xpl). The
+  txid, invitation and result cells of the existing rows are unchanged.
+- Engine per row was read from git, not assumed: for each txid, `git log -S<txid> -- docs/MAINNET-RUNS.md` gives the
+  commit that added the row (`95e8079`, `57ff4c4`, `57ff4c4`, `a86dca9`), and `package.json` in each of those commits
+  pins `@xo-cash/engine` `0.1.1-next.18029697917`. The two `fund` rows are wallet transfers that did not use the engine;
+  their cell gives the version pinned at the time, as the header text says.
+- `MIGRATE-TO-XO.md`: a 3xpl link was added after each of the 6 Blockchair transaction links (txids `5671fd92...`,
+  `7307ceeb...`, `80387030...`).
+- Each 3xpl link was fetched once with `curl` at 14:30 UTC. All 5 returned HTTP 200 with the txid in the HTML body:
+  `5671fd92...`, `9a66aa08...`, `c8ab57d9...`, `7307ceeb...`, `80387030...`.
+- Blockchair was not refetched; an earlier measurement from this host on the same day returned HTTP 401 for its pages,
+  which is why a second explorer was added.
