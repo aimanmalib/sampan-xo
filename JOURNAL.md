@@ -1367,3 +1367,14 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
   - expired offer returns with no key: `expireUnlockingBytecode` is `OP_1 OP_0`; `expirePath` checks
     `OP_CHECKSEQUENCEVERIFY`, one input and one output, maker locking script, no tokens.
 - README unchanged. Full vitest run: 163 passed.
+
+## 2026-11-20 15:56 UTC: second mainnet Swap Intent run (fill with a test token) not started
+
+- Planned: `swapmain2` on mainnet, a test token minted by the `owner` account, an offer opened by `payer`, filled by
+  `owner`. Nothing was coded or broadcast for it.
+- Balances, `scripts/wallets.ts balance --network mainnet`, 15:51 UTC: `payer` confirmed=0 unconfirmed=0, `owner`
+  confirmed=4000 unconfirmed=0. The offer needs 2000 sat plus fees from `payer`.
+- A funding request for 3500 sat to the `payer` address was refused at 15:55 UTC: status `KURANG`, available 0 sat,
+  short by 3500 sat.
+- Result: `swapmain1` (open, expire) stays the only mainnet Swap Intent run. `fill` stays rejected on mainnet by
+  `src/swap-network.ts`, and the documents keep saying that no token is created on mainnet.
