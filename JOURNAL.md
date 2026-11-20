@@ -1146,3 +1146,38 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
 - 00:44 UTC chipnet dry run `npx tsx scripts/run.ts open dryrun --dry-run` showed the new printout: output 0 of
   20000 sat to the offer address (P2SH32 bytecode `aa20...87`), output 1 the change to the maker. Nothing was
   broadcast and no invitation file was written.
+
+## 2026-11-20 00:54 UTC: run5 and run6 on engine 0.1.1-next.18170561234
+
+- 00:55 `npm view @xo-cash/engine dist-tags`: `next: '0.1.1-next.18170561234'`, `latest: '0.0.1'`. `package.json` and
+  `package-lock.json` already pin that version (commit 160cb30), so there was no upgrade this time and no engine
+  database copy was needed. `@xo-cash/templates` dist-tags: `latest: '0.0.12'`, already pinned.
+- 00:56 `npx tsx scripts/run.ts open run5 --dry-run` built and printed the offer (output 0: 20000 sat to the offer
+  address), with the existing maker database under `.xo/`.
+- 00:56 `npx tsx scripts/run.ts open run5` broadcast `cc29d1c8...04d4` and printed, after the broadcast:
+  `note: broadcast recorded; the engine then failed to clear a spent coin reservation: UnspentOutputNotFoundInStoreError: Unspent output "9631b0162267422547f5982065daec2835d699b0ea6ade8bd153f06a566b4f01:1" not found in store`.
+  The input was the landing6 change coin; afterwards it no longer appears in the maker engine's unspent list.
+- 00:57 operator mistake: `npx tsx scripts/run.ts fill run5` was run next. As the README says, `fill` runs all four
+  steps including `open`, so it opened a second offer `70e14b03...1545` (00:58) and wrote it over `run5-open.json`,
+  then filled that one: fill `565cc19f...8103` (01:00). The first offer stayed open. About 25 minutes lost.
+- The first offer's invitation (`6d666eb1db59d46de64db6fe8bf7f9e5`) was still in the maker engine's store
+  (`engine.listInvitations()`), as were all earlier open invitations. It was saved again as `invitations/run6-open.json`
+  with the same export used for run1 and run2. 01:14 `npx tsx scripts/run.ts cancel run6` (dry run first) broadcast
+  `2670cc50...d355`: one input, output 0 of 19500 sat to the maker, no token.
+- During `fill-take` the taker engine printed eight lines like
+  `Failed to process transaction update: Error: Could not validate a block header on height 338323: The requested header is ahead of the current checkpoint at height 335408`;
+  the checkpoint height in these lines rose (335408, then 336416, and 338939 during the second open), the same
+  message as before the upgrade (entries above) and the steps still completed.
+- Fill `565cc19f...8103` read from Electrum: 3 inputs (offer `70e14b03...:0`, two taker coins), output 0 1000 sat with
+  the test token to the maker, output 1 20000 sat to the taker, outputs 2 and 3 the taker's token and BCH change.
+- https://chipnet.imaginary.cash/ did not answer (`curl` code 000 after 30 s). The four txids were opened in a browser
+  on https://explorer.selene.cash/tx/<txid>?network=chipnet between 01:04 and 01:24: run6 open 8 confirmations, run5
+  fill 3, run5 open 27, run6 cancel first in the mempool, then 6. Only then were the rows written as `ok`.
+- blaze.xo.cash with a new disposable chipnet account: template version 2 imported, "View invitation" for run5 and run6
+  files, "Inspect" on chipnet for the four txids, each `SUCCESS` with "Transaction is already known on chipnet".
+  The Inspect page showed `Inspecting…` for more than 8 seconds on one txid; the capture script now waits for the
+  script debugger to appear. Images: docs/debug-tool/swap-intent/run5-*.png and run6-*.png.
+- The first run5 Inspect capture was taken with the run6 open txid by mistake; it was taken again with `70e14b03...1545`
+  before anything was committed.
+- `npx tsx scripts/used-templates.ts --write` (no new template id: run5 and run6 use `8f0fb78d...712e`) and
+  `npx tsx scripts/runs-table.ts --write` (4 new README rows).

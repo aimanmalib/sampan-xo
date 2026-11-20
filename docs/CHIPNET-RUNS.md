@@ -43,6 +43,10 @@ opened on a public chipnet explorer (https://chipnet.imaginary.cash/tx/). Invita
 | 2026-11-19 19:26 | run4 | expire | 4d92f782949444f9751ce3dcbd685696319f474f129893fc617f5792f5b35f48 | invitations/run4-expire.json | ok |
 | 2026-11-19 23:38 | landing6 | land | 9631b0162267422547f5982065daec2835d699b0ea6ade8bd153f06a566b4f01 | invitations/landing6-land.json | ok |
 | 2026-11-19 23:38 | landing6 | convert | 29c6bf27b461bc26809331131f8271c07c23ab9f4400322e125182c000c72d7c | invitations/landing6-convert.json | ok |
+| 2026-11-20 00:57 | run6 | open | cc29d1c8151b91de2a7fa899412d61686b2d25afec0f650002fb1797baba04d4 | invitations/run6-open.json | ok |
+| 2026-11-20 00:58 | run5 | open | 70e14b031f3571ac477fc2634b6517f60f6bcad5374b53daa4634c4141dc1545 | invitations/run5-open.json | ok |
+| 2026-11-20 01:00 | run5 | fill | 565cc19f701d41f6dae8fe48b0a0de0ed7fae492b45c7610e47549d336ca8103 | invitations/run5-fill.json | ok |
+| 2026-11-20 01:14 | run6 | cancel | 2670cc505471e5692f37ba7c1bd05bc38b92d44e7d9ac2e9fc8e8e49083fd355 | invitations/run6-cancel.json | ok |
 
 run2 is the open -> cancel run: the offer opened at 19:30 was cancelled by the maker at 19:56. The fill steps in between are saved as `<run>-fill-start.json` (maker adds
 the offer coin) and `<run>-fill-taken.json` (taker adds the payment and signs).
@@ -98,3 +102,12 @@ of `check-bytecode --params config/chipnet.json`). In the convert the converter 
 output 0 pays the owner `bchtest:zz4rr7mn324zdkeav5v3gpqvlf3jx9u68q0vhr6hgz` 100 test token units with 1000 sat, output 1
 returns 997500 units with 8800 sat to the converter. Both rows were opened on https://explorer.selene.cash/ (chipnet) at
 23:40 on 2026-11-19 (land 3 confirmations, convert unconfirmed); https://chipnet.imaginary.cash/ did not answer.
+
+run5 and run6 use `@xo-cash/engine` 0.1.1-next.18170561234 (the `next` tag, unchanged on 2026-11-20) with template
+version 2 (`8f0fb78d...712e`). run5 is the open -> fill run: in the fill, output 0 pays the maker 1000 sat with the
+test tokens and output 1 pays the taker the 20000 offered sat. run6 is an open -> cancel run that came from an operator
+mistake: `run.ts open run5` was run first and then `run.ts fill run5`, which opens a new offer itself. The first offer
+(`cc29d1c8...04d4`) was left open and its file `run5-open.json` was overwritten by the second open. Its invitation was
+still in the maker's engine and was exported again as `run6-open.json`; the maker then cancelled it, and output 0 of the
+cancel returns 19500 sat (20000 offered, 500 fee) to the maker. All four rows were opened on
+https://explorer.selene.cash/ (chipnet) between 01:04 and 01:24 on 2026-11-20; https://chipnet.imaginary.cash/ did not answer.

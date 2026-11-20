@@ -69,7 +69,8 @@ XO tools is [template/swap-intent.json](template/swap-intent.json).
 - Package versions are pinned exactly in `package.json` and `package-lock.json`. The ones that matter:
   `@xo-cash/engine` 0.1.1-next.18170561234, `@xo-cash/templates` 0.0.12, `@xo-cash/types` 0.0.8,
   `@xo-cash/utils` 0.0.10, `@bitauth/libauth` 3.1.0-next.8, `@electrum-cash/network` 4.4.8, `typescript` 5.9.3,
-  `tsx` 4.23.15, `vitest` 3.2.7.
+  `tsx` 4.23.15, `vitest` 3.2.7. The Swap Intent runs run5 and run6 (20 November) used this engine version; run1 to
+  run4 and browser1 (14 to 19 November) used 0.1.1-next.18029697917.
 - The Swap Intent runs on chipnet only. The Landing template has one minimum mainnet run (land, then giveBack),
   recorded in `docs/MAINNET-RUNS.md`; its amounts are limited in `src/landing-network.ts`.
 
@@ -122,10 +123,9 @@ XO tools is [template/swap-intent.json](template/swap-intent.json).
    npx tsx scripts/run.ts expire run4
    ```
 
-The token, deposit and run commands accept `--dry-run` (build and check without broadcasting), and
-`npx tsx scripts/run.ts --help` prints the run steps. Settings that may change (Electrum servers, derivation path,
-explorers, amounts) live in `config/chipnet.json`. Every chipnet transaction is listed in
-[docs/CHIPNET-RUNS.md](docs/CHIPNET-RUNS.md).
+The token, deposit and run commands accept `--dry-run` (build and check, no broadcast); `npx tsx scripts/run.ts --help`
+prints the run steps. Settings that may change (Electrum servers, derivation path, explorers, amounts) live in
+`config/chipnet.json`. Every chipnet transaction is listed in [docs/CHIPNET-RUNS.md](docs/CHIPNET-RUNS.md).
 
 ## Chipnet runs
 
@@ -165,19 +165,16 @@ Every step accepts `--dry-run` (build and check without broadcasting). The chipn
 | run4 | open | [d76f3c9f...f367](https://chipnet.imaginary.cash/tx/d76f3c9f2a190dcddd8c0c28dae338d0fc5f69ecb48d0d1195faa2dc11ecf367) |
 | run4 | expire | [4d92f782...5f48](https://chipnet.imaginary.cash/tx/4d92f782949444f9751ce3dcbd685696319f474f129893fc617f5792f5b35f48) |
 
-The saved invitations are in [invitations/](invitations/); the full list, failures included, is in
-[docs/CHIPNET-RUNS.md](docs/CHIPNET-RUNS.md).
+run5 (open -> fill) and run6 (open -> cancel) are listed in the table further down. The saved invitations are in
+[invitations/](invitations/); the full list, failures included, is in [docs/CHIPNET-RUNS.md](docs/CHIPNET-RUNS.md).
+Each invitation names its template by id; the exact template is in `template/used/<id>.json`. The id is the one the
+XO engine computes (sha256 of the serialized template); `npx tsx scripts/used-templates.ts --check` confirms that every
+invitation has its file and that each file hashes to its own name.
 
-Each invitation names its template by id; the exact template is in `template/used/<id>.json`
-([template/used/](template/used/)). The id is the one the XO engine computes (sha256 of the serialized template), and
-`npx tsx scripts/used-templates.ts --check` confirms that every invitation has its file and that each file hashes to
-its own name.
-
-One exception: the P2PKH wallet template from `@xo-cash/templates` (id `a31eb858...c672`, used by the browser1 fund
-invitations) carries an example private key in its test scenario. It is public in the npm package and controls no
-funds, but the stored copy replaces it with a placeholder so the repository holds no key-shaped value. That file is
-checked instead against the package export: the export, with the same replacement, must equal the file byte for byte,
-and the unchanged export must hash to the file's name.
+One exception: the P2PKH wallet template from `@xo-cash/templates` (id `a31eb858...c672`, browser1 fund invitations)
+has an example private key in its test scenario. It is public in the npm package and controls no funds, but the stored
+copy replaces it with a placeholder. That file is checked against the package export instead: the export with the same
+replacement must equal the file byte for byte, and the unchanged export must hash to the file's name.
 
 ## Runs, invitations and templates
 
@@ -215,6 +212,10 @@ transactions without an invitation (the token mint and the plain deposits) and f
 | chipnet | run4 | expire | [4d92f782949444f9751ce3dcbd685696319f474f129893fc617f5792f5b35f48](https://chipnet.imaginary.cash/tx/4d92f782949444f9751ce3dcbd685696319f474f129893fc617f5792f5b35f48) | [invitations/run4-expire.json](invitations/run4-expire.json) | [template/used/8f0fb78d266c54d77852910b1ed8fb3772a1a7cd625dde6b548a247f9896712e.json](template/used/8f0fb78d266c54d77852910b1ed8fb3772a1a7cd625dde6b548a247f9896712e.json) |
 | chipnet | landing6 | land | [9631b0162267422547f5982065daec2835d699b0ea6ade8bd153f06a566b4f01](https://chipnet.imaginary.cash/tx/9631b0162267422547f5982065daec2835d699b0ea6ade8bd153f06a566b4f01) | [invitations/landing6-land.json](invitations/landing6-land.json) | [template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json](template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json) |
 | chipnet | landing6 | convert | [29c6bf27b461bc26809331131f8271c07c23ab9f4400322e125182c000c72d7c](https://chipnet.imaginary.cash/tx/29c6bf27b461bc26809331131f8271c07c23ab9f4400322e125182c000c72d7c) | [invitations/landing6-convert.json](invitations/landing6-convert.json) | [template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json](template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json) |
+| chipnet | run6 | open | [cc29d1c8151b91de2a7fa899412d61686b2d25afec0f650002fb1797baba04d4](https://chipnet.imaginary.cash/tx/cc29d1c8151b91de2a7fa899412d61686b2d25afec0f650002fb1797baba04d4) | [invitations/run6-open.json](invitations/run6-open.json) | [template/used/8f0fb78d266c54d77852910b1ed8fb3772a1a7cd625dde6b548a247f9896712e.json](template/used/8f0fb78d266c54d77852910b1ed8fb3772a1a7cd625dde6b548a247f9896712e.json) |
+| chipnet | run5 | open | [70e14b031f3571ac477fc2634b6517f60f6bcad5374b53daa4634c4141dc1545](https://chipnet.imaginary.cash/tx/70e14b031f3571ac477fc2634b6517f60f6bcad5374b53daa4634c4141dc1545) | [invitations/run5-open.json](invitations/run5-open.json) | [template/used/8f0fb78d266c54d77852910b1ed8fb3772a1a7cd625dde6b548a247f9896712e.json](template/used/8f0fb78d266c54d77852910b1ed8fb3772a1a7cd625dde6b548a247f9896712e.json) |
+| chipnet | run5 | fill | [565cc19f701d41f6dae8fe48b0a0de0ed7fae492b45c7610e47549d336ca8103](https://chipnet.imaginary.cash/tx/565cc19f701d41f6dae8fe48b0a0de0ed7fae492b45c7610e47549d336ca8103) | [invitations/run5-fill.json](invitations/run5-fill.json) | [template/used/8f0fb78d266c54d77852910b1ed8fb3772a1a7cd625dde6b548a247f9896712e.json](template/used/8f0fb78d266c54d77852910b1ed8fb3772a1a7cd625dde6b548a247f9896712e.json) |
+| chipnet | run6 | cancel | [2670cc505471e5692f37ba7c1bd05bc38b92d44e7d9ac2e9fc8e8e49083fd355](https://chipnet.imaginary.cash/tx/2670cc505471e5692f37ba7c1bd05bc38b92d44e7d9ac2e9fc8e8e49083fd355) | [invitations/run6-cancel.json](invitations/run6-cancel.json) | [template/used/8f0fb78d266c54d77852910b1ed8fb3772a1a7cd625dde6b548a247f9896712e.json](template/used/8f0fb78d266c54d77852910b1ed8fb3772a1a7cd625dde6b548a247f9896712e.json) |
 | mainnet | mainnet1 | land | [7307ceebe247f57b177f8dbcb69cad97a3a05055712d74934b65f0713551b8ef](https://blockchair.com/bitcoin-cash/transaction/7307ceebe247f57b177f8dbcb69cad97a3a05055712d74934b65f0713551b8ef) | [invitations/mainnet1-land.json](invitations/mainnet1-land.json) | [template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json](template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json) |
 | mainnet | mainnet1 | giveBack | [80387030d47911bb9fa144892cf853a61cb3e4e8bc5f3ce948e78e99e67ca8d8](https://blockchair.com/bitcoin-cash/transaction/80387030d47911bb9fa144892cf853a61cb3e4e8bc5f3ce948e78e99e67ca8d8) | [invitations/mainnet1-giveBack.json](invitations/mainnet1-giveBack.json) | [template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json](template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json) |
 <!-- runs-table:end -->
