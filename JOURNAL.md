@@ -1282,3 +1282,14 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
   `docs/debug-tool/swap-intent/swapmain1-*.png`, reduced to 128 colours, each under 110 KB.
 - To keep README.md within its 500 line limit, the short chipnet txid table under "Chipnet runs" was replaced by a
   link to the generated table in "Runs, invitations and templates", which lists the same transactions.
+
+## 2026-11-20 08:45 UTC: correction to the swapmain1 open entry (07:19 UTC)
+
+- The 07:19 UTC entry gives the offer P2SH32 locking bytecode of the open as `aa20c90e...fdae9487`. That value is wrong.
+  The open output on chain, `06e1273d...e6ba:0` (2000 sat), and `invitations/swapmain1-open.json` both have
+  `aa20c730339d...c5d8d8f387` (in full `aa20c730339dc06170b1996eb2ce7b9660bb7006f027c93e96ffbce25dc9c5d8d8f387`).
+- No log of the open dry run was kept, so the earlier value has no recorded source and cannot be explained by a
+  measurement. It should be treated as unsupported. The other figures in that entry (input, 2000 sat offer, 1415 sat
+  change, 400 sat fee) agree with the chain.
+- Suggestion: save the dry run output of each mainnet action to a file before the broadcast, so journal values can be
+  checked against it.
