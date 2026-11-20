@@ -68,40 +68,47 @@ export const finishAction = async (account: AccountEngine, invitationIdentifier:
  * open (maker): locks swap.offeredSatoshis in a new offer asking for swap.wantedAmount test tokens, paid to a fresh
  * maker receive script; anyone may return it to that script after swap.expireAfterBlocks blocks. Funded from one plain engine coin; the engine adds the change and the fee.
  */
-export const openOffer = async (account: AccountEngine, config: ChipnetConfig, broadcast: boolean): Promise<ActionResult> => {
+export const openOffer = async (account: AccountEngine, config: Pick<ChipnetConfig, 'testToken' | 'swap'>, broadcast: boolean): Promise<ActionResult> => {
   const { engine, swapTemplateIdentifier: templateIdentifier } = account;
   if (config.testToken.category === null) throw new Error('testToken.category is not set; run the test token setup first');
   const template = await engine.getTemplate(templateIdentifier);
   const intent = template?.start?.find((entry) => entry.action === 'open');
   const created = await engine.createInvitation({ templateIdentifier, actionIdentifier: 'open', intent });
   const invitationIdentifier = created.invitation.invitationIdentifier;
-  const makerLockingScript = await engine.generateLockingBytecodeFromDefaultPolicy('receive');
-  const role = { roleIdentifier: 'maker' };
-  await engine.appendInvitation(invitationIdentifier, {
-    templateIdentifier,
-    actionIdentifier: 'open',
-    ...role,
-    variables: [
-      { variableIdentifier: 'offeredSatoshis', value: BigInt(config.swap.offeredSatoshis), ...role },
-      { variableIdentifier: 'wantedCategory', value: config.testToken.category, ...role },
-      { variableIdentifier: 'wantedAmount', value: BigInt(config.swap.wantedAmount), ...role },
-      { variableIdentifier: 'makerLockingScript', value: makerLockingScript, ...role },
-      { variableIdentifier: 'expireAfter', value: BigInt(config.swap.expireAfterBlocks), ...role },
-      { variableIdentifier: 'expireFeeSatoshis', value: BigInt(config.swap.expireFeeSatoshis), ...role },
-    ],
-    outputs: [{ outputIdentifier: 'offerOutput', ...role }],
-  });
-  const coins = await engine.listSpendableUnspentOutputs();
-  const coin = coins
-    .filter((utxo) => utxo.tokenCategory === undefined)
-    .sort((a, b) => Number(BigInt(b.valueSatoshis) - BigInt(a.valueSatoshis)))[0];
-  if (coin === undefined) throw new Error('the maker engine wallet has no spendable plain coin; run scripts/deposit.ts maker');
-  await engine.appendInvitation(invitationIdentifier, {
-    templateIdentifier,
-    actionIdentifier: 'open',
-    inputs: [{ outpointTransactionHash: hexToBin(coin.outpointTransactionHash), outpointIndex: coin.outpointIndex, sequenceNumber: 0, ...role }],
-  });
-  await engine.addChangeToInvitation(invitationIdentifier);
-  await signOwnInputs(account, invitationIdentifier);
+  // Until it is built, a failed open (for example a coin too small for the offer) archives its invitation, so the
+  // coin it reserved is free for the next try.
+  try {
+    const makerLockingScript = await engine.generateLockingBytecodeFromDefaultPolicy('receive');
+    const role = { roleIdentifier: 'maker' };
+    await engine.appendInvitation(invitationIdentifier, {
+      templateIdentifier,
+      actionIdentifier: 'open',
+      ...role,
+      variables: [
+        { variableIdentifier: 'offeredSatoshis', value: BigInt(config.swap.offeredSatoshis), ...role },
+        { variableIdentifier: 'wantedCategory', value: config.testToken.category, ...role },
+        { variableIdentifier: 'wantedAmount', value: BigInt(config.swap.wantedAmount), ...role },
+        { variableIdentifier: 'makerLockingScript', value: makerLockingScript, ...role },
+        { variableIdentifier: 'expireAfter', value: BigInt(config.swap.expireAfterBlocks), ...role },
+        { variableIdentifier: 'expireFeeSatoshis', value: BigInt(config.swap.expireFeeSatoshis), ...role },
+      ],
+      outputs: [{ outputIdentifier: 'offerOutput', ...role }],
+    });
+    const coins = await engine.listSpendableUnspentOutputs();
+    const coin = coins
+      .filter((utxo) => utxo.tokenCategory === undefined)
+      .sort((a, b) => Number(BigInt(b.valueSatoshis) - BigInt(a.valueSatoshis)))[0];
+    if (coin === undefined) throw new Error('the maker engine wallet has no spendable plain coin; run scripts/deposit.ts maker');
+    await engine.appendInvitation(invitationIdentifier, {
+      templateIdentifier,
+      actionIdentifier: 'open',
+      inputs: [{ outpointTransactionHash: hexToBin(coin.outpointTransactionHash), outpointIndex: coin.outpointIndex, sequenceNumber: 0, ...role }],
+    });
+    await engine.addChangeToInvitation(invitationIdentifier);
+    await signOwnInputs(account, invitationIdentifier);
+  } catch (error) {
+    await engine.archiveInvitation(invitationIdentifier);
+    throw error;
+  }
   return finishAction(account, invitationIdentifier, broadcast);
 };

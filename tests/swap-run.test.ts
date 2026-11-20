@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 import { loadConfig } from '../src/config.js';
 import { invitationPath } from '../src/invitation-file.js';
 import { readOfferVariables, readOpenTransactionHash } from '../src/swap-fill.js';
-import { finishAction } from '../src/swap-open.js';
+import { finishAction, openOffer } from '../src/swap-open.js';
 import { stopAccountEngine, type AccountEngine } from '../src/xo-engine.js';
 
 const hash = 'ab'.repeat(32);
@@ -109,5 +109,33 @@ describe('saved invitations', () => {
         expect(results.some((r) => /^[0-9a-f]{64}$/.test(r.transactionHash) && 'broadcastedAtTimestamp' in r), name).toBe(true);
       }
     }
+  });
+});
+
+describe('open that fails before it is built', () => {
+  it('archives its invitation so the reserved coin is released', async () => {
+    const archived: string[] = [];
+    // Verbatim shape of the engine error seen on mainnet with a 1415 sat coin and a 2000 sat offer.
+    const tooSmall = Object.assign(new Error('Change satoshis insufficient ... expected at least 280 satoshis, got -585 satoshis'), {
+      name: 'ChangeSatoshisInsufficientError',
+    });
+    const account = {
+      swapTemplateIdentifier: 't1',
+      engine: {
+        getTemplate: async () => ({ start: [{ action: 'open' }] }),
+        createInvitation: async () => ({ invitation: { invitationIdentifier: 'i9' } }),
+        generateLockingBytecodeFromDefaultPolicy: async () => '76a9',
+        appendInvitation: async () => undefined,
+        listSpendableUnspentOutputs: async () => [{ outpointTransactionHash: hash, outpointIndex: 0, valueSatoshis: 1415n }],
+        addChangeToInvitation: async () => {
+          throw tooSmall;
+        },
+        archiveInvitation: async (id: string) => {
+          archived.push(id);
+        },
+      },
+    } as unknown as AccountEngine;
+    await expect(openOffer(account, loadConfig(), false)).rejects.toThrow(/got -585 satoshis/);
+    expect(archived).toEqual(['i9']);
   });
 });
