@@ -1496,7 +1496,7 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
 - `used-templates.ts --write`: no new template id. `runs-table.ts --write`: 2 README rows; README is back at 500 lines by
   shortening the Landing runs paragraph and joining one wrapped bullet line.
 
-## 2026-11-21 15:15 to 15:40 UTC: link sweep of MIGRATE-TO-XO.md and docs/MAINNET-RUNS.md without a login
+## 2026-11-21 15:15 to 15:23 UTC: link sweep of MIGRATE-TO-XO.md and docs/MAINNET-RUNS.md without a login
 
 - `gh api repos/aimanmalib/sampan-xo --jq .visibility` and the same for `aimanmalib/sampan` both answer `public`.
 - Links were taken from the two files (Markdown links and bare URLs), 58 unique after removing in-page anchors.
@@ -1514,3 +1514,19 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
   https://blockchair.com/ itself and in a headless Chromium. This is the sites' bot screen, not a missing page. The
   same 5 txids were read from a mainnet Electrum server in `config/mainnet.json` with
   `blockchain.transaction.get_height`: 977518, 978019, 978021, 978029, 978090 (all mined). No link was changed.
+
+## 2026-11-21 15:40 to 15:50 UTC: Selene links checked by page content
+
+- Correction to the 15:15 entry: its header said 15:40, both of its commits are at 15:23 UTC. Its Selene figures
+  ("7 of 11" answering 200) were HTTP status codes only, which do not show whether the page holds the transaction.
+- A Selene page without `?network=chipnet` opens mainnet. For a chipnet txid it answers HTTP 404 and shows
+  "Data unavailable". That page still carries the txid inside the network switch link, so "txid on the page" is
+  not proof either.
+- All 11 Selene transaction links in MIGRATE-TO-XO.md end in `?network=chipnet` (none in docs/MAINNET-RUNS.md).
+  Each was opened in a headless Chromium, 7 s after load, and the visible text read: all 11 gave HTTP 200, no
+  "Data unavailable", the txid in the visible text, and the word chipnet. Control: the first link with the
+  parameter removed gave HTTP 404, "Data unavailable", txid not in the visible text.
+- The tables in MIGRATE-TO-XO.md are written by hand; no script writes Selene links. New test
+  `tests/landing-explorer-links.test.ts` fails when a Selene transaction link in MIGRATE-TO-XO.md, README.md or
+  the run and debug-tool documents lacks `?network=chipnet`. Checked red by removing the parameter from line 57 of
+  MIGRATE-TO-XO.md (1 failed, 6 passed), green after restoring it (7 passed).
