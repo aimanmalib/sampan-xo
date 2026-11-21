@@ -286,8 +286,7 @@ signed and exported its part of the fill; browser2 is recorded in
 
 ## Migrate to XO
 
-A second entry in this repository, for the "Migrate to XO" bounty at BCH BLAZE 2026: the landing address contract of
-Sampan, ported to an XO template named "Landing" and run on chipnet with two follow-up actions.
+A second entry in this repository, for the "Migrate to XO" bounty at BCH BLAZE 2026: the landing address contract of Sampan, ported to an XO template named "Landing" and run on chipnet with two follow-up actions.
 
 - Original project: https://sampan.sasateguh.com, source https://github.com/aimanmalib/sampan, contract
   `contracts/landing.cash` (CashScript, P2SH20). Sampan runs it on mainnet; nothing here touches that deployment.
@@ -298,6 +297,7 @@ Sampan, ported to an XO template named "Landing" and run on chipnet with two fol
   the chipnet runs of `land`, `convert` and `giveBack` are [below](#chipnet-runs-landing), and debug tool screenshots
   of each invitation and transaction are in [docs/debug-tool/](docs/debug-tool/README.md#landing).
 - Before and after, side by side (source, compiler, redeem bytecode hash, P2SH wrapper, transactions): [MIGRATE-TO-XO.md](MIGRATE-TO-XO.md#before-and-after).
+- Prize address for this entry: `bitcoincash:zrsn433teurm6km7afuanhtdq4dfnwpvlgf6c8hkny`.
 
 The original contract: anyone pays BCH to the landing address, and the coin can then leave only to the owner, either
 converted to tokens at or above a minimum rate (`convert`) or returned as BCH once it is a few blocks old (`giveBack`).

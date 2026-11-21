@@ -1438,3 +1438,9 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
   file, or the working tree for the two run7 rows. Result: setup, deposit, run1 to run4, browser1 and landing1 to landing5
   0.1.1-next.18029697917; run5, run6, browser2 and landing6 0.1.1-next.18170561234; run7 and landing7
   0.1.1-next.18230317763. The setup rows were built with libauth, not the engine; the file says so.
+
+## 2026-11-21 13:38 UTC: prize address for the Migrate to XO entry
+
+- Added `bitcoincash:zrsn433teurm6km7afuanhtdq4dfnwpvlgf6c8hkny` as the prize and Community Choice address of the Migrate to XO
+  entry: section `## Prize address` in MIGRATE-TO-XO.md and one bullet in README `## Migrate to XO` (two wrapped lines of that
+  section joined, so README stays at 500 lines). The Build with XO address in `config/mainnet.json` is unchanged.
