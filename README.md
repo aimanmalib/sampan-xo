@@ -1,9 +1,17 @@
-# Swap Intent: an XO template for CashTokens swaps, on chipnet and mainnet
+<p align="center"><img src="https://raw.githubusercontent.com/aimanmalib/sampan/main/brand/logo-512.png" width="96" height="96" alt="Sampan logo: this repository holds the XO work of the Sampan project"></p>
+
+<h1 align="center">Swap Intent: an XO template for CashTokens swaps</h1>
+
+<p align="center"><a href="LICENSE"><img src="https://img.shields.io/badge/licence-MIT-0f6b5c" alt="Licence: MIT"></a> <a href="BUILD-WITH-XO.md"><img src="https://img.shields.io/badge/bounty-Build%20with%20XO-0f6b5c" alt="Bounty: Build with XO"></a> <a href="MIGRATE-TO-XO.md"><img src="https://img.shields.io/badge/bounty-Migrate%20to%20XO-0f6b5c" alt="Bounty: Migrate to XO"></a> <a href="#runs-invitations-and-templates"><img src="https://img.shields.io/badge/runs-chipnet%20and%20mainnet-0f6b5c" alt="Runs on chipnet and mainnet"></a></p>
+
+<p align="center"><b>Offers of BCH for CashTokens that need no online maker and no escrow, on chipnet and mainnet.</b> · <i>Tawaran BCH untuk CashTokens tanpa pembuat dalam talian dan tanpa escrow, di chipnet dan mainnet.</i><br>
+<a href="docs/debug-tool/swap-intent/taker-clip.mp4"><b>33 s clip</b></a> · <a href="#for-judges"><b>Judging? Start here</b></a> · <a href="#setup-step-by-step">Run it</a> · <a href="#tests">Tests</a> · <a href="#known-limits">Limits</a> · <a href="#migrate-to-xo">Migrate to XO</a> · <a href="#bahasa-melayu">Bahasa Melayu</a><br>
+Built in Malaysia by <a href="https://aimanmalib.com">Aiman Malib</a> · <a href="https://sasateguh.com">Sasa Teguh</a></p>
+
+![Swap Intent: open, then fill, cancel or expire](docs/swap-intent-flow.svg)
 
 OTC offers of BCH for CashTokens without an online maker or escrow: whoever pays the wanted tokens fills the offer,
 and expired offers return to the maker without a key.
-
-![Swap Intent: open, then fill, cancel or expire](docs/swap-intent-flow.svg)
 
 New project. First commit after the 14 November start: [1ac2691](https://github.com/aimanmalib/sampan-xo/commit/1ac2691e4c699dcc3563fafcd2815bf6eadd6b94) (2026-11-14 17:40 UTC).
 
@@ -16,6 +24,8 @@ the Sampan landing contract as an XO template, see [Migrate to XO](#migrate-to-x
 - Build with XO, taker side in the XO debug tool: [33 s clip](docs/debug-tool/swap-intent/taker-clip.mp4) of run browser2.
 - Migrate to XO: [MIGRATE-TO-XO.md](MIGRATE-TO-XO.md) (before and after diagram, same redeem bytecode, chipnet and mainnet runs).
 
+![The XO debug tool after run browser2: the taker's Fill offer invitation completed on chipnet, 1000 tokens paid to the maker for 20000 satoshis](docs/debug-tool/swap-intent/browser2-05-completed.png)
+
 ## What it is
 
 Swap Intent is an XO template with three roles:
@@ -25,8 +35,7 @@ Swap Intent is an XO template with three roles:
 - `maker` can cancel an open offer and take the BCH back.
 - `expirer` (anyone) can return an offer that is `expireAfter` blocks old to the maker, with no key (template version 2).
 
-The offer is enforced by the locking script, not by either party: a fill is valid only if the output at the same index as the
-offer input pays the maker's locking bytecode, carries the wanted token category, and carries at least the wanted token amount.
+The offer is enforced by the locking script, not by either party: a fill is valid only if the output at the same index as the offer input pays the maker's locking bytecode, carries the wanted token category, and carries at least the wanted token amount.
 
 Status: template, offline tests and the chipnet flows fill, cancel and expire are done; see the [journal](JOURNAL.md).
 
@@ -60,8 +69,7 @@ Template variables:
 | `makerKey` | generated on `open` | key whose signature is the only way to cancel |
 | `takerLockingScript` | taker on `fill` | where the taker receives the offered satoshis |
 
-The template source is [template/swap-intent.ts](template/swap-intent.ts); the same template as JSON for import into
-XO tools is [template/swap-intent.json](template/swap-intent.json) (`npx tsx scripts/export-template.ts` writes it).
+The template source is [template/swap-intent.ts](template/swap-intent.ts); the same template as JSON for import into XO tools is [template/swap-intent.json](template/swap-intent.json) (`npx tsx scripts/export-template.ts` writes it).
 
 ## Requirements
 
@@ -126,10 +134,13 @@ The token, deposit and run commands accept `--dry-run` (build and check, no broa
 prints the run steps. Settings that may change (Electrum servers, derivation path, explorers, amounts) live in
 `config/chipnet.json`. Every chipnet transaction is listed in [docs/CHIPNET-RUNS.md](docs/CHIPNET-RUNS.md).
 
+## Tests
+
+`npm test` runs vitest offline, with no network and no wallet; `npm run gate` runs the typecheck (`tsc --noEmit`) first. The tests cover the Swap Intent template and its covenant (open, fill, cancel, expire and the refused cases), the Landing template, its covenant and its redeem bytecode against the deployed Sampan contract, the network limits, the config, the run scripts, the saved invitations and the template files they name, and the runs table below. Measured: 173 tests in 24 files passed (vitest, commit 422e776, 21 Nov 2026). The chipnet and mainnet runs below are recorded transactions, not unit tests.
+
 ## Chipnet runs
 
-`scripts/run.ts` drives `@xo-cash/engine` for each account (engine databases under `.xo/`, ignored by git). Each step is
-its own process and the accounts exchange only invitation files:
+`scripts/run.ts` drives `@xo-cash/engine` for each account (engine databases under `.xo/`, ignored by git). Each step is its own process and the accounts exchange only invitation files:
 
 1. `open` (maker): locks `swap.offeredSatoshis` in the offer and states the wanted token and amount.
 2. `fill-start` (maker): starts the `fill` invitation with the offer coin at input 0. Only the maker's engine tracks the
@@ -138,43 +149,21 @@ its own process and the accounts exchange only invitation files:
    coins and change, and signs its inputs.
 4. `fill-finish` (maker): adds the offer input's unlocking bytecode and broadcasts.
 
-`npx tsx scripts/run.ts fill <run>` runs the four steps in order, each in its own process. To withdraw an open offer
-instead, `npx tsx scripts/run.ts cancel <run>` (maker, same engine as `open`) spends the offer back to the maker's
-locking script, less the template's `cancelFeeSatoshis`.
+`npx tsx scripts/run.ts fill <run>` runs the four steps in order, each in its own process. To withdraw an open offer instead, `npx tsx scripts/run.ts cancel <run>` (maker, same engine as `open`) spends the offer back to the maker's locking script, less the template's `cancelFeeSatoshis`.
 
-`npx tsx scripts/run.ts expire <run>` returns an offer that is at least `expireAfter` blocks old to the maker's locking
-script: one input with sequence `expireAfter`, one output of `offeredSatoshis` less `expireFeeSatoshis`, no signature.
-The script reads the offer coin from Electrum and refuses while it is younger. The step runs with the maker account:
-the XO engine completes an input only for a coin its own account tracks, and an account without `makerKey` cannot
-rebuild the offer script to track it. A refused attempt is archived so the step can be run again.
+`npx tsx scripts/run.ts expire <run>` returns an offer that is at least `expireAfter` blocks old to the maker's locking script: one input with sequence `expireAfter`, one output of `offeredSatoshis` less `expireFeeSatoshis`, no signature. The script reads the offer coin from Electrum and refuses while it is younger. The step runs with the maker account: the XO engine completes an input only for a coin its own account tracks, and an account without `makerKey` cannot rebuild the offer script to track it. A refused attempt is archived so the step can be run again.
 
-Every step accepts `--dry-run` (build and check without broadcasting). Every transaction of every run, with its
-invitation and template, is in [Runs, invitations and templates](#runs-invitations-and-templates). The saved invitations are in
-[invitations/](invitations/); the full list, failures included, is in [docs/CHIPNET-RUNS.md](docs/CHIPNET-RUNS.md).
-Each invitation names its template by id; the exact template is in `template/used/<id>.json`. The id is the one the
-XO engine computes (sha256 of the serialized template); `npx tsx scripts/used-templates.ts --check` confirms that every
-invitation has its file and that each file hashes to its own name.
+Every step accepts `--dry-run` (build and check without broadcasting). Every transaction of every run, with its invitation and template, is in [Runs, invitations and templates](#runs-invitations-and-templates). The saved invitations are in [invitations/](invitations/); the full list, failures included, is in [docs/CHIPNET-RUNS.md](docs/CHIPNET-RUNS.md). Each invitation names its template by id; the exact template is in `template/used/<id>.json`. The id is the one the XO engine computes (sha256 of the serialized template); `npx tsx scripts/used-templates.ts --check` confirms that every invitation has its file and that each file hashes to its own name.
 
-One exception: the P2PKH wallet template of `@xo-cash/templates` (`a31eb858...c672`, the fund invitations) has a public
-example private key in its test scenario, replaced by a placeholder in the stored copy. That file is checked against the
-package export with the same replacement, and the unchanged export must hash to the file's name.
+One exception: the P2PKH wallet template of `@xo-cash/templates` (`a31eb858...c672`, the fund invitations) has a public example private key in its test scenario, replaced by a placeholder in the stored copy. That file is checked against the package export with the same replacement, and the unchanged export must hash to the file's name.
 
 ### Swap Intent on mainnet
 
-One minimum mainnet run, `swapmain1`: `open` (2000 sat, `expireAfter` 2 blocks, values in `config/mainnet-swap.json`,
-limits in `src/swap-network.ts`, which also refuses `fill` on mainnet), then the keyless `expire`, which returned 1500 sat
-to the same maker account. No token was created on mainnet, so no fill ran. All mainnet fees of the run were 1085 sat.
-Rows: [docs/MAINNET-SWAP-RUNS.md](docs/MAINNET-SWAP-RUNS.md); open
-[06e1273d...e6ba](https://blockchair.com/bitcoin-cash/transaction/06e1273d217e3b2e4c4f009d1f33009f141116cc59e0abb9bb5d16f04d3ee6ba) ([3xpl](https://3xpl.com/bitcoin-cash/transaction/06e1273d217e3b2e4c4f009d1f33009f141116cc59e0abb9bb5d16f04d3ee6ba)),
-expire [1a0ce51b...d511](https://blockchair.com/bitcoin-cash/transaction/1a0ce51bcafda1328a2045aaadbdadb4d74486bd86672ad46e4161a767a2d511) ([3xpl](https://3xpl.com/bitcoin-cash/transaction/1a0ce51bcafda1328a2045aaadbdadb4d74486bd86672ad46e4161a767a2d511));
-screenshots: [docs/debug-tool/](docs/debug-tool/README.md#swapmain1-open---expire-on-mainnet).
+One minimum mainnet run, `swapmain1`: `open` (2000 sat, `expireAfter` 2 blocks, values in `config/mainnet-swap.json`, limits in `src/swap-network.ts`, which also refuses `fill` on mainnet), then the keyless `expire`, which returned 1500 sat to the same maker account. No token was created on mainnet, so no fill ran. All mainnet fees of the run were 1085 sat. Rows: [docs/MAINNET-SWAP-RUNS.md](docs/MAINNET-SWAP-RUNS.md); open [06e1273d...e6ba](https://blockchair.com/bitcoin-cash/transaction/06e1273d217e3b2e4c4f009d1f33009f141116cc59e0abb9bb5d16f04d3ee6ba) ([3xpl](https://3xpl.com/bitcoin-cash/transaction/06e1273d217e3b2e4c4f009d1f33009f141116cc59e0abb9bb5d16f04d3ee6ba)), expire [1a0ce51b...d511](https://blockchair.com/bitcoin-cash/transaction/1a0ce51bcafda1328a2045aaadbdadb4d74486bd86672ad46e4161a767a2d511) ([3xpl](https://3xpl.com/bitcoin-cash/transaction/1a0ce51bcafda1328a2045aaadbdadb4d74486bd86672ad46e4161a767a2d511)); screenshots: [docs/debug-tool/](docs/debug-tool/README.md#swapmain1-open---expire-on-mainnet).
 
 ## Runs, invitations and templates
 
-One line per broadcast transaction with a saved invitation: network, txid (linked to an explorer), invitation file and
-the exact template it names. `npx tsx scripts/runs-table.ts --write` writes it from the `ok` rows of
-[docs/CHIPNET-RUNS.md](docs/CHIPNET-RUNS.md) and the mainnet run lists; `--check` confirms it is up to date. Setup
-transactions without an invitation (token mint, plain deposits) and failed attempts are only in the run lists.
+One line per broadcast transaction with a saved invitation: network, txid (linked to an explorer), invitation file and the exact template it names. `npx tsx scripts/runs-table.ts --write` writes it from the `ok` rows of [docs/CHIPNET-RUNS.md](docs/CHIPNET-RUNS.md) and the mainnet run lists; `--check` confirms it is up to date. Setup transactions without an invitation (token mint, plain deposits) and failed attempts are only in the run lists.
 
 <!-- runs-table:start -->
 | Network | Run | Action | Txid | Invitation | Template |
@@ -226,8 +215,7 @@ transactions without an invitation (token mint, plain deposits) and failed attem
 
 ## Open a saved invitation in the XO debug tool
 
-The XO debugging wallet at https://blaze.xo.cash/ reads the saved invitations and the chipnet transactions. Use a new
-disposable account there; no funds are needed to view.
+The XO debugging wallet at https://blaze.xo.cash/ reads the saved invitations and the chipnet transactions. Use a new disposable account there; no funds are needed to view.
 
 1. Open https://blaze.xo.cash/, choose "Create new account", set the network to `chipnet`, then "Save and use account".
 2. "Import Template", paste the contents of [template/swap-intent.json](template/swap-intent.json) and choose
@@ -240,14 +228,11 @@ disposable account there; no funds are needed to view.
 4. "Inspect", choose `chipnet` and paste a txid from the table above. The script debugger steps through each input;
    the offer input shows the redeem script with the fill and cancel branches.
 
-Screenshots of each step, for every saved Swap Intent invitation and transaction, are in
-[docs/debug-tool/](docs/debug-tool/README.md).
+Screenshots of each step, for every saved Swap Intent invitation and transaction, are in [docs/debug-tool/](docs/debug-tool/README.md).
 
 ## Take an offer from inside the XO debug tool
 
-In runs `browser1` and `browser2` the taker was a new disposable chipnet account in https://blaze.xo.cash/, which built,
-signed and exported its part of the fill; browser2 is recorded in
-[taker-clip.mp4](docs/debug-tool/swap-intent/taker-clip.mp4). To do the same:
+In runs `browser1` and `browser2` the taker was a new disposable chipnet account in https://blaze.xo.cash/, which built, signed and exported its part of the fill; browser2 is recorded in [taker-clip.mp4](docs/debug-tool/swap-intent/taker-clip.mp4). To do the same:
 
 1. In the debug tool create a chipnet account and import `template/swap-intent.json` (steps 1 and 2 above). "Receive"
    asks for a default receive policy: choose "Set up default receive", then `Receive` and `Wallet (P2PKH)`. Do the same
@@ -495,6 +480,16 @@ with the entrant reviewing the result. The feedback in FEEDBACK.md was written b
 
 The entrant's main BCH BLAZE 2026 project is Sampan: https://sampan.sasateguh.com and https://github.com/aimanmalib/sampan
 
+## Bahasa Melayu
+
+Swap Intent ialah templat XO untuk tawaran BCH bagi CashTokens: pembuat mengunci BCH dan menyatakan kategori serta jumlah token yang dikehendaki; sesiapa yang membayar token itu kepada pembuat mengambil BCH tersebut, pembuat boleh membatalkan tawaran yang masih terbuka, dan selepas `expireAfter` blok sesiapa pun boleh memulangkannya kepada pembuat tanpa kunci. Peraturan itu dikuatkuasakan oleh skrip penguncian, bukan oleh mana-mana pihak. Repositori ini juga memegang entri kedua, Migrate to XO: kontrak alamat pendaratan Sampan sebagai templat XO, dengan bytecode tebus yang sama. Kedua-duanya entri BCH BLAZE 2026. Mula di [For judges](#for-judges); jalankan dengan [Setup, step by step](#setup-step-by-step); ujian di [Tests](#tests); had di [Known limits](#known-limits).
+
 ## License
 
 MIT, see [LICENSE](LICENSE).
+
+## Work with Sasa Teguh
+
+I built this project. I run [Sasa Teguh](https://sasateguh.com), a studio in Malaysia that builds websites found on Google and in AI answers, and sets up systems like this one for businesses.
+
+[Book a call](https://sasateguh.com/book) · hello@sasateguh.com · [More from Sasa Teguh](https://github.com/sasateguh)
