@@ -1378,3 +1378,34 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
   short by 3500 sat.
 - Result: `swapmain1` (open, expire) stays the only mainnet Swap Intent run. `fill` stays rejected on mainnet by
   `src/swap-network.ts`, and the documents keep saying that no token is created on mainnet.
+
+## 2026-11-21 12:40 UTC: Engine 0.1.1-next.18230317763 and chipnet run landing7
+
+- `npm view @xo-cash/engine dist-tags` at 12:40: next `0.1.1-next.18230317763`. Its exact dependencies include
+  `@xo-cash/utils` 0.0.12 (pinned here at 0.0.10 until now), `@xo-cash/templates` 0.0.12, `@xo-cash/types` 0.0.8.
+  The engine databases `.xo/` and `.xo-mainnet/` were copied to an untracked backup folder first, then
+  `npm install --save-exact @xo-cash/engine@0.1.1-next.18230317763 @xo-cash/utils@0.0.12` ("added 2 packages, and
+  changed 2 packages"). `npm ls` still shows `@xo-cash/utils` 0.0.10 under `@xo-cash/crypto` and `@xo-cash/state`
+  (their own exact dependency); templates and types were not changed.
+- Checks on the new engine, before any run: `bash scripts/gerbang-ujian.sh` (typecheck and the whole vitest suite)
+  22 files, 163 tests passed with no test or template change; `check-bytecode.ts --json` `identical: true`;
+  `used-templates.ts --check` "template/used: complete" (template ids unchanged).
+- 12:47 `landing-run.ts land landing7 --dry-run` built a land transaction from the payer engine's coins, not broadcast.
+- 12:48:23 `timeout 200 npx tsx scripts/landing-run.ts land landing7` exit 0 at 12:50:06 (about 100 s, against about
+  25 s for landing6), broadcast `e27636e828cbccfc62c031dd6e37caf48212aaed3b3422fc443aaaf605d92f61`. Read back from chipnet
+  Electrum: output 0 10000 sat to `bchtest:pvp48e6zfhj9glvrlwp8tzap2rmpkl3yel2g29rt9h9y99ja86hfqc2u6lnlx`, output 1 change.
+  The invitation names template `e0e9b742...e03e`, as in landing3 to landing6.
+- 12:50:12 `timeout 400 npx tsx scripts/landing-run.ts convert landing7` exit 0 at 12:53:18; convert-start, convert-take
+  and convert-finish each saved their invitation; broadcast
+  `91f6d5cbd71fd4e8aa69bf8260668d97cb81ffb5079ff817b6097e4bf3f56f0e`. Read back: input 0 the landed coin, input 1 the
+  taker token coin `d8a5128b...:1`; output 0 1000 sat and 100 units of `008eebd7...f95a` to the owner
+  `bchtest:zz4rr7mn324zdkeav5v3gpqvlf3jx9u68q0vhr6hgz`; output 1 8800 sat and 995400 units to the taker.
+- Differences seen against 0.1.1-next.18170561234, from the two run logs: no script or step change was needed. The
+  convert-finish step no longer printed the spent coin reservation note seen in landing6 (`UnspentOutputNotFoundInStoreError`);
+  neither log has a line with "note", "header", "checkpoint" or "error". `engine.stop()` returned in all four processes.
+- Opened at 12:51 and 12:55 on https://chipnet.imaginary.cash/tx/ (land 4 confirmations, convert 1 confirmation with
+  the token category listed). https://explorer.selene.cash/ answered 200 for the land and HTTP 429 for the convert.
+  At 12:57 chipnet Electrum gave tip 341151, land height 341142, convert height 341147. Then the rows were written `ok`.
+- `src/plain-coins.ts` does not exist yet, so `src/landing-land.ts` keeps its own `tokenCategory === undefined` filter.
+- README (requirements pin), MIGRATE-TO-XO.md (compiler row, runs table, landing7 line), ADR 0001 and
+  docs/CHIPNET-RUNS.md name the new engine version.
