@@ -68,8 +68,10 @@ and runs it on chipnet. The Swap Intent template in the same repository is a sep
   and `ownerAddress` live in `config/chipnet.json` and are checked when the config loads.
 - **Engine version.** `@xo-cash/engine` stays at `0.1.1-next.18029697917`, which is still the `next` tag on 2026-11-16.
   Update 2026-11-19: moved to `0.1.1-next.18170561234` (the new `next` tag) after the Landing and Swap Intent tests,
-  `check-bytecode` and `used-templates --check` passed on it unchanged; chipnet run landing6 used it. Way back: pin the
-  earlier version again in `package.json` and run `npm ci`.
+  `check-bytecode` and `used-templates --check` passed on it unchanged; chipnet run landing6 used it.
+  Update 2026-11-21: moved to `0.1.1-next.18230317763` (the `next` tag) with `@xo-cash/utils` 0.0.12, its exact
+  dependency; the full test suite, `check-bytecode` and `used-templates --check` passed unchanged; chipnet run landing7
+  used it. Way back: pin the earlier version again in `package.json` and run `npm ci`.
 
 ## Consequences
 
