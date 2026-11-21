@@ -1,5 +1,6 @@
 import { cashAddressToLockingBytecode, binToHex, hexToBin } from '@bitauth/libauth';
 import { finishAction, signOwnInputs, type ActionResult } from './swap-open.js';
+import { plainCoins, tokenCoin } from './plain-coins.js';
 import type { AccountEngine } from './xo-engine.js';
 
 /** What to send to another wallet: plain satoshis, or fungible tokens of one category. */
@@ -34,11 +35,8 @@ export const sendFromEngine = async (account: AccountEngine, recipientLockingscr
   const created = await engine.createInvitation({ templateIdentifier, actionIdentifier });
   const invitationIdentifier = created.invitation.invitationIdentifier;
   const spendable = await engine.listSpendableUnspentOutputs();
-  const plain = spendable.filter((utxo) => utxo.tokenCategory === undefined).sort((a, b) => b.valueSatoshis - a.valueSatoshis)[0];
-  const token =
-    transfer.kind === 'tokens'
-      ? spendable.find((utxo) => utxo.tokenCategory === transfer.category && BigInt(utxo.tokenAmount ?? '0') >= transfer.amount)
-      : undefined;
+  const plain = plainCoins(spendable)[0];
+  const token = transfer.kind === 'tokens' ? tokenCoin(spendable, transfer.category, transfer.amount) : undefined;
   if (plain === undefined || (transfer.kind === 'tokens' && token === undefined)) throw new Error(`the ${actionIdentifier} sender has no suitable coin`);
   await engine.appendInvitation(invitationIdentifier, {
     templateIdentifier,

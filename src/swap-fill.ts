@@ -1,6 +1,7 @@
 import { hexToBin } from '@bitauth/libauth';
 import type { XOInvitation, XOInvitationVariable } from '@xo-cash/types';
 import { finishAction, signOwnInputs, type ActionResult } from './swap-open.js';
+import { largestPlainCoin, tokenCoin } from './plain-coins.js';
 import type { AccountEngine } from './xo-engine.js';
 
 /** The six offer variables, as the maker committed them in the open invitation. */
@@ -75,9 +76,9 @@ export const takeFill = async (account: AccountEngine, started: XOInvitation, wa
   const accepted = await engine.acceptInvitation(started, { roleIdentifier: 'taker' });
   const invitationIdentifier = accepted.invitation.invitationIdentifier;
   const spendable = await engine.listSpendableUnspentOutputs();
-  const tokenCoin = spendable.find((utxo) => utxo.tokenCategory === wantedCategory && BigInt(utxo.tokenAmount ?? '0') >= wantedAmount);
-  const plainCoin = spendable.filter((utxo) => utxo.tokenCategory === undefined).sort((a, b) => b.valueSatoshis - a.valueSatoshis)[0];
-  if (tokenCoin === undefined || plainCoin === undefined) throw new Error('the taker engine wallet needs a coin with the wanted tokens and a plain coin');
+  const paymentCoin = tokenCoin(spendable, wantedCategory, wantedAmount);
+  if (paymentCoin === undefined) throw new Error('the taker engine wallet needs a coin with the wanted tokens and a plain coin');
+  const plainCoin = largestPlainCoin(spendable, 'taker engine wallet');
   const role = { roleIdentifier: 'taker' };
   const takerLockingScript = await engine.generateLockingBytecodeFromDefaultPolicy('receive');
   await engine.appendInvitation(invitationIdentifier, {
@@ -89,7 +90,7 @@ export const takeFill = async (account: AccountEngine, started: XOInvitation, wa
       { outputIdentifier: 'makerPaymentOutput', transactionIndex: 0, ...role },
       { outputIdentifier: 'takerPayoutOutput', ...role },
     ],
-    inputs: [tokenCoin, plainCoin].map((utxo) => ({
+    inputs: [paymentCoin, plainCoin].map((utxo) => ({
       outpointTransactionHash: hexToBin(utxo.outpointTransactionHash),
       outpointIndex: utxo.outpointIndex,
       sequenceNumber: 0,

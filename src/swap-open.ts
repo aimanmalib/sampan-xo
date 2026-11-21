@@ -1,6 +1,7 @@
 import { hexToBin } from '@bitauth/libauth';
 import type { XOInvitation } from '@xo-cash/types';
 import type { ChipnetConfig } from './config.js';
+import { largestPlainCoin } from './plain-coins.js';
 import type { AccountEngine } from './xo-engine.js';
 
 export interface ActionResult {
@@ -95,10 +96,7 @@ export const openOffer = async (account: AccountEngine, config: Pick<ChipnetConf
       outputs: [{ outputIdentifier: 'offerOutput', ...role }],
     });
     const coins = await engine.listSpendableUnspentOutputs();
-    const coin = coins
-      .filter((utxo) => utxo.tokenCategory === undefined)
-      .sort((a, b) => Number(BigInt(b.valueSatoshis) - BigInt(a.valueSatoshis)))[0];
-    if (coin === undefined) throw new Error('the maker engine wallet has no spendable plain coin; run scripts/deposit.ts maker');
+    const coin = largestPlainCoin(coins, 'maker engine wallet (run scripts/deposit.ts maker)');
     await engine.appendInvitation(invitationIdentifier, {
       templateIdentifier,
       actionIdentifier: 'open',
