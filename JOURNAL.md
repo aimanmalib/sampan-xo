@@ -1530,3 +1530,34 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
   `tests/landing-explorer-links.test.ts` fails when a Selene transaction link in MIGRATE-TO-XO.md, README.md or
   the run and debug-tool documents lacks `?network=chipnet`. Checked red by removing the parameter from line 57 of
   MIGRATE-TO-XO.md (1 failed, 6 passed), green after restoring it (7 passed).
+
+## 2026-11-21 16:05 to 16:35 UTC: one token filter for coin selection, checked against Electrum
+
+- Before: `src/swap-open.ts`, `src/swap-fill.ts` and `src/send.ts` each picked a plain coin with their own
+  `tokenCategory === undefined` filter. New `src/plain-coins.ts` holds one definition: a plain coin has no token
+  category, no fungible amount and no NFT capability; `tokenCoin` picks by category and minimum amount. The three
+  files now use it. When no plain coin exists the error is
+  `the taker engine wallet has no spendable plain coin (coins holding tokens are never spent as satoshis)`.
+- `tests/plain-coins.test.ts` (9 tests): a token coin worth more than every plain coin is not picked; an NFT coin
+  without an amount and a coin with only a category are not picked; no plain coin gives the error above; token
+  selection by category and amount; raw Electrum `token_data` converted to the engine field names; `openOffer` with a
+  fake engine funds the offer with the plain coin when a larger token coin is present; `check-coins` refuses
+  `--network mainnet`. Sabotage: removing the `tokenCategory` check from `isPlainCoin` gave
+  `1 failed | 5 passed (6)` (the category-only coin), green after restoring it.
+- The engine types (`@xo-cash/state` `UnspentOutputData`) say only that a coin without `tokenCategory` is plain BCH.
+  They do not say whether a coin can carry `tokenAmount` or `tokenNftCapability` without a category, so the filter
+  checks all three.
+- `scripts/check-coins.ts <account>` (chipnet only, broadcasts nothing) starts the account's engine, reads
+  `listSpendableUnspentOutputs()` and `listUnspentOutputs()`, and asks Electrum `blockchain.scripthash.listunspent`
+  with `include_tokens` for every locking script from `listScriptHashes()`. Results, 16:12 to 16:30 UTC:
+  - taker, 36 scripts: Electrum 16 coins (8 with `token_data`); engine tracks all 16 with the same token fields;
+    6 are spendable, 10 are `confirmed` but `selectable: false` (7 of them hold tokens).
+  - maker, 63 scripts: Electrum 10 coins (5 with `token_data`); engine tracks all 10 with the same token fields;
+    9 spendable, 1 not selectable (a plain coin).
+  - Token field mismatches: 0 for both. No Electrum-side filter was added.
+- Not explained by the engine types: why the 10 taker coins are tracked but not selectable. Coin selection here only
+  reads the spendable list, so they are never chosen.
+- During the first maker check the engine logged, more than once:
+  `Failed to process transaction update: Error: Server reported merkle root 8dbd01059a156cb3b4352f1366da73d9949cc403958f80006dec796e0ba0139c for checkpoint #341199, expected bf0aebf5f8539fcc41bd94128abd1c2c79e1b28eca0da2402db52e62d838dfed.`
+  The check still finished with exit code 0. The second taker plus maker pass took about 15 minutes against about
+  3 minutes for the first; the host load average was above 50 at the time.

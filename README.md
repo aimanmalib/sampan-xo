@@ -266,6 +266,8 @@ In runs `browser1` and `browser2` the taker was a new disposable chipnet account
 - Through the XO engine in this repository, a fill is interactive: only the maker's engine tracks the offer coin, so the
   maker adds the offer input (`fill-start`) and its unlocking bytecode (`fill-finish`) around the taker's step.
 - The cancel fee is a fixed template constant (`cancelFeeSatoshis`, 500 satoshis).
+- Coin selection (`src/plain-coins.ts`) never spends a token output as plain satoshis. `scripts/check-coins.ts` compared the
+  engine's coin records with Electrum on chipnet (2026-11-21 16:30 UTC): every token coin had the same token fields in both.
 - `Engine.stop()` did not always settle during the chipnet runs, so the scripts wait at most
   `swap.engineStopTimeoutSeconds` for it and then exit.
 - Chipnet test wallets, plus one minimum mainnet run (`swapmain1`, 2000 sat, open and expire). The code has not been
