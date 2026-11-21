@@ -1,0 +1,147 @@
+{
+  "invitationIdentifier": "b8cdf8fc27a08b66fa90539f4ffc8219",
+  "templateIdentifier": "e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e",
+  "actionIdentifier": "convert",
+  "createdAtTimestamp": 1795271410171,
+  "commits": [
+    {
+      "commitIdentifier": "74c8bd8cd2a87c8f5ed15dd4e8044431",
+      "createdAtTimestamp": 1795271410172,
+      "data": {},
+      "expiresAtTimestamp": 1795289410172,
+      "signature": "2e4bd0dff3bb33eb4f7d9e5e816d7682d9d064e7ced9c22e540a0bee6166b2da79285f8d47dc80d70442728fdb601ff50678d03686ef657a10ea7a20b21dac94",
+      "entityIdentifier": "tpubDFK2w8YsRRe6fSPRtHKsK7tHAxJ8EbiDZFxoEMuyx1JC7dEDtDZvGRke4awJbsNmGtbA3nqbo5Tq8ykKnYMxcWMrqaAT6DG9ksNxPNBssSX"
+    },
+    {
+      "commitIdentifier": "a1642028e32bf6dc4dbc5f40eb6f9a60",
+      "previousCommitIdentifier": "74c8bd8cd2a87c8f5ed15dd4e8044431",
+      "createdAtTimestamp": 1795271410497,
+      "data": {
+        "variables": [
+          {
+            "variableIdentifier": "landedSatoshis",
+            "value": "<bigint: 10000n>"
+          },
+          {
+            "variableIdentifier": "ownerLockingScript",
+            "value": "76a914aa31fb738aaa26db3d651914040cfa6323179a3888ac"
+          },
+          {
+            "variableIdentifier": "tokenCategory",
+            "value": "008eebd7502376715a8ffc87f6b6341cbe284c27237ea0204eaee167603ff95a"
+          },
+          {
+            "variableIdentifier": "rateNum",
+            "value": "<bigint: 1n>"
+          },
+          {
+            "variableIdentifier": "rateDen",
+            "value": "<bigint: 100n>"
+          },
+          {
+            "variableIdentifier": "returnAfter",
+            "value": "<bigint: 6n>"
+          }
+        ],
+        "inputs": [
+          {
+            "inputIdentifier": "convertInput",
+            "transactionIndex": 0,
+            "outpointTransactionHash": "<uint8array: afebaf3d75ca1fb9a6682df22b5b798d48de33251a549d859d1920ce44a5e538>",
+            "outpointIndex": 0,
+            "sequenceNumber": 0
+          }
+        ]
+      },
+      "expiresAtTimestamp": 1795289410496,
+      "signature": "fb344578276c5392aded38c1500e28a9d76652851ca68fbf7055c0e02f730e51379c343c64bf9c99bfceff1d389c10ddd167cacd47744690d98af50deac67d04",
+      "entityIdentifier": "tpubDFK2w8YsRRe6fSPRtHKsK7tHAxJ8EbiDZFxoEMuyx1JC7dEDtDZvGRke4awJbsNmGtbA3nqbo5Tq8ykKnYMxcWMrqaAT6DG9ksNxPNBssSX"
+    },
+    {
+      "commitIdentifier": "63aaab3668fd801987b1475c41365dc6",
+      "previousCommitIdentifier": "a1642028e32bf6dc4dbc5f40eb6f9a60",
+      "createdAtTimestamp": 1795271439053,
+      "data": {
+        "roleIdentifier": "converter"
+      },
+      "expiresAtTimestamp": 1795289439052,
+      "signature": "c7413c03631c9f72d6dcc126b09366b178421033b1cb72f4473f46262b917d146675bb2ccc6d381c65d03e95caf948074550f0d2a7139c86eda210b1957992fc",
+      "entityIdentifier": "tpubDEAFjKdhnFW8BPMydLdLzskSgopuq4Sqspraifr3kqWrxoJdBLcaUBKcH4epDESAVsiPNAkv7szBpcPGVCiGM6k52PyFxww6nUBYGC9ahHf"
+    },
+    {
+      "commitIdentifier": "65593dbdf586cc804fd64833a796b6c7",
+      "previousCommitIdentifier": "63aaab3668fd801987b1475c41365dc6",
+      "createdAtTimestamp": 1795271444061,
+      "data": {
+        "variables": [
+          {
+            "variableIdentifier": "converterLockingScript",
+            "value": "76a914c23eeb5c5da4b0a9e1438255835d8351d4b7d7f688ac",
+            "roleIdentifier": "converter"
+          },
+          {
+            "variableIdentifier": "converterCoinSatoshis",
+            "value": "<bigint: 800n>",
+            "roleIdentifier": "converter"
+          },
+          {
+            "variableIdentifier": "converterCoinTokens",
+            "value": "<bigint: 994400n>",
+            "roleIdentifier": "converter"
+          },
+          {
+            "variableIdentifier": "convertFeeSatoshis",
+            "value": "<bigint: 1000n>",
+            "roleIdentifier": "converter"
+          }
+        ],
+        "inputs": [
+          {
+            "transactionIndex": 1,
+            "outpointTransactionHash": "<uint8array: f3768043b76528ce5f966b0ef0a719deaadf5d73e36bf30df4ddebba1ffde521>",
+            "outpointIndex": 2,
+            "sequenceNumber": 0,
+            "roleIdentifier": "converter"
+          }
+        ],
+        "outputs": [
+          {
+            "outputIdentifier": "ownerTokenOutput",
+            "transactionIndex": 0,
+            "roleIdentifier": "converter",
+            "lockingBytecode": "<uint8array: 76a914aa31fb738aaa26db3d651914040cfa6323179a3888ac>"
+          },
+          {
+            "outputIdentifier": "converterPayoutOutput",
+            "transactionIndex": 1,
+            "roleIdentifier": "converter",
+            "lockingBytecode": "<uint8array: 76a914c23eeb5c5da4b0a9e1438255835d8351d4b7d7f688ac>"
+          }
+        ],
+        "roleIdentifier": "converter"
+      },
+      "expiresAtTimestamp": 1795289444061,
+      "signature": "dc0ea1784d65fa665aec93ca7e83bac0f2e2ea67e7c1e7da0d0121a6d567b7156d7f313c5eb114e59e4ef45d3a8c441edabf5ced4075c47319d2483337040b99",
+      "entityIdentifier": "tpubDEAFjKdhnFW8BPMydLdLzskSgopuq4Sqspraifr3kqWrxoJdBLcaUBKcH4epDESAVsiPNAkv7szBpcPGVCiGM6k52PyFxww6nUBYGC9ahHf"
+    },
+    {
+      "commitIdentifier": "d9ccb4e276c2803349317464ff55b1bd",
+      "previousCommitIdentifier": "65593dbdf586cc804fd64833a796b6c7",
+      "createdAtTimestamp": 1795271446763,
+      "data": {
+        "inputs": [
+          {
+            "mergesWith": {
+              "commitIdentifier": "65593dbdf586cc804fd64833a796b6c7",
+              "itemIndex": 0
+            },
+            "unlockingBytecode": "<uint8array: 412a90df0aaa312a1bd31c784122beae6fd1550ef11e699ab1d599a7d0ef933c38025f56691799cd37eb8d85a886ed375d1e76bc828dc874701bd71be2acfaca9041210378731723735da4a0392bf68fcfd827a4171f7c00a7aaa4671481770aef3f57db>"
+          }
+        ]
+      },
+      "expiresAtTimestamp": 1795289446762,
+      "signature": "f6f538b9a4452f6b710854a5c57f78a950d1edb8ef9a5efe0965ce5e8baeed71b3b9deb9d60fa1f2a564581ab951653a967d1bcd718edddbeb9849be71f4d4d6",
+      "entityIdentifier": "tpubDEAFjKdhnFW8BPMydLdLzskSgopuq4Sqspraifr3kqWrxoJdBLcaUBKcH4epDESAVsiPNAkv7szBpcPGVCiGM6k52PyFxww6nUBYGC9ahHf"
+    }
+  ]
+}

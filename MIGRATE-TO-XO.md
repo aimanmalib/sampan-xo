@@ -31,7 +31,7 @@ Prize and Community Choice address for the Migrate to XO entry only.
 | | Original (Sampan, CashScript) | XO template (this repo) |
 | --- | --- | --- |
 | Contract source | [contracts/landing.cash](https://github.com/aimanmalib/sampan/blob/main/contracts/landing.cash) | [template/landing.ts](template/landing.ts), exported as [template/landing.json](template/landing.json) |
-| Compiler | cashc 0.14.0 (artifact: [tests/fixtures/landing-artifact.json](tests/fixtures/landing-artifact.json)) | XO template CashASM, compiled by `@xo-cash/engine` 0.1.1-next.18230317763 (`@xo-cash/templates` 0.0.12, `@xo-cash/types` 0.0.8, `@xo-cash/utils` 0.0.12); chipnet `landing7` ran on this version, `landing6` on 0.1.1-next.18170561234, the earlier runs on 0.1.1-next.18029697917 |
+| Compiler | cashc 0.14.0 (artifact: [tests/fixtures/landing-artifact.json](tests/fixtures/landing-artifact.json)) | XO template CashASM, compiled by `@xo-cash/engine` 0.1.1-next.18230317763 (`@xo-cash/templates` 0.0.12, `@xo-cash/types` 0.0.8, `@xo-cash/utils` 0.0.12); chipnet `landing7` and `landing8` ran on this version, `landing6` on 0.1.1-next.18170561234, the earlier runs on 0.1.1-next.18029697917 |
 | sha256 of the redeem bytecode (136 bytes, parameters of the deployed contract) | `1901bbb619676836ffa58180113e57612d01e47caad8d8a1fb1aedbff586f01d` (from the deployed transaction) | `1901bbb619676836ffa58180113e57612d01e47caad8d8a1fb1aedbff586f01d` (compiled by the XO engine); `check-bytecode` prints `identical: true` |
 | P2SH wrapper | P2SH20 address | P2SH32 address: XO's `p2sh` locking type is P2SH32 and there is no P2SH20 type ([ADR 0002](docs/decisions/0002-byte-identical-port.md)) |
 | Who builds the transactions | Sampan's own code; for `convert` the other inputs and outputs are Cauldron pools | The XO engine, through invitations: one role per party, saved as `invitations/*.json` |
@@ -65,6 +65,8 @@ template that invitation names. Template `e0e9b742...e03e` is [template/landing.
 | chipnet | landing6 | convert | [29c6bf27b461bc26809331131f8271c07c23ab9f4400322e125182c000c72d7c](https://explorer.selene.cash/tx/29c6bf27b461bc26809331131f8271c07c23ab9f4400322e125182c000c72d7c?network=chipnet) | [invitations/landing6-convert.json](invitations/landing6-convert.json) | [e0e9b742...e03e](template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json) |
 | chipnet | landing7 | land | [e27636e828cbccfc62c031dd6e37caf48212aaed3b3422fc443aaaf605d92f61](https://explorer.selene.cash/tx/e27636e828cbccfc62c031dd6e37caf48212aaed3b3422fc443aaaf605d92f61?network=chipnet) | [invitations/landing7-land.json](invitations/landing7-land.json) | [e0e9b742...e03e](template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json) |
 | chipnet | landing7 | convert | [91f6d5cbd71fd4e8aa69bf8260668d97cb81ffb5079ff817b6097e4bf3f56f0e](https://explorer.selene.cash/tx/91f6d5cbd71fd4e8aa69bf8260668d97cb81ffb5079ff817b6097e4bf3f56f0e?network=chipnet) | [invitations/landing7-convert.json](invitations/landing7-convert.json) | [e0e9b742...e03e](template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json) |
+| chipnet | landing8 | land | [afebaf3d75ca1fb9a6682df22b5b798d48de33251a549d859d1920ce44a5e538](https://chipnet.imaginary.cash/tx/afebaf3d75ca1fb9a6682df22b5b798d48de33251a549d859d1920ce44a5e538) | [invitations/landing8-land.json](invitations/landing8-land.json) | [e0e9b742...e03e](template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json) |
+| chipnet | landing8 | convert | [3c2245b3ff96b9958384c8270cbf04f39e1b8a8ec5b6c4648c78a37e1b0fd0e5](https://chipnet.imaginary.cash/tx/3c2245b3ff96b9958384c8270cbf04f39e1b8a8ec5b6c4648c78a37e1b0fd0e5) | [invitations/landing8-convert.json](invitations/landing8-convert.json) | [e0e9b742...e03e](template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json) |
 | mainnet | mainnet1 | land | [7307ceebe247f57b177f8dbcb69cad97a3a05055712d74934b65f0713551b8ef](https://blockchair.com/bitcoin-cash/transaction/7307ceebe247f57b177f8dbcb69cad97a3a05055712d74934b65f0713551b8ef) ([3xpl](https://3xpl.com/bitcoin-cash/transaction/7307ceebe247f57b177f8dbcb69cad97a3a05055712d74934b65f0713551b8ef)) | [invitations/mainnet1-land.json](invitations/mainnet1-land.json) | [e0e9b742...e03e](template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json) |
 | mainnet | mainnet1 | giveBack | [80387030d47911bb9fa144892cf853a61cb3e4e8bc5f3ce948e78e99e67ca8d8](https://blockchair.com/bitcoin-cash/transaction/80387030d47911bb9fa144892cf853a61cb3e4e8bc5f3ce948e78e99e67ca8d8) ([3xpl](https://3xpl.com/bitcoin-cash/transaction/80387030d47911bb9fa144892cf853a61cb3e4e8bc5f3ce948e78e99e67ca8d8)) | [invitations/mainnet1-giveBack.json](invitations/mainnet1-giveBack.json) | [e0e9b742...e03e](template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json) |
 
@@ -73,11 +75,19 @@ template that invitation names. Template `e0e9b742...e03e` is [template/landing.
 - landing5: the converter role was a new account inside the XO debug tool, which signed its token input there.
 - landing6: land, then convert on `@xo-cash/engine` 0.1.1-next.18170561234; the earlier runs used 0.1.1-next.18029697917.
 - landing7: land, then convert on engine 0.1.1-next.18230317763 (the `next` tag on 2026-11-21); the owner received 100 test token units at output 0 (convert [91f6d5cb...6f0e](https://chipnet.imaginary.cash/tx/91f6d5cbd71fd4e8aa69bf8260668d97cb81ffb5079ff817b6097e4bf3f56f0e)).
+- landing8: land, then one convert under the rate that the node refused (below), then a valid convert; the owner received 100 test token units.
 - mainnet1: 5000 sat landed, giveBack paid the owner 4000 sat; the only mainnet run (`config/mainnet.json`).
 
 Failed attempts and the runs `landing1` and `landing2` (made with an earlier hand-written script, template
 `03fad653...3515`) are listed in [docs/CHIPNET-RUNS.md](docs/CHIPNET-RUNS.md); the mainnet rows, including the two
 funding transactions, are in [docs/MAINNET-RUNS.md](docs/MAINNET-RUNS.md).
+
+## Rejected on chain
+
+In landing8 a convert that paid the owner 99 test token units, one under the minimum of 100, was built with libauth and
+sent once to chipnet. The node refused it with `mandatory-script-verify-flag-failed` and it was never mined; the raw
+transaction, the node's answer and the covenant line that fails are in
+[docs/rejected/landing8-convert-under-rate.md](docs/rejected/landing8-convert-under-rate.md).
 
 ## In the XO debug tool
 

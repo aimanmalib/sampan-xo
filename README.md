@@ -216,6 +216,8 @@ transactions without an invitation (token mint, plain deposits) and failed attem
 | chipnet | landing7 | convert | [91f6d5cbd71fd4e8aa69bf8260668d97cb81ffb5079ff817b6097e4bf3f56f0e](https://chipnet.imaginary.cash/tx/91f6d5cbd71fd4e8aa69bf8260668d97cb81ffb5079ff817b6097e4bf3f56f0e) | [invitations/landing7-convert.json](invitations/landing7-convert.json) | [template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json](template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json) |
 | chipnet | run7 | open | [daeed04068641747c21073120ddc7142a250794316a8bcbe08b45f231a5c1416](https://chipnet.imaginary.cash/tx/daeed04068641747c21073120ddc7142a250794316a8bcbe08b45f231a5c1416) | [invitations/run7-open.json](invitations/run7-open.json) | [template/used/8f0fb78d266c54d77852910b1ed8fb3772a1a7cd625dde6b548a247f9896712e.json](template/used/8f0fb78d266c54d77852910b1ed8fb3772a1a7cd625dde6b548a247f9896712e.json) |
 | chipnet | run7 | fill | [f3768043b76528ce5f966b0ef0a719deaadf5d73e36bf30df4ddebba1ffde521](https://chipnet.imaginary.cash/tx/f3768043b76528ce5f966b0ef0a719deaadf5d73e36bf30df4ddebba1ffde521) | [invitations/run7-fill.json](invitations/run7-fill.json) | [template/used/8f0fb78d266c54d77852910b1ed8fb3772a1a7cd625dde6b548a247f9896712e.json](template/used/8f0fb78d266c54d77852910b1ed8fb3772a1a7cd625dde6b548a247f9896712e.json) |
+| chipnet | landing8 | land | [afebaf3d75ca1fb9a6682df22b5b798d48de33251a549d859d1920ce44a5e538](https://chipnet.imaginary.cash/tx/afebaf3d75ca1fb9a6682df22b5b798d48de33251a549d859d1920ce44a5e538) | [invitations/landing8-land.json](invitations/landing8-land.json) | [template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json](template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json) |
+| chipnet | landing8 | convert | [3c2245b3ff96b9958384c8270cbf04f39e1b8a8ec5b6c4648c78a37e1b0fd0e5](https://chipnet.imaginary.cash/tx/3c2245b3ff96b9958384c8270cbf04f39e1b8a8ec5b6c4648c78a37e1b0fd0e5) | [invitations/landing8-convert.json](invitations/landing8-convert.json) | [template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json](template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json) |
 | mainnet | mainnet1 | land | [7307ceebe247f57b177f8dbcb69cad97a3a05055712d74934b65f0713551b8ef](https://blockchair.com/bitcoin-cash/transaction/7307ceebe247f57b177f8dbcb69cad97a3a05055712d74934b65f0713551b8ef) ([3xpl](https://3xpl.com/bitcoin-cash/transaction/7307ceebe247f57b177f8dbcb69cad97a3a05055712d74934b65f0713551b8ef)) | [invitations/mainnet1-land.json](invitations/mainnet1-land.json) | [template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json](template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json) |
 | mainnet | mainnet1 | giveBack | [80387030d47911bb9fa144892cf853a61cb3e4e8bc5f3ce948e78e99e67ca8d8](https://blockchair.com/bitcoin-cash/transaction/80387030d47911bb9fa144892cf853a61cb3e4e8bc5f3ce948e78e99e67ca8d8) ([3xpl](https://3xpl.com/bitcoin-cash/transaction/80387030d47911bb9fa144892cf853a61cb3e4e8bc5f3ce948e78e99e67ca8d8)) | [invitations/mainnet1-giveBack.json](invitations/mainnet1-giveBack.json) | [template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json](template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json) |
 | mainnet | swapmain1 | open | [06e1273d217e3b2e4c4f009d1f33009f141116cc59e0abb9bb5d16f04d3ee6ba](https://blockchair.com/bitcoin-cash/transaction/06e1273d217e3b2e4c4f009d1f33009f141116cc59e0abb9bb5d16f04d3ee6ba) ([3xpl](https://3xpl.com/bitcoin-cash/transaction/06e1273d217e3b2e4c4f009d1f33009f141116cc59e0abb9bb5d16f04d3ee6ba)) | [invitations/swapmain1-open.json](invitations/swapmain1-open.json) | [template/used/8f0fb78d266c54d77852910b1ed8fb3772a1a7cd625dde6b548a247f9896712e.json](template/used/8f0fb78d266c54d77852910b1ed8fb3772a1a7cd625dde6b548a247f9896712e.json) |
@@ -346,8 +348,7 @@ sequenceDiagram
   other inputs, so this changes the counterparty, not the rules.
 - **The output count is fixed by the template.** The converter states its token coin's satoshis and tokens and the fee
   as variables, so `convert` has two inputs and two outputs and the engine adds no change output.
-- The values used on chipnet live in `config/chipnet.json` under `landing`: 10000 landed satoshis, rate 1/100 (100 test
-  token units for 10000 satoshis), `returnAfter` 6 as in Sampan, a 500 satoshi giveBack fee.
+- The values used on chipnet live in `config/chipnet.json` under `landing`: 10000 landed satoshis, rate 1/100 (100 test token units for 10000 satoshis), `returnAfter` 6 as in Sampan, a 500 satoshi giveBack fee.
 
 ### Chipnet runs (Landing)
 
@@ -369,11 +370,10 @@ With the earlier hand-written script (template `03fad653...3515`, same rules in 
 | landing2 | land | [a0e6da27...ce47](https://chipnet.imaginary.cash/tx/a0e6da274c8c5881bfc5c0c103c4d64f1612d1d69b79aeac876fea165ffdce47) | [landing2-land.json](invitations/landing2-land.json) |
 | landing2 | giveBack | [de837976...19dd](https://chipnet.imaginary.cash/tx/de83797632b64d4725fcd47ec9325fc49dc36cddf30fdd7d301137d01d1819dd) | [landing2-giveBack.json](invitations/landing2-giveBack.json) |
 
-All eight ran through the XO engine, including both follow-up actions. In the convert runs (landing3, landing1) the
-owner received 100 test token units at output 0. In the giveBack runs (landing4, landing2) the owner received 9500
-satoshis with no token. Early giveBack attempts were refused by the chipnet nodes as `non-BIP68-final` until about an
-hour after the land coin was mined (rows in [docs/CHIPNET-RUNS.md](docs/CHIPNET-RUNS.md), measurements in the
-[journal](JOURNAL.md)). landing7 repeated land and convert with the same template on engine 0.1.1-next.18230317763.
+All eight ran through the XO engine, both follow-up actions included: convert paid the owner 100 test token units, giveBack
+9500 sat; early giveBack attempts were refused as `non-BIP68-final` ([docs/CHIPNET-RUNS.md](docs/CHIPNET-RUNS.md)). landing7
+and landing8 ran on engine 0.1.1-next.18230317763; in landing8 the node first refused a convert under the rate
+([docs/rejected/](docs/rejected/landing8-convert-under-rate.md)).
 
 ### Mainnet run (Landing)
 

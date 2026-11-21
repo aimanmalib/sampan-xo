@@ -57,6 +57,9 @@ opened on a public chipnet explorer (https://chipnet.imaginary.cash/tx/). Invita
 | 2026-11-21 12:53 | landing7 | convert | 91f6d5cbd71fd4e8aa69bf8260668d97cb81ffb5079ff817b6097e4bf3f56f0e | invitations/landing7-convert.json | `0.1.1-next.18230317763` | ok |
 | 2026-11-21 13:22 | run7 | open | daeed04068641747c21073120ddc7142a250794316a8bcbe08b45f231a5c1416 | invitations/run7-open.json | `0.1.1-next.18230317763` | ok |
 | 2026-11-21 13:24 | run7 | fill | f3768043b76528ce5f966b0ef0a719deaadf5d73e36bf30df4ddebba1ffde521 | invitations/run7-fill.json | `0.1.1-next.18230317763` | ok |
+| 2026-11-21 13:52 | landing8 | land | afebaf3d75ca1fb9a6682df22b5b798d48de33251a549d859d1920ce44a5e538 | invitations/landing8-land.json | `0.1.1-next.18230317763` | ok |
+| 2026-11-21 14:28 | landing8 | convert | - (rejected by node: `mandatory-script-verify-flag-failed (Script evaluated without error but finished with a false/empty top stack element) (code 16)`; tx ed835bf65cc6a20feff041b4afd5f2f38c40761ad7ff3da52e939024c84f3eea, never mined; deliberate under-rate test built with libauth, see docs/rejected/landing8-convert-under-rate.md) | - | `0.1.1-next.18230317763` | rejected |
+| 2026-11-21 14:31 | landing8 | convert | 3c2245b3ff96b9958384c8270cbf04f39e1b8a8ec5b6c4648c78a37e1b0fd0e5 | invitations/landing8-convert.json | `0.1.1-next.18230317763` | ok |
 
 run2 is the open -> cancel run: the offer opened at 19:30 was cancelled by the maker at 19:56. The fill steps in between are saved as `<run>-fill-start.json` (maker adds
 the offer coin) and `<run>-fill-taken.json` (taker adds the payment and signs).
@@ -142,3 +145,11 @@ version 2 (`8f0fb78d...712e`), done as four separate processes (`open`, `fill-st
 `fill-take` by the taker). The offer locked 20000 sat; in the fill, output 0 pays the maker 1000 sat with 1000 test token
 units and output 1 pays the taker the 20000 offered sat. Both rows were opened on https://chipnet.imaginary.cash/tx/ at
 13:25 UTC on 2026-11-21, each shown in a block.
+
+landing8 is the one deliberate negative test of the Landing covenant. After a normal land, a convert that paid the owner 99
+test token units, one under the minimum of 100 for 10000 sat at rate 1/100, was built with libauth
+(`npx tsx scripts/landing-run.ts convert-under-rate landing8`) and sent once to chipnet. The node refused it and the
+transaction was never mined (`rejected` row; raw transaction and the covenant line in
+[docs/rejected/landing8-convert-under-rate.md](rejected/landing8-convert-under-rate.md)). The landed coin then left
+through a valid convert through the XO engine that paid the owner 100 units. The two `ok` rows were opened on
+https://chipnet.imaginary.cash/tx/ at 14:33 UTC on 2026-11-21, each shown in a block.
