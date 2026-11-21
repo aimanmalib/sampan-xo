@@ -1,0 +1,61 @@
+{
+  "invitationIdentifier": "64ecaf03076d8d8916d304ffc376dc9a",
+  "templateIdentifier": "e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e",
+  "actionIdentifier": "convert",
+  "createdAtTimestamp": 1795265483064,
+  "commits": [
+    {
+      "commitIdentifier": "0039b535851c4b6643ef460d1b91ec66",
+      "createdAtTimestamp": 1795265483065,
+      "data": {},
+      "expiresAtTimestamp": 1795283483065,
+      "signature": "bd967f8b1a0b22ffdf54f207d43766d811aa7e0c8ab5f0185451357c0fb6acfd9024eb624c98c04cbe5e820cf4f772ebbdb83ec789169e5b4fe53f0164a39890",
+      "entityIdentifier": "tpubDFK2w8YvL5xCFbrxiGt2m3BtfqSojPtia32oJ1dAxFE55xcHtupFzwuTDYKHXbaRi89LrPrMT1CT3UmpUys3hLaRuppk6pLaDU1FSBv6iUm"
+    },
+    {
+      "commitIdentifier": "b103e047bfdbecae7d95f9f43988aa1e",
+      "previousCommitIdentifier": "0039b535851c4b6643ef460d1b91ec66",
+      "createdAtTimestamp": 1795265483468,
+      "data": {
+        "variables": [
+          {
+            "variableIdentifier": "landedSatoshis",
+            "value": "<bigint: 10000n>"
+          },
+          {
+            "variableIdentifier": "ownerLockingScript",
+            "value": "76a914aa31fb738aaa26db3d651914040cfa6323179a3888ac"
+          },
+          {
+            "variableIdentifier": "tokenCategory",
+            "value": "008eebd7502376715a8ffc87f6b6341cbe284c27237ea0204eaee167603ff95a"
+          },
+          {
+            "variableIdentifier": "rateNum",
+            "value": "<bigint: 1n>"
+          },
+          {
+            "variableIdentifier": "rateDen",
+            "value": "<bigint: 100n>"
+          },
+          {
+            "variableIdentifier": "returnAfter",
+            "value": "<bigint: 6n>"
+          }
+        ],
+        "inputs": [
+          {
+            "inputIdentifier": "convertInput",
+            "transactionIndex": 0,
+            "outpointTransactionHash": "<uint8array: e27636e828cbccfc62c031dd6e37caf48212aaed3b3422fc443aaaf605d92f61>",
+            "outpointIndex": 0,
+            "sequenceNumber": 0
+          }
+        ]
+      },
+      "expiresAtTimestamp": 1795283483468,
+      "signature": "ba70c440a783d554a30a29825597c1b1cce5f8af76b4b258e38b2951e768ac8eca0e325fb0431bbe3d577df345eb4aad250063a593ce66aecd532cf91ac729fb",
+      "entityIdentifier": "tpubDFK2w8YvL5xCFbrxiGt2m3BtfqSojPtia32oJ1dAxFE55xcHtupFzwuTDYKHXbaRi89LrPrMT1CT3UmpUys3hLaRuppk6pLaDU1FSBv6iUm"
+    }
+  ]
+}

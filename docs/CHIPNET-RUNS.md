@@ -51,6 +51,8 @@ opened on a public chipnet explorer (https://chipnet.imaginary.cash/tx/). Invita
 | 2026-11-20 03:02 | browser2 | fund | d8a5128b774cb28693466d59141ed78930c159d6472cb14f1e7102c76dd6f47d | invitations/browser2-fund-tokens.json | ok |
 | 2026-11-20 03:10 | browser2 | fund | 8892eb73414c3f1816cbe671e809dea5d44bb2924055f03fdb29b1f64ada87cd | invitations/browser2-fund-sats.json | ok |
 | 2026-11-20 03:23 | browser2 | fill | c145510b5a1080e6e48755b7cd7bb08d6551cd6483c49d1b38832cb9b072c195 | invitations/browser2-fill.json | ok |
+| 2026-11-21 12:50 | landing7 | land | e27636e828cbccfc62c031dd6e37caf48212aaed3b3422fc443aaaf605d92f61 | invitations/landing7-land.json | ok |
+| 2026-11-21 12:53 | landing7 | convert | 91f6d5cbd71fd4e8aa69bf8260668d97cb81ffb5079ff817b6097e4bf3f56f0e | invitations/landing7-convert.json | ok |
 
 run2 is the open -> cancel run: the offer opened at 19:30 was cancelled by the maker at 19:56. The fill steps in between are saved as `<run>-fill-start.json` (maker adds
 the offer coin) and `<run>-fill-taken.json` (taker adds the payment and signs).
@@ -106,6 +108,12 @@ of `check-bytecode --params config/chipnet.json`). In the convert the converter 
 output 0 pays the owner `bchtest:zz4rr7mn324zdkeav5v3gpqvlf3jx9u68q0vhr6hgz` 100 test token units with 1000 sat, output 1
 returns 997500 units with 8800 sat to the converter. Both rows were opened on https://explorer.selene.cash/ (chipnet) at
 23:40 on 2026-11-19 (land 3 confirmations, convert unconfirmed); https://chipnet.imaginary.cash/ did not answer.
+
+landing7 is the land -> convert run on `@xo-cash/engine` 0.1.1-next.18230317763 (the `next` tag on 2026-11-21), with
+the same template `e0e9b742...e03e`. The payer landed 10000 sat at the same landing address; in the convert, input 1 is
+the converter's token coin, output 0 pays the owner 100 test token units with 1000 sat and output 1 returns 995400 units
+with 8800 sat to the converter. Both rows were opened on https://chipnet.imaginary.cash/ at 12:55 on 2026-11-21 (land
+4 confirmations, convert 1 confirmation, the convert page listing the test token category).
 
 run5 and run6 use `@xo-cash/engine` 0.1.1-next.18170561234 (the `next` tag, unchanged on 2026-11-20) with template
 version 2 (`8f0fb78d...712e`). run5 is the open -> fill run: in the fill, output 0 pays the maker 1000 sat with the
