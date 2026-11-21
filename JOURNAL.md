@@ -1495,3 +1495,22 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
   block); then the rows were written `ok`.
 - `used-templates.ts --write`: no new template id. `runs-table.ts --write`: 2 README rows; README is back at 500 lines by
   shortening the Landing runs paragraph and joining one wrapped bullet line.
+
+## 2026-11-21 15:15 to 15:40 UTC: link sweep of MIGRATE-TO-XO.md and docs/MAINNET-RUNS.md without a login
+
+- `gh api repos/aimanmalib/sampan-xo --jq .visibility` and the same for `aimanmalib/sampan` both answer `public`.
+- Links were taken from the two files (Markdown links and bare URLs), 44 unique after removing in-page anchors.
+- Relative links: 29, each resolved against the file's folder and found in `git ls-tree -r HEAD`. None missing.
+- GitHub links, fetched with no token and no cookie: 3, each HTTP 200:
+  `github.com/aimanmalib/sampan-xo/commit/1ac2691e...`, `github.com/aimanmalib/sampan/blob/main/contracts/landing.cash`,
+  `github.com/aimanmalib/sampan/commit/2a92ef30...`.
+- Other links answering HTTP 200 on the first pass: https://blaze.xo.cash (1), https://sampan.sasateguh.com (1),
+  https://chipnet.imaginary.cash/tx/ (3), https://explorer.selene.cash/tx/ (3 of 5 chipnet links).
+- https://explorer.selene.cash/tx/29c6bf27...2d7c and /tx/9631b016...4f01 answered `429` on the first pass and in a
+  headless Chromium; fetched again 20 s apart, both HTTP 200, and both txids also answer 200 on
+  https://chipnet.imaginary.cash/tx/.
+- Mainnet explorer links (5 txids, each on https://3xpl.com and https://blockchair.com) do not answer from this host:
+  3xpl gives `403` or `429`, blockchair gives `401` with a `/__qrator/qauth.js` challenge page, also for
+  https://blockchair.com/ itself and in a headless Chromium. This is the sites' bot screen, not a missing page. The
+  same 5 txids were read from a mainnet Electrum server in `config/mainnet.json` with
+  `blockchain.transaction.get_height`: 977518, 978019, 978021, 978029, 978090 (all mined). No link was changed.
