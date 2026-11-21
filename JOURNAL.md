@@ -1561,3 +1561,26 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
   `Failed to process transaction update: Error: Server reported merkle root 8dbd01059a156cb3b4352f1366da73d9949cc403958f80006dec796e0ba0139c for checkpoint #341199, expected bf0aebf5f8539fcc41bd94128abd1c2c79e1b28eca0da2402db52e62d838dfed.`
   The check still finished with exit code 0. The second taker plus maker pass took about 15 minutes against about
   3 minutes for the first; the host load average was above 50 at the time.
+
+## 2026-11-21 20:13 to 20:18 UTC: link sweep of BUILD-WITH-XO.md, README.md, docs/MAINNET-SWAP-RUNS.md and docs/debug-tool/README.md without a login
+
+- `gh api repos/aimanmalib/sampan-xo --jq .visibility` answers `public`.
+- Links were taken from the four files (Markdown links and bare URLs, trailing punctuation and in-page anchors
+  removed): 75 unique absolute links and 158 unique relative targets.
+- Relative targets: each resolved against its file's folder and found in `git ls-tree -r HEAD`. None missing.
+- Absolute links, fetched with curl, no token, no cookie, redirects followed: 59 answered HTTP 200. These include
+  `github.com/aimanmalib/sampan-xo/commit/1ac2691e...`, `github.com/aimanmalib/sampan`, `github.com/sasateguh`,
+  the logo on `raw.githubusercontent.com`, the 4 `img.shields.io` badges, https://blaze.xo.cash/,
+  https://tbch.googol.cash/, https://chipnet.bch.ninja/, the 5 Selene links (all ending in `?network=chipnet`) and
+  the 39 `chipnet.imaginary.cash/tx/<txid>` links. Each of those 39 pages holds its txid in the HTML.
+- 2 answered `404`: `https://chipnet.imaginary.cash/tx/` and `https://explorer.selene.cash/tx/`. Both are the
+  bare prefix of the `<txid>` pattern in BUILD-WITH-XO.md, not links to a page.
+- 14 mainnet explorer links (6 txids plus the bare prefix, on 3xpl and blockchair) answered `403` (3xpl) and `401`
+  (blockchair), the same bot screens recorded at 15:15. The 6 txids were read from mainnet Electrum
+  `bch.imaginary.cash` with `blockchain.transaction.get_height` (read only): 06e1273d... 978135, 1a0ce51b... 978142,
+  5671fd92... 977518, 7307ceeb... 978029, 80387030... 978090, fde04dc1... 978135. All mined.
+- One defect: BUILD-WITH-XO.md gave the Selene pattern as `https://explorer.selene.cash/tx/<txid>` with no network,
+  which opens the mainnet page ("Data unavailable" for a chipnet txid, see 15:40). It now ends in
+  `?network=chipnet`. New test `tests/build-with-xo-links.test.ts` also checks the `<txid>` pattern; it failed on
+  the old line and passes on the new one. The existing Selene link test does not read BUILD-WITH-XO.md and only
+  matches 64-hex txids, so it did not catch this.

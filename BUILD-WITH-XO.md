@@ -67,7 +67,7 @@ One minimum run on mainnet (`swapmain1`, 2000 sat, rows in [docs/MAINNET-SWAP-RU
 The maker got 1500 sat back with no key; all mainnet fees of the run were 1085 sat. Mainnet explorers:
 `https://blockchair.com/bitcoin-cash/transaction/<txid>` or `https://3xpl.com/bitcoin-cash/transaction/<txid>`.
 
-Explorers: `https://chipnet.imaginary.cash/tx/<txid>` or `https://explorer.selene.cash/tx/<txid>`.
+Explorers: `https://chipnet.imaginary.cash/tx/<txid>` or `https://explorer.selene.cash/tx/<txid>?network=chipnet`.
 run1 is an earlier open -> fill with the same template as run3. run1 to run4 and browser1 used `@xo-cash/engine`
 0.1.1-next.18029697917; run5, run6 (open -> cancel) and browser2 used 0.1.1-next.18170561234, the `next` tag on
 20 November; run7 used 0.1.1-next.18230317763, the `next` tag on 2026-11-21. The `Engine` column of
