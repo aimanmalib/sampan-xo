@@ -1409,3 +1409,32 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
 - `src/plain-coins.ts` does not exist yet, so `src/landing-land.ts` keeps its own `tokenCategory === undefined` filter.
 - README (requirements pin), MIGRATE-TO-XO.md (compiler row, runs table, landing7 line), ADR 0001 and
   docs/CHIPNET-RUNS.md name the new engine version.
+
+## 2026-11-21 13:18 UTC: run7 on engine 0.1.1-next.18230317763 and the Engine column
+
+- 13:19 `npm view @xo-cash/engine dist-tags`: next `0.1.1-next.18230317763`, the version already pinned in `package.json`
+  and `package-lock.json` (commit 51ebb53, entry above), so no install was needed and the engine databases were not touched.
+- 13:20 `npx tsx scripts/run.ts open run7 --dry-run` built an open (output 0: 20000 sat to the offer address, output 1:
+  110978 sat change) from the landing7 change coin `e27636e8...:1`, not broadcast.
+- The four steps were run as separate processes, as the README describes (not `run.ts fill`, which also opens):
+  13:21:18 `open` exit 0 at 13:22:28, broadcast `daeed04068641747c21073120ddc7142a250794316a8bcbe08b45f231a5c1416`, and
+  printed after the broadcast, as in run5:
+  `note: broadcast recorded; the engine then failed to clear a spent coin reservation: UnspentOutputNotFoundInStoreError: Unspent output "e27636e828cbccfc62c031dd6e37caf48212aaed3b3422fc443aaaf605d92f61:1" not found in store`.
+  `fill-start` (maker) 34 s, `fill-take` (taker) 53 s, `fill-finish` (maker) 40 s, all exit 0; `fill-finish` broadcast
+  `f3768043b76528ce5f966b0ef0a719deaadf5d73e36bf30df4ddebba1ffde521`.
+- The broadcast open has a different txid, offer address and change address than the dry run (`e53413db...d056`,
+  `bchtest:pvcffph6...`): each build takes a new maker address, and the offer address depends on it.
+- Differences against 0.1.1-next.18170561234: none of the four logs has a `Could not validate a block header` line (run5
+  printed eight during `fill-take`); no script or step change was needed.
+- Read from chipnet Electrum at 13:25 (tip 341180): open, 4 confirmations, one input, output 0 20000 sat to
+  `bchtest:pvvmqg956szvz5l5n6uavt868ajn2lc4h6qgxlzuj4kpa0k922jrw9wucrx89`. Fill, 3 confirmations, inputs `daeed040...:0`
+  (the offer), `91f6d5cb...:1` and `8892eb73...:1` (taker coins); output 0 1000 sat with 1000 units of `008eebd7...f95a` to
+  the maker, output 1 20000 sat to the taker, outputs 2 and 3 the taker's token change (994400 units) and BCH change.
+- Both txids were opened on https://chipnet.imaginary.cash/tx/ at 13:25 (HTTP 200, each shown with a block hash); then the
+  rows were written `ok`. https://explorer.selene.cash/ answered 200 for the open and 503 for the fill.
+- `used-templates.ts --write`: no new template id (run7 uses `8f0fb78d...712e`). `runs-table.ts --write`: 2 new README rows.
+- `docs/CHIPNET-RUNS.md` has a new `Engine` column before `Result`. Each value was computed, not typed: the
+  `@xo-cash/engine` version in `package.json` at the first commit found by `git log --reverse -S <txid cell>` on that
+  file, or the working tree for the two run7 rows. Result: setup, deposit, run1 to run4, browser1 and landing1 to landing5
+  0.1.1-next.18029697917; run5, run6, browser2 and landing6 0.1.1-next.18170561234; run7 and landing7
+  0.1.1-next.18230317763. The setup rows were built with libauth, not the engine; the file says so.
