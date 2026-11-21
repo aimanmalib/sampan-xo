@@ -65,11 +65,10 @@ XO tools is [template/swap-intent.json](template/swap-intent.json) (`npx tsx scr
 
 ## Requirements
 
-- Node.js 22 (see `.nvmrc`) and npm.
-- Package versions are pinned exactly in `package.json` and `package-lock.json`. The ones that matter: `@xo-cash/engine`
-  0.1.1-next.18230317763, `@xo-cash/templates` 0.0.12, `@xo-cash/types` 0.0.8, `@xo-cash/utils` 0.0.12, `@bitauth/libauth`
-  3.1.0-next.8, `@electrum-cash/network` 4.4.8, `typescript` 5.9.3, `tsx` 4.23.15, `vitest` 3.2.7. landing7 (21 November) used
-  this engine; run5, run6, browser2 and landing6 used 0.1.1-next.18170561234; earlier runs used 0.1.1-next.18029697917.
+- Node.js 22 (see `.nvmrc`) and npm. Versions are pinned exactly in `package.json` and `package-lock.json`; the ones that
+  matter: `@xo-cash/engine` 0.1.1-next.18230317763 (the `next` tag on 2026-11-21; run7 and landing7 used it; the `Engine`
+  column of `docs/CHIPNET-RUNS.md` gives each row's version), `@xo-cash/templates` 0.0.12, `@xo-cash/types` 0.0.8,
+  `@xo-cash/utils` 0.0.12, `@bitauth/libauth` 3.1.0-next.8, `@electrum-cash/network` 4.4.8, `typescript` 5.9.3, `tsx` 4.23.15, `vitest` 3.2.7.
 - Swap Intent has one minimum mainnet run, `swapmain1` (open, then expire with no key), recorded in
   `docs/MAINNET-SWAP-RUNS.md`; its amounts are limited in `src/swap-network.ts`. The Landing template has one minimum
   mainnet run (land, then giveBack), recorded in `docs/MAINNET-RUNS.md`; its amounts are limited in `src/landing-network.ts`.
@@ -215,6 +214,8 @@ transactions without an invitation (token mint, plain deposits) and failed attem
 | chipnet | browser2 | fill | [c145510b5a1080e6e48755b7cd7bb08d6551cd6483c49d1b38832cb9b072c195](https://chipnet.imaginary.cash/tx/c145510b5a1080e6e48755b7cd7bb08d6551cd6483c49d1b38832cb9b072c195) | [invitations/browser2-fill.json](invitations/browser2-fill.json) | [template/used/8f0fb78d266c54d77852910b1ed8fb3772a1a7cd625dde6b548a247f9896712e.json](template/used/8f0fb78d266c54d77852910b1ed8fb3772a1a7cd625dde6b548a247f9896712e.json) |
 | chipnet | landing7 | land | [e27636e828cbccfc62c031dd6e37caf48212aaed3b3422fc443aaaf605d92f61](https://chipnet.imaginary.cash/tx/e27636e828cbccfc62c031dd6e37caf48212aaed3b3422fc443aaaf605d92f61) | [invitations/landing7-land.json](invitations/landing7-land.json) | [template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json](template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json) |
 | chipnet | landing7 | convert | [91f6d5cbd71fd4e8aa69bf8260668d97cb81ffb5079ff817b6097e4bf3f56f0e](https://chipnet.imaginary.cash/tx/91f6d5cbd71fd4e8aa69bf8260668d97cb81ffb5079ff817b6097e4bf3f56f0e) | [invitations/landing7-convert.json](invitations/landing7-convert.json) | [template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json](template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json) |
+| chipnet | run7 | open | [daeed04068641747c21073120ddc7142a250794316a8bcbe08b45f231a5c1416](https://chipnet.imaginary.cash/tx/daeed04068641747c21073120ddc7142a250794316a8bcbe08b45f231a5c1416) | [invitations/run7-open.json](invitations/run7-open.json) | [template/used/8f0fb78d266c54d77852910b1ed8fb3772a1a7cd625dde6b548a247f9896712e.json](template/used/8f0fb78d266c54d77852910b1ed8fb3772a1a7cd625dde6b548a247f9896712e.json) |
+| chipnet | run7 | fill | [f3768043b76528ce5f966b0ef0a719deaadf5d73e36bf30df4ddebba1ffde521](https://chipnet.imaginary.cash/tx/f3768043b76528ce5f966b0ef0a719deaadf5d73e36bf30df4ddebba1ffde521) | [invitations/run7-fill.json](invitations/run7-fill.json) | [template/used/8f0fb78d266c54d77852910b1ed8fb3772a1a7cd625dde6b548a247f9896712e.json](template/used/8f0fb78d266c54d77852910b1ed8fb3772a1a7cd625dde6b548a247f9896712e.json) |
 | mainnet | mainnet1 | land | [7307ceebe247f57b177f8dbcb69cad97a3a05055712d74934b65f0713551b8ef](https://blockchair.com/bitcoin-cash/transaction/7307ceebe247f57b177f8dbcb69cad97a3a05055712d74934b65f0713551b8ef) ([3xpl](https://3xpl.com/bitcoin-cash/transaction/7307ceebe247f57b177f8dbcb69cad97a3a05055712d74934b65f0713551b8ef)) | [invitations/mainnet1-land.json](invitations/mainnet1-land.json) | [template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json](template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json) |
 | mainnet | mainnet1 | giveBack | [80387030d47911bb9fa144892cf853a61cb3e4e8bc5f3ce948e78e99e67ca8d8](https://blockchair.com/bitcoin-cash/transaction/80387030d47911bb9fa144892cf853a61cb3e4e8bc5f3ce948e78e99e67ca8d8) ([3xpl](https://3xpl.com/bitcoin-cash/transaction/80387030d47911bb9fa144892cf853a61cb3e4e8bc5f3ce948e78e99e67ca8d8)) | [invitations/mainnet1-giveBack.json](invitations/mainnet1-giveBack.json) | [template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json](template/used/e0e9b742197a31a69c65ce6b378ef414f45d7a0f4f9b73fa637e5ae075e4e03e.json) |
 | mainnet | swapmain1 | open | [06e1273d217e3b2e4c4f009d1f33009f141116cc59e0abb9bb5d16f04d3ee6ba](https://blockchair.com/bitcoin-cash/transaction/06e1273d217e3b2e4c4f009d1f33009f141116cc59e0abb9bb5d16f04d3ee6ba) ([3xpl](https://3xpl.com/bitcoin-cash/transaction/06e1273d217e3b2e4c4f009d1f33009f141116cc59e0abb9bb5d16f04d3ee6ba)) | [invitations/swapmain1-open.json](invitations/swapmain1-open.json) | [template/used/8f0fb78d266c54d77852910b1ed8fb3772a1a7cd625dde6b548a247f9896712e.json](template/used/8f0fb78d266c54d77852910b1ed8fb3772a1a7cd625dde6b548a247f9896712e.json) |
@@ -268,8 +269,7 @@ signed and exported its part of the fill; browser2 is recorded in
 
 ## Known limits
 
-- The covenant checks only the output at the same index as the offer input. One offer is filled as a whole; there are
-  no partial fills.
+- The covenant checks only the output at the same index as the offer input. An offer is filled as a whole, not in part.
 - The fill path needs no signature, so anyone who sees an open offer can fill it; the first valid transaction wins.
 - Template version 2 adds `expire`: once an offer is `expireAfter` blocks old, anyone can return it to the maker
   without a key (docs/decisions/0003-swap-intent-expiry.md). Offers opened with version 1 (run1 to run3, browser1)

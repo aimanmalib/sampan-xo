@@ -50,6 +50,8 @@ Every txid is an `ok` row in [docs/CHIPNET-RUNS.md](docs/CHIPNET-RUNS.md), which
 | | expire | 4d92f782949444f9751ce3dcbd685696319f474f129893fc617f5792f5b35f48 | [invitations/run4-expire.json](invitations/run4-expire.json) | same as run4 open |
 | open -> fill on engine 0.1.1-next.18170561234 (run5) | open | 70e14b031f3571ac477fc2634b6517f60f6bcad5374b53daa4634c4141dc1545 | [invitations/run5-open.json](invitations/run5-open.json) | [template/used/8f0fb78d266c54d77852910b1ed8fb3772a1a7cd625dde6b548a247f9896712e.json](template/used/8f0fb78d266c54d77852910b1ed8fb3772a1a7cd625dde6b548a247f9896712e.json) |
 | | fill | 565cc19f701d41f6dae8fe48b0a0de0ed7fae492b45c7610e47549d336ca8103 | [invitations/run5-fill.json](invitations/run5-fill.json) | same as run5 open |
+| open -> fill on engine 0.1.1-next.18230317763 (run7) | open | daeed04068641747c21073120ddc7142a250794316a8bcbe08b45f231a5c1416 | [invitations/run7-open.json](invitations/run7-open.json) | [template/used/8f0fb78d266c54d77852910b1ed8fb3772a1a7cd625dde6b548a247f9896712e.json](template/used/8f0fb78d266c54d77852910b1ed8fb3772a1a7cd625dde6b548a247f9896712e.json) |
+| | fill | f3768043b76528ce5f966b0ef0a719deaadf5d73e36bf30df4ddebba1ffde521 | [invitations/run7-fill.json](invitations/run7-fill.json) | same as run7 open |
 | fill from the debug tool (browser1) | open | 7f3896aed87a94eb1b9dee9dd938f5c6567ad97766cca8a702af2a8e54151101 | [invitations/browser1-open.json](invitations/browser1-open.json) | [template/used/c4f2cf9439468e95f8a43852b2c874d336ebb082652467766ed4cf03275aa456.json](template/used/c4f2cf9439468e95f8a43852b2c874d336ebb082652467766ed4cf03275aa456.json) |
 | | fill | f92159229f9ec6b3b55feeb43ffc48cd67e297075d259671c8d6d41a71c118a6 | [invitations/browser1-fill.json](invitations/browser1-fill.json) | same |
 | fill from the debug tool, recorded (browser2) | open | 0b712fdf8958d3df4f6904dfb266f7d9c0919f906aca80b2850726551186d93e | [invitations/browser2-open.json](invitations/browser2-open.json) | [template/used/8f0fb78d266c54d77852910b1ed8fb3772a1a7cd625dde6b548a247f9896712e.json](template/used/8f0fb78d266c54d77852910b1ed8fb3772a1a7cd625dde6b548a247f9896712e.json) |
@@ -68,7 +70,8 @@ The maker got 1500 sat back with no key; all mainnet fees of the run were 1085 s
 Explorers: `https://chipnet.imaginary.cash/tx/<txid>` or `https://explorer.selene.cash/tx/<txid>`.
 run1 is an earlier open -> fill with the same template as run3. run1 to run4 and browser1 used `@xo-cash/engine`
 0.1.1-next.18029697917; run5, run6 (open -> cancel) and browser2 used 0.1.1-next.18170561234, the `next` tag on
-20 November. All runs are in the [README](README.md#runs-invitations-and-templates).
+20 November; run7 used 0.1.1-next.18230317763, the `next` tag on 2026-11-21. The `Engine` column of
+[docs/CHIPNET-RUNS.md](docs/CHIPNET-RUNS.md) gives the version for every row. All runs are in the [README](README.md#runs-invitations-and-templates).
 
 ## Screenshots of the XO debug tool
 
