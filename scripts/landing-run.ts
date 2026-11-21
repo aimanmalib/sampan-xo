@@ -10,6 +10,11 @@
  *   npx tsx scripts/landing-run.ts convert        <run>   the three convert steps, each in its own process
  *   npx tsx scripts/landing-run.ts giveBack       <run>   payer returns the landed coin to the owner as BCH,
  *                                                        once it is landing.returnAfter blocks old -> <run>-giveBack.json
+ *   npx tsx scripts/landing-run.ts convert-under-rate <run>   negative test: the owner's own P2PKH coin pays the owner one
+ *                                                        token unit under the minimum; built with libauth, checked in
+ *                                                        the local VM and sent once to chipnet, where the node must refuse it
+ *   npx tsx scripts/landing-run.ts convert-take-under-rate   <run>   the same short payment asked of the XO engine:
+ *   npx tsx scripts/landing-run.ts convert-finish-under-rate <run>   converter, then payer (never broadcast)
  *   npx tsx scripts/landing-run.ts --help                 prints the usage line
  *
  * Add --network mainnet for the one mainnet run: steps land and giveBack only, run names mainnet<n>, values from
@@ -26,10 +31,12 @@ import type { XOInvitation } from '@xo-cash/types';
 import type { AccountName } from '../src/config.js';
 import { readMnemonic } from '../src/env.js';
 import { loadInvitation, saveInvitation } from '../src/invitation-file.js';
-import { finishFollowUp, startConvert, takeConvert } from '../src/landing-convert.js';
+import { finishFollowUp, minimumTokenAmount, startConvert, takeConvert } from '../src/landing-convert.js';
 import { checkLandAge, giveBack } from '../src/landing-giveback.js';
 import { landCoin } from '../src/landing-land.js';
 import { parseNetworkArg, withoutNetworkArg } from '../src/landing-network.js';
+import { assertChipnetOnly } from '../src/landing-under-rate.js';
+import { runUnderRate } from '../src/landing-under-rate-run.js';
 import { loadRunConfig, networkAccount, runNamePattern } from '../src/landing-run-config.js';
 import { startAccountEngine, stopAccountEngine, type AccountEngine } from '../src/xo-engine.js';
 
@@ -47,6 +54,8 @@ type Step = {
   /** Runs before the engine starts; throws to stop the step. */
   before?: (previous: XOInvitation) => Promise<void>;
   act: (account: AccountEngine, previous?: XOInvitation) => Promise<Outcome>;
+  /** The step only ever builds (the under-rate engine attempt): it is logged and saved as a dry run. */
+  neverBroadcasts?: true;
 };
 const steps: Record<string, Step> = {
   land: { account: 'maker', writes: 'land', act: (account) => landCoin(account, config, broadcast) },
@@ -62,6 +71,22 @@ const steps: Record<string, Step> = {
     },
   },
   'convert-finish': { account: 'maker', reads: 'convert-taken', writes: 'convert', act: (account, taken) => finishFollowUp(account, taken!, broadcast) },
+  'convert-take-under-rate': {
+    account: 'taker',
+    reads: 'convert-start',
+    writes: 'convert-taken-under-rate',
+    act: async (account, started) => {
+      const { landedSatoshis, rateNum, rateDen } = config.landing;
+      const short = minimumTokenAmount(BigInt(landedSatoshis), BigInt(rateNum), BigInt(rateDen)) - 1n;
+      // Releases the token coin whatever happens: this invitation only goes to the payer's dry run below.
+      try {
+        return { invitation: await takeConvert(account, started!, config, short) };
+      } finally {
+        await account.engine.archiveInvitation(started!.invitationIdentifier);
+      }
+    },
+  },
+  'convert-finish-under-rate': { account: 'maker', reads: 'convert-taken-under-rate', writes: 'convert-under-rate', act: (account, taken) => finishFollowUp(account, taken!, false), neverBroadcasts: true },
   giveBack: { account: 'maker', reads: 'land', writes: 'giveBack', before: (land) => checkLandAge(land, config), act: (account, land) => giveBack(account, land!, config, broadcast) },
 };
 
@@ -75,7 +100,18 @@ if (step === 'convert' && run !== undefined && flag === undefined && network ===
   process.exit(0);
 }
 
-const usage = `usage: landing-run.ts ${Object.keys(steps).join('|')} <run> [--dry-run]  or  landing-run.ts convert <run>
+// The negative test needs no engine: libauth builds it and the owner account's plain coin supplies the tokens.
+if (step === 'convert-under-rate') {
+  assertChipnetOnly(network);
+  if (run === undefined || !runNamePattern(network).test(run) || (flag !== undefined && flag !== '--dry-run')) {
+    console.error('usage: landing-run.ts convert-under-rate landing<n> [--dry-run]');
+    process.exit(2);
+  }
+  await runUnderRate(config, run, readMnemonic('owner', envPath), broadcast);
+  process.exit();
+}
+
+const usage = `usage: landing-run.ts ${Object.keys(steps).join('|')} <run> [--dry-run]  or  landing-run.ts convert|convert-under-rate <run>
        landing-run.ts land|giveBack mainnet<n> --network mainnet [--dry-run]`;
 if (step === '--help' || step === '-h') {
   console.log(usage);
@@ -89,16 +125,17 @@ if (selected === undefined || run === undefined || !runNamePattern(network).test
   process.exit(2);
 }
 
+const sends = broadcast && selected.neverBroadcasts === undefined;
 const previous = selected.reads === undefined ? undefined : loadInvitation(run, selected.reads);
 if (previous !== undefined) await selected.before?.(previous);
 const accountName = networkAccount(selected.account, network);
 const account = await startAccountEngine(accountName, readMnemonic(accountName, envPath, network), config);
 try {
   const outcome = await selected.act(account, previous);
-  if (outcome.transactionHash !== undefined) console.log(`${step} ${broadcast ? 'broadcast' : 'built (dry run)'} txid ${outcome.transactionHash}`);
+  if (outcome.transactionHash !== undefined) console.log(`${step} ${sends ? 'broadcast' : 'built (dry run)'} txid ${outcome.transactionHash}`);
   // A dry run prints the built transaction so its outputs can be checked before the real broadcast.
-  if (!broadcast && outcome.serializedTransaction !== undefined) console.log(`transaction ${outcome.serializedTransaction}`);
-  if (broadcast || outcome.transactionHash === undefined) console.log(`saved ${saveInvitation(outcome.invitation, run, selected.writes)}`);
+  if (!sends && outcome.serializedTransaction !== undefined) console.log(`transaction ${outcome.serializedTransaction}`);
+  if (sends || outcome.transactionHash === undefined) console.log(`saved ${saveInvitation(outcome.invitation, run, selected.writes)}`);
 } finally {
   await stopAccountEngine(account, config);
 }

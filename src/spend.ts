@@ -41,26 +41,28 @@ export interface SignedSpend {
 
 const compiler = walletTemplateToCompilerBch(walletTemplateP2pkhNonHd);
 
+/** A P2PKH input of generateTransaction that spends `utxo` with `privateKey` (sequence 0). */
+export const p2pkhUnlockingInput = (utxo: Utxo, privateKey: Uint8Array) => ({
+  outpointTransactionHash: hexToBin(utxo.txid),
+  outpointIndex: utxo.vout,
+  sequenceNumber: 0,
+  unlockingBytecode: {
+    compiler,
+    data: { keys: { privateKeys: { key: privateKey } } } as CompilationData<never>,
+    script: 'unlock',
+    valueSatoshis: utxo.satoshis,
+    // The signed message covers the token of the spent output, so token coins need it here.
+    ...(utxo.token ? { token: { category: hexToBin(utxo.token.category), amount: utxo.token.amount } } : {}),
+  },
+});
+
 const generate = (request: SpendRequest, changeSatoshis: bigint) => {
   const outputs = [...request.outputs];
   outputs.splice(request.change.index, 0, { lockingBytecode: request.change.lockingBytecode, valueSatoshis: changeSatoshis });
-  const data = { keys: { privateKeys: { key: request.privateKey } } } as CompilationData<never>;
   const generated = generateTransaction({
     version: 2,
     locktime: 0,
-    inputs: request.inputs.map((utxo) => ({
-      outpointTransactionHash: hexToBin(utxo.txid),
-      outpointIndex: utxo.vout,
-      sequenceNumber: 0,
-      unlockingBytecode: {
-        compiler,
-        data,
-        script: 'unlock',
-        valueSatoshis: utxo.satoshis,
-        // The signed message covers the token of the spent output, so token coins need it here.
-        ...(utxo.token ? { token: { category: hexToBin(utxo.token.category), amount: utxo.token.amount } } : {}),
-      },
-    })),
+    inputs: request.inputs.map((utxo) => p2pkhUnlockingInput(utxo, request.privateKey)),
     outputs,
   });
   if (!generated.success) throw new Error(`transaction generation failed: ${JSON.stringify(generated.errors)}`);

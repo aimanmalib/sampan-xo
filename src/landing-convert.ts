@@ -63,8 +63,9 @@ export const startConvert = (account: AccountEngine, land: XOInvitation): Promis
  * convert, converter part: joins as converter and adds one token coin as input 1, the owner token output at output 0
  * and its payout (landed satoshis and the rest of its tokens) at output 1. No change output: the covenant needs as
  * many outputs as inputs, and the payout already carries everything left. Signs its own input.
+ * `ownerTokenAmount` overrides the owner output's token amount; it exists only for the under-rate negative test.
  */
-export const takeConvert = async (account: AccountEngine, started: XOInvitation, config: LandingRunConfig): Promise<XOInvitation> => {
+export const takeConvert = async (account: AccountEngine, started: XOInvitation, config: LandingRunConfig, ownerTokenAmount?: bigint): Promise<XOInvitation> => {
   const { engine, landingTemplateIdentifier: templateIdentifier } = account;
   const accepted = await engine.acceptInvitation(started, { roleIdentifier: 'converter' });
   const invitationIdentifier = accepted.invitation.invitationIdentifier;
@@ -87,7 +88,7 @@ export const takeConvert = async (account: AccountEngine, started: XOInvitation,
       { variableIdentifier: 'convertFeeSatoshis', value: BigInt(convertFeeSatoshis), ...role },
     ],
     outputs: [
-      { outputIdentifier: 'ownerTokenOutput', transactionIndex: 0, ...role },
+      { outputIdentifier: 'ownerTokenOutput', transactionIndex: 0, ...role, ...(ownerTokenAmount === undefined ? {} : { token: { category: hexToBin(config.testToken.category!), amount: ownerTokenAmount } }) },
       { outputIdentifier: 'converterPayoutOutput', transactionIndex: 1, ...role },
     ],
     inputs: [{ transactionIndex: 1, outpointTransactionHash: hexToBin(tokenCoin.outpointTransactionHash), outpointIndex: tokenCoin.outpointIndex, sequenceNumber: 0, ...role }],
