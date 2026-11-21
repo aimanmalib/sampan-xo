@@ -1444,3 +1444,54 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
 - Added `bitcoincash:zrsn433teurm6km7afuanhtdq4dfnwpvlgf6c8hkny` as the prize and Community Choice address of the Migrate to XO
   entry: section `## Prize address` in MIGRATE-TO-XO.md and one bullet in README `## Migrate to XO` (two wrapped lines of that
   section joined, so README stays at 500 lines). The Build with XO address in `config/mainnet.json` is unchanged.
+
+## 2026-11-21 13:45 to 14:36 UTC: landing8, one convert under the rate refused by the chipnet node
+
+- New code: `src/landing-under-rate.ts` (build a two-input, two-output convert with libauth: landed coin at input 0
+  unlocked with `OP_0` and the redeem push, a P2PKH token coin at input 1; check it in the libauth BCH 2026 VM; refuse any
+  network but chipnet), `src/landing-under-rate-run.ts` (Electrum I/O), step `convert-under-rate` in
+  `scripts/landing-run.ts`. `src/spend.ts` now exports its P2PKH input builder (`p2pkhUnlockingInput`) instead of
+  keeping it inline. The input 1 coin is the owner account's plain coin `7a9b82e8...d056:0` (100 units, the landing1
+  convert output); the plain maker and taker addresses held 0 sat (`wallets.ts balance`).
+- Offline first: `tests/landing-under-rate.test.ts` builds the same shape with fixed test keys. The libauth VM accepts
+  100 units and refuses 99 with `Unable to verify transaction: error in evaluating input index 0: Unsuccessful evaluation:
+  completed with a non-truthy value on top of the stack. Top stack item: "".` (my first regex expected a capital
+  `Error`; corrected).
+- 13:50 `landing-run.ts land landing8`, exit 0, broadcast `afebaf3d75ca1fb9a6682df22b5b798d48de33251a549d859d1920ce44a5e538`
+  (mined 13:52:47), with the known line `note: broadcast recorded; the engine then failed to clear a spent coin
+  reservation: UnspentOutputNotFoundInStoreError: Unspent output "daeed040...:1" not found in store`.
+- (a) The XO engine first. `takeConvert` gained an optional owner token amount, used only by two new steps
+  (`convert-take-under-rate`, converter; `convert-finish-under-rate`, payer, never broadcasts).
+  - 13:54 with `token: { amount: 99n }` only: `CommitTokenCategoryMissingError: Token category missing on output 0 from
+    commit: a28fd6414ca64e628d7269f11a16b38b`. The failed append left the taker's token coin reserved: the next take
+    said `the converter engine wallet has no coin with 100 test token units` (14:06).
+  - Archiving the invitation in the taker engine released the coin, but accepting the same invitation again gave
+    `UnspentOutputReservationInternalConflictError: Unspent output "f3768043...e521:2" is already reserved by
+    "145283a7c31f36f7c95d1ef1e74f1009", the invitation requesting this reservation` (14:10), and a new `convert-start`
+    gave `UnspentOutputReservationExternalConflictError: Unspent output "afebaf3d...e538:0" is already reserved by
+    "145283a7c31f36f7c95d1ef1e74f1009"` (14:12). Archiving `145283a7...` in the maker engine too released the landed
+    coin. The take step now archives its invitation in a `finally`. About 20 minutes lost.
+  - 14:17 to 14:25, with a new `convert-start` and `token: { category, amount: 99n }`: all three steps exit 0. The engine
+    built and signed the convert in its dry run with no error (14:25 build `d09005afc700aa73650e9e2acb42c6f1be1f1c544cab9308d0b2eecaa7c2b12b`;
+    a 14:19 build `9821efe6...b4e5` was printed with the word `broadcast` because the log line read the global flag;
+    Electrum answered `No such mempool or blockchain transaction` for it, and the log line now reads the step).
+    Decoded: output 0 1000 sat with 99 units to the owner, output 1 8800 sat with 994300 units to the converter, from a
+    token input of 994400 units, so one unit would be burned. The libauth VM, with both source outputs read from
+    Electrum, refuses it with the same `non-truthy value` message. Not sent: the plan allows one refused broadcast.
+- (b) 14:27 `convert-under-rate landing8 --dry-run`: local VM `true` at 100 units, the `non-truthy` message at 99, txid
+  `ed835bf65cc6a20feff041b4afd5f2f38c40761ad7ff3da52e939024c84f3eea`, not sent. 14:28 the same command without
+  `--dry-run` (same txid) sent it once to chipnet.imaginary.cash:
+  `the transaction was rejected by network rules.` / `mandatory-script-verify-flag-failed (Script evaluated without error
+  but finished with a false/empty top stack element) (code 16)`. Right after, `blockchain.transaction.get` answered
+  `daemon error: DaemonError({'code': -5, 'message': 'No such mempool or blockchain transaction. Use gettransaction for
+  wallet transactions.'})`. https://chipnet.imaginary.cash/tx/ed835bf6...3eea answers HTTP 200 (not 404) with a page
+  that shows the same `getrawtransaction` error -5; https://explorer.selene.cash/tx/ answered 429. Not sent again.
+- `convert-under-rate --network mainnet` stops before any network call with `Error: convert-under-rate runs on chipnet
+  only, not mainnet`.
+- (c) 14:29 `landing-run.ts convert landing8` (three processes), exit 0, broadcast
+  `3c2245b3ff96b9958384c8270cbf04f39e1b8a8ec5b6c4648c78a37e1b0fd0e5` (mined 14:31:44): inputs `afebaf3d...:0` and
+  `f3768043...:2`; output 0 1000 sat with 100 units to the owner, output 1 8800 sat with 994300 units to the converter.
+  Land and convert were opened on https://chipnet.imaginary.cash/tx/ at 14:33 (HTTP 200, each with its txid and a
+  block); then the rows were written `ok`.
+- `used-templates.ts --write`: no new template id. `runs-table.ts --write`: 2 README rows; README is back at 500 lines by
+  shortening the Landing runs paragraph and joining one wrapped bullet line.
