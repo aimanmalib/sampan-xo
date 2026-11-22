@@ -5,7 +5,7 @@
 <p align="center"><a href="LICENSE"><img src="https://img.shields.io/badge/licence-MIT-0f6b5c" alt="Licence: MIT"></a> <a href="BUILD-WITH-XO.md"><img src="https://img.shields.io/badge/bounty-Build%20with%20XO-0f6b5c" alt="Bounty: Build with XO"></a> <a href="MIGRATE-TO-XO.md"><img src="https://img.shields.io/badge/bounty-Migrate%20to%20XO-0f6b5c" alt="Bounty: Migrate to XO"></a> <a href="#runs-invitations-and-templates"><img src="https://img.shields.io/badge/runs-chipnet%20and%20mainnet-0f6b5c" alt="Runs on chipnet and mainnet"></a></p>
 
 <p align="center"><b>Offers of BCH for CashTokens that need no online maker and no escrow, on chipnet and mainnet.</b> · <i>Tawaran BCH untuk CashTokens tanpa pembuat dalam talian dan tanpa escrow, di chipnet dan mainnet.</i><br>
-<a href="docs/debug-tool/swap-intent/taker-clip.mp4"><b>33 s clip</b></a> · <a href="#for-judges"><b>Judging? Start here</b></a> · <a href="#setup-step-by-step">Run it</a> · <a href="#tests">Tests</a> · <a href="#known-limits">Limits</a> · <a href="#migrate-to-xo">Migrate to XO</a> · <a href="#bahasa-melayu">Bahasa Melayu</a><br>
+<a href="https://youtu.be/j1hIemT7crQ"><b>&#9654;&#xFE0E; demo video, 33 s</b></a> · <a href="#for-judges"><b>Judging? Start here</b></a> · <a href="#setup-step-by-step">Run it</a> · <a href="#tests">Tests</a> · <a href="#known-limits">Limits</a> · <a href="#migrate-to-xo">Migrate to XO</a> · <a href="#bahasa-melayu">Bahasa Melayu</a><br>
 Built in Malaysia by <a href="https://aimanmalib.com">Aiman Malib</a> · <a href="https://sasateguh.com">Sasa Teguh</a></p>
 
 ![Swap Intent: open, then fill, cancel or expire](docs/swap-intent-flow.svg)
