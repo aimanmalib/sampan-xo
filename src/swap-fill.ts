@@ -70,8 +70,15 @@ export const startFill = async (account: AccountEngine, open: XOInvitation): Pro
 /**
  * fill, taker part: joins as taker, adds the token payment to the maker at output 0, the payout of the offered
  * satoshis to a fresh taker script, its own token and plain coins, and change; then signs its own inputs.
+ * `paidAmount` overrides the maker output's token amount; it exists only for the short fill negative test.
  */
-export const takeFill = async (account: AccountEngine, started: XOInvitation, wantedCategory: string, wantedAmount: bigint): Promise<XOInvitation> => {
+export const takeFill = async (
+  account: AccountEngine,
+  started: XOInvitation,
+  wantedCategory: string,
+  wantedAmount: bigint,
+  paidAmount?: bigint,
+): Promise<XOInvitation> => {
   const { engine, swapTemplateIdentifier: templateIdentifier } = account;
   const accepted = await engine.acceptInvitation(started, { roleIdentifier: 'taker' });
   const invitationIdentifier = accepted.invitation.invitationIdentifier;
@@ -87,7 +94,12 @@ export const takeFill = async (account: AccountEngine, started: XOInvitation, wa
     ...role,
     variables: [{ variableIdentifier: 'takerLockingScript', value: takerLockingScript, ...role }],
     outputs: [
-      { outputIdentifier: 'makerPaymentOutput', transactionIndex: 0, ...role },
+      {
+        outputIdentifier: 'makerPaymentOutput',
+        transactionIndex: 0,
+        ...role,
+        ...(paidAmount === undefined ? {} : { token: { category: hexToBin(wantedCategory), amount: paidAmount } }),
+      },
       { outputIdentifier: 'takerPayoutOutput', ...role },
     ],
     inputs: [paymentCoin, plainCoin].map((utxo) => ({

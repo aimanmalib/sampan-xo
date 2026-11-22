@@ -11,6 +11,10 @@
  *   npx tsx scripts/run.ts cancel      <run>   maker spends its open offer back            -> <run>-cancel.json
  *   npx tsx scripts/run.ts expire      <run>   returns an old enough offer to the maker, no key -> <run>-expire.json
  *   npx tsx scripts/run.ts expire-early <run>  the same without the age check, to record the node's rejection
+ *   npx tsx scripts/run.ts fill-take-under   <run>  taker asks the engine for a fill paying wantedAmount - 1 -> <run>-fill-taken-under.json
+ *   npx tsx scripts/run.ts fill-under-amount <run>  negative test, chipnet only: the maker engine builds that fill (never sent),
+ *                                                   then libauth sends once a fill paying wantedAmount - 1 from the taker's
+ *                                                   plain coin; the node must refuse it
  *   npx tsx scripts/run.ts --help              prints the usage line
  *
  * Add --dry-run to build and check without broadcasting; the step's invitation is then archived so its coins are
@@ -28,6 +32,8 @@ import { loadInvitation, saveInvitation } from '../src/invitation-file.js';
 import { cancelOffer } from '../src/swap-cancel.js';
 import { expireOffer, locateOffer } from '../src/swap-expire.js';
 import { finishFill, startFill, takeFill } from '../src/swap-fill.js';
+import { assertFillUnderChipnetOnly } from '../src/swap-fill-under.js';
+import { runFillUnder } from '../src/swap-fill-under-run.js';
 import { parseNetworkArg, withoutNetworkArg } from '../src/landing-network.js';
 import { openOffer } from '../src/swap-open.js';
 import { checkSwapStep, describeOutputs, loadSwapRunConfig, swapAccount } from '../src/swap-network.js';
@@ -54,6 +60,20 @@ const steps: Record<string, Step> = {
       return { invitation };
     },
   },
+  'fill-take-under': {
+    account: 'taker',
+    reads: 'fill-start',
+    writes: 'fill-taken-under',
+    act: async (account, started) => {
+      const wanted = BigInt(config.swap.wantedAmount);
+      // Releases the taker's coins whatever happens: this invitation only goes to the maker's build in fill-under-amount.
+      try {
+        return { invitation: await takeFill(account, started!, config.testToken.category!, wanted, wanted - 1n) };
+      } finally {
+        await account.engine.archiveInvitation(started!.invitationIdentifier);
+      }
+    },
+  },
   'fill-finish': { account: 'maker', reads: 'fill-taken', writes: 'fill', act: (account, taken) => finishFill(account, taken!, broadcast) },
   cancel: { account: 'maker', reads: 'open', writes: 'cancel', act: (account, open) => cancelOffer(account, open!, broadcast) },
   // The expire path takes no key, but the XO engine only completes inputs for coins its own account tracks, and an
@@ -77,11 +97,32 @@ if (step === 'fill' && run !== undefined && flag === undefined && network === 'c
   process.exit(0);
 }
 
-const usage = `usage: run.ts ${Object.keys(steps).join('|')} <run> [--dry-run]  or  run.ts fill <run>
+const usage = `usage: run.ts ${Object.keys(steps).join('|')} <run> [--dry-run]  or  run.ts fill|fill-under-amount <run> [--dry-run]
        run.ts open|expire|cancel swapmain<n> --network mainnet [--dry-run]`;
 if (step === '--help' || step === '-h') {
   console.log(usage);
   process.exit(0);
+}
+
+// The negative test: the maker engine builds the short fill but never sends it; libauth sends the same short payment.
+if (step === 'fill-under-amount') {
+  try {
+    assertFillUnderChipnetOnly(network);
+  } catch (error) {
+    console.error(String(error));
+    process.exit(2);
+  }
+  if (run === undefined || (flag !== undefined && flag !== '--dry-run')) {
+    console.error(usage);
+    process.exit(2);
+  }
+  const maker = await startAccountEngine('maker', readMnemonic('maker', envPath), config);
+  try {
+    await runFillUnder(maker, loadInvitation(run, 'open'), loadInvitation(run, 'fill-taken-under'), config, readMnemonic('taker', envPath), broadcast);
+  } finally {
+    await stopAccountEngine(maker, config);
+  }
+  process.exit();
 }
 
 const selected = step === undefined ? undefined : steps[step];
