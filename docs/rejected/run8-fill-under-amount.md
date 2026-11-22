@@ -1,7 +1,7 @@
 # run8: fill paying one token unit short, refused by the chipnet node
 
 One deliberate negative test of the Swap Intent covenant on chipnet (run `run8`, 2026-11-22, `@xo-cash/engine`
-0.1.1-next.18230317763 pinned). Its row is the `rejected` row in [docs/CHIPNET-RUNS.md](../CHIPNET-RUNS.md). The
+0.1.1-next.18230317763 pinned). Its row is the run8 `fill` row with result `fail` in [docs/CHIPNET-RUNS.md](../CHIPNET-RUNS.md). The
 template and its covenant are the same as for every other run; nothing was changed for this test.
 
 ## What was sent

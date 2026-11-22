@@ -1619,3 +1619,9 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
   script made the first test fail (1 failed, 3 passed); the copy was removed.
 - The taker's short-fill invitation (`run8-fill-taken-under.json`) is not kept, as for landing8: it never led to a
   broadcast. Details: docs/rejected/run8-fill-under-amount.md.
+
+## 2026-11-22 03:54 UTC: run8 result column
+
+- The run8 short-fill row in docs/CHIPNET-RUNS.md used the result `rejected`. The table's convention for a refused
+  broadcast is result `fail` with `rejected` in the txid cell (deposit-taker, landing2, landing4, run4). The row now
+  reads `fail`; the txid cell, the prose and docs/rejected/run8-fill-under-amount.md were adjusted. No new transaction.

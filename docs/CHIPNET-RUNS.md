@@ -62,7 +62,7 @@ opened on a public chipnet explorer (https://chipnet.imaginary.cash/tx/). Invita
 | 2026-11-21 14:31 | landing8 | convert | 3c2245b3ff96b9958384c8270cbf04f39e1b8a8ec5b6c4648c78a37e1b0fd0e5 | invitations/landing8-convert.json | `0.1.1-next.18230317763` | ok |
 | 2026-11-22 03:40 | run8 | fund | 7c8c5e71227621687e97219c88397951709f4bc4973a4d6209acfab295b1e366 | invitations/run8-fund-tokens.json | `0.1.1-next.18230317763` | ok |
 | 2026-11-22 03:40 | run8 | open | 6cebb159890ee46c7852378da0f211798bac67238bf3d497a862f55e721a7049 | invitations/run8-open.json | `0.1.1-next.18230317763` | ok |
-| 2026-11-22 03:42 | run8 | fill | - (rejected by node: `mandatory-script-verify-flag-failed (Script evaluated without error but finished with a false/empty top stack element) (code 16)`; tx 9b41d1ef6fe2e1d163b18923d0df2b5bb5375a599b65c99387cbf3dd16f54803, never mined; deliberate short fill built with libauth, see docs/rejected/run8-fill-under-amount.md) | - | `0.1.1-next.18230317763` | rejected |
+| 2026-11-22 03:42 | run8 | fill | - (rejected by node: `mandatory-script-verify-flag-failed (Script evaluated without error but finished with a false/empty top stack element) (code 16)`; tx 9b41d1ef6fe2e1d163b18923d0df2b5bb5375a599b65c99387cbf3dd16f54803, never mined; deliberate short fill built with libauth, see docs/rejected/run8-fill-under-amount.md) | - | `0.1.1-next.18230317763` | fail |
 | 2026-11-22 03:44 | run8 | fill | 3956954fb7c6c6ccb6d7ac927327eade52df348897643c43d533b5150dc5c933 | invitations/run8-fill.json | `0.1.1-next.18230317763` | ok |
 
 run2 is the open -> cancel run: the offer opened at 19:30 was cancelled by the maker at 19:56. The fill steps in between are saved as `<run>-fill-start.json` (maker adds
@@ -161,7 +161,7 @@ https://chipnet.imaginary.cash/tx/ at 14:33 UTC on 2026-11-21, each shown in a b
 run8 is the one deliberate negative test of the Swap Intent covenant. The taker's engine wallet first sent 1000 test
 token units to the taker's plain address (`fund` row). After a normal open of 20000 sat asking for 1000 units, a fill
 that paid the maker 999 units was built with libauth (`npx tsx scripts/run.ts fill-under-amount run8`) and sent once to
-chipnet. The node refused it and the transaction was never mined (`rejected` row; raw transaction and the covenant line
+chipnet. The node refused it and the transaction was never mined (`fail` row marked rejected; raw transaction and the covenant line
 in [docs/rejected/run8-fill-under-amount.md](rejected/run8-fill-under-amount.md)). The offer then left through a valid
 fill through the XO engine (`fill-start`, `fill-take`, `fill-finish`) that paid the maker 1000 units. The three `ok`
 rows were opened on https://chipnet.imaginary.cash/tx/ at 03:46 UTC on 2026-11-22, shown in blocks 342341, 342342 and
