@@ -1625,3 +1625,14 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
 - The run8 short-fill row in docs/CHIPNET-RUNS.md used the result `rejected`. The table's convention for a refused
   broadcast is result `fail` with `rejected` in the txid cell (deposit-taker, landing2, landing4, run4). The row now
   reads `fail`; the txid cell, the prose and docs/rejected/run8-fill-under-amount.md were adjusted. No new transaction.
+
+## 2026-11-22 04:15 UTC: test count measured in a clean clone
+
+- `git archive c043ad7` into a temporary directory (removed afterwards), Node v22.23.5: `npm ci` rc 0 (313 packages),
+  `npm test` rc 0, `npx tsx scripts/run.ts --help` rc 0.
+- vitest summary: `Test Files  27 passed (27)` / `Tests  188 passed (188)`. The README Tests line said 173 tests in 24
+  files at 422e776; it now gives 188 in 27 at c043ad7. The extra tests came from the token coin filter, the link sweep
+  regression, the Landing negative run and run8.
+- Relative links: README.md 142, BUILD-WITH-XO.md 39, none missing at HEAD.
+- Style check on temporary copies: BUILD-WITH-XO.md passed; README.md flagged the upper-case words `SUCCESS` (the debug
+  tool's own Inspect label, quoted) and `FEEDBACK` (the file name FEEDBACK.md). Both kept as they are.

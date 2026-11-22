@@ -136,7 +136,7 @@ prints the run steps. Settings that may change (Electrum servers, derivation pat
 
 ## Tests
 
-`npm test` runs vitest offline, with no network and no wallet; `npm run gate` runs the typecheck (`tsc --noEmit`) first. The tests cover the Swap Intent template and its covenant (open, fill, cancel, expire and the refused cases), the Landing template, its covenant and its redeem bytecode against the deployed Sampan contract, the network limits, the config, the run scripts, the saved invitations and the template files they name, and the runs table below. Measured: 173 tests in 24 files passed (vitest, commit 422e776, 21 Nov 2026). The chipnet and mainnet runs below are recorded transactions, not unit tests.
+`npm test` runs vitest offline, with no network and no wallet; `npm run gate` runs the typecheck (`tsc --noEmit`) first. The tests cover the Swap Intent template and its covenant (open, fill, cancel, expire and the refused cases), the Landing template, its covenant and its redeem bytecode against the deployed Sampan contract, the network limits, the config, the run scripts, the saved invitations and the template files they name, and the runs table below. Measured: 188 tests in 27 files passed (vitest, clean `git archive` clone of commit c043ad7, 22 Nov 2026). The chipnet and mainnet runs below are recorded transactions, not unit tests.
 
 ## Chipnet runs
 
