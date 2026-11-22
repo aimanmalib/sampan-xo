@@ -1,0 +1,211 @@
+{
+  "invitationIdentifier": "951b8a867a1959ed0c42ea46da76a5ea",
+  "templateIdentifier": "8f0fb78d266c54d77852910b1ed8fb3772a1a7cd625dde6b548a247f9896712e",
+  "actionIdentifier": "fill",
+  "createdAtTimestamp": 1795319011074,
+  "commits": [
+    {
+      "commitIdentifier": "6fa496a3c8c4cbe156ad37072aea1703",
+      "createdAtTimestamp": 1795319011074,
+      "data": {},
+      "expiresAtTimestamp": 1795337011074,
+      "signature": "cebaf65d3baf8ebea6abf9b95d21aa26c919b8c73475ee18a9b4bcb8691484e425501aaca863c07fa66b9cf9d52661eb8ed986c1bbd438fed2c973f03d622319",
+      "entityIdentifier": "tpubDFK2w8YtK6S1mxbDqaTt9kf9FfnCJFvzqNWqgwLecGbXhCV3pAcNZNF47ZKyGYHGxPuLxtgj9K541CeDqv51FpyjsEeEMs3xgwsMWkNTCG7"
+    },
+    {
+      "commitIdentifier": "b69422c98e468a81779c2db5d5b0b923",
+      "previousCommitIdentifier": "6fa496a3c8c4cbe156ad37072aea1703",
+      "createdAtTimestamp": 1795319011265,
+      "data": {
+        "variables": [
+          {
+            "variableIdentifier": "offeredSatoshis",
+            "value": "<bigint: 20000n>"
+          },
+          {
+            "variableIdentifier": "wantedCategory",
+            "value": "008eebd7502376715a8ffc87f6b6341cbe284c27237ea0204eaee167603ff95a"
+          },
+          {
+            "variableIdentifier": "wantedAmount",
+            "value": "<bigint: 1000n>"
+          },
+          {
+            "variableIdentifier": "makerLockingScript",
+            "value": "76a914ed1888a7a879a2c7126b05160dc0ba3dbe8ce47788ac"
+          },
+          {
+            "variableIdentifier": "expireAfter",
+            "value": "<bigint: 2n>"
+          },
+          {
+            "variableIdentifier": "expireFeeSatoshis",
+            "value": "<bigint: 500n>"
+          }
+        ],
+        "inputs": [
+          {
+            "inputIdentifier": "fillInput",
+            "transactionIndex": 0,
+            "outpointTransactionHash": "<uint8array: 6cebb159890ee46c7852378da0f211798bac67238bf3d497a862f55e721a7049>",
+            "outpointIndex": 0,
+            "sequenceNumber": 0
+          }
+        ]
+      },
+      "expiresAtTimestamp": 1795337011265,
+      "signature": "3c71f9ddd14d15262dc5e1f1ae2baa3f7542606da4a026d38f74ffe2c27b929bed2dee1df03af2110173c30136b955e19452b989ed497e3df3b7888da84ca834",
+      "entityIdentifier": "tpubDFK2w8YtK6S1mxbDqaTt9kf9FfnCJFvzqNWqgwLecGbXhCV3pAcNZNF47ZKyGYHGxPuLxtgj9K541CeDqv51FpyjsEeEMs3xgwsMWkNTCG7"
+    },
+    {
+      "commitIdentifier": "9ab60b0c2e339a53824d656cdda9eb4a",
+      "previousCommitIdentifier": "b69422c98e468a81779c2db5d5b0b923",
+      "createdAtTimestamp": 1795319032987,
+      "data": {
+        "roleIdentifier": "taker"
+      },
+      "expiresAtTimestamp": 1795337032986,
+      "signature": "b5a9aaf3f64c97b6176b652b810f609aab7d3955b7254d83b165212291e62340b8eab5ae439880a54a72498f6eca5d8ebf3afb4a4707bf32c98ec441ba9ef8cc",
+      "entityIdentifier": "tpubDEAFjKddmfHPwsPjMggNTfkY2SeaeqCnLmJSWNuteqMMLUaATx9YBHQZR7GAo96gvtnD7rbLtAZS7DKQB5mLVdnxv2rzoqiJv2Wg4zy8cze"
+    },
+    {
+      "commitIdentifier": "7c51b1d19bc5c15aeeceacdb2f252eb0",
+      "previousCommitIdentifier": "9ab60b0c2e339a53824d656cdda9eb4a",
+      "createdAtTimestamp": 1795319035769,
+      "data": {
+        "variables": [
+          {
+            "variableIdentifier": "takerLockingScript",
+            "value": "76a914e56feccedaeacfb1c997932f27a4a56d1135f0e988ac",
+            "roleIdentifier": "taker"
+          }
+        ],
+        "inputs": [
+          {
+            "outpointTransactionHash": "<uint8array: 7c8c5e71227621687e97219c88397951709f4bc4973a4d6209acfab295b1e366>",
+            "outpointIndex": 1,
+            "sequenceNumber": 0,
+            "roleIdentifier": "taker"
+          },
+          {
+            "outpointTransactionHash": "<uint8array: 7c8c5e71227621687e97219c88397951709f4bc4973a4d6209acfab295b1e366>",
+            "outpointIndex": 2,
+            "sequenceNumber": 0,
+            "roleIdentifier": "taker"
+          }
+        ],
+        "outputs": [
+          {
+            "outputIdentifier": "makerPaymentOutput",
+            "transactionIndex": 0,
+            "roleIdentifier": "taker",
+            "lockingBytecode": "<uint8array: 76a914ed1888a7a879a2c7126b05160dc0ba3dbe8ce47788ac>"
+          },
+          {
+            "outputIdentifier": "takerPayoutOutput",
+            "roleIdentifier": "taker",
+            "lockingBytecode": "<uint8array: 76a914e56feccedaeacfb1c997932f27a4a56d1135f0e988ac>"
+          }
+        ],
+        "roleIdentifier": "taker"
+      },
+      "expiresAtTimestamp": 1795337035769,
+      "signature": "109918b73fc9092fe0f7f6555e7cfffba8cddfc0a26971ca8a844501996fea47f1449c86d809ec779876420b22e6950b89a5f70c8102a87b6f43ead791e4686e",
+      "entityIdentifier": "tpubDEAFjKddmfHPwsPjMggNTfkY2SeaeqCnLmJSWNuteqMMLUaATx9YBHQZR7GAo96gvtnD7rbLtAZS7DKQB5mLVdnxv2rzoqiJv2Wg4zy8cze"
+    },
+    {
+      "commitIdentifier": "c64c8b8594199d087d8e5859fdc3fb47",
+      "previousCommitIdentifier": "7c51b1d19bc5c15aeeceacdb2f252eb0",
+      "createdAtTimestamp": 1795319039672,
+      "data": {
+        "outputs": [
+          {
+            "valueSatoshis": "<bigint: 800n>",
+            "lockingBytecode": "<uint8array: 76a914bf75570a8a5dfb18c7ed842cccc5b9a2d4564f1188ac>",
+            "token": {
+              "category": "<uint8array: 008eebd7502376715a8ffc87f6b6341cbe284c27237ea0204eaee167603ff95a>",
+              "amount": "<bigint: 992300n>"
+            }
+          },
+          {
+            "valueSatoshis": "<bigint: 71161n>",
+            "lockingBytecode": "<uint8array: 76a914bf75570a8a5dfb18c7ed842cccc5b9a2d4564f1188ac>"
+          }
+        ]
+      },
+      "expiresAtTimestamp": 1795337039672,
+      "signature": "747cccf45196cbc2d4e7b5def808e27ea0edbccddf914a5f4cbc1c98e3c4e9571fc143737c2c403800483a38bd17e94b78bb68c1bbc4614b32edc9479258ccf2",
+      "entityIdentifier": "tpubDEAFjKddmfHPwsPjMggNTfkY2SeaeqCnLmJSWNuteqMMLUaATx9YBHQZR7GAo96gvtnD7rbLtAZS7DKQB5mLVdnxv2rzoqiJv2Wg4zy8cze"
+    },
+    {
+      "commitIdentifier": "ea1d51b3106ecab267ed27264194e19f",
+      "previousCommitIdentifier": "c64c8b8594199d087d8e5859fdc3fb47",
+      "createdAtTimestamp": 1795319041449,
+      "data": {
+        "inputs": [
+          {
+            "mergesWith": {
+              "commitIdentifier": "7c51b1d19bc5c15aeeceacdb2f252eb0",
+              "itemIndex": 0
+            },
+            "unlockingBytecode": "<uint8array: 41444f93a7d751de34d449b12e7030351c416d8b2e5a4f7e5e073e95c8a076a1276834e4bf4a033819d718245f00579c602c4563f5027073df351c57528f802cd841210327727cc0678ec8f58fb8d013bb3b599f9b2916ccdf94fba2b63dfa5b93e12810>"
+          }
+        ]
+      },
+      "expiresAtTimestamp": 1795337041448,
+      "signature": "b300fc3272fba44d1c73971b29ec68b60940635f75e17e31f25615ef572ab2c7e838733c11a5447255a332d4c0847a079dc5588cda627e1958c7d8cad1f53004",
+      "entityIdentifier": "tpubDEAFjKddmfHPwsPjMggNTfkY2SeaeqCnLmJSWNuteqMMLUaATx9YBHQZR7GAo96gvtnD7rbLtAZS7DKQB5mLVdnxv2rzoqiJv2Wg4zy8cze"
+    },
+    {
+      "commitIdentifier": "0fe4ccb48327d505cf3da853331ca21a",
+      "previousCommitIdentifier": "ea1d51b3106ecab267ed27264194e19f",
+      "createdAtTimestamp": 1795319042271,
+      "data": {
+        "inputs": [
+          {
+            "mergesWith": {
+              "commitIdentifier": "7c51b1d19bc5c15aeeceacdb2f252eb0",
+              "itemIndex": 1
+            },
+            "unlockingBytecode": "<uint8array: 41673311e28abe7e7c876a732c0eb2097088ffb1cdb056035cd86703d1b9dc355e3c70f7c2587d5aa058f6b430bb426e2fbd173859dc142812590b55e7e43eae7241210327727cc0678ec8f58fb8d013bb3b599f9b2916ccdf94fba2b63dfa5b93e12810>"
+          }
+        ]
+      },
+      "expiresAtTimestamp": 1795337042271,
+      "signature": "afabf241b32092188e422d1550445cef9d98f76dcfa27b5d8a28ec0d71a08e6c34a9cc2c550305ef4c3d2f3e6aa84991a3348fbc38fb2e56b38a8df436c604bc",
+      "entityIdentifier": "tpubDEAFjKddmfHPwsPjMggNTfkY2SeaeqCnLmJSWNuteqMMLUaATx9YBHQZR7GAo96gvtnD7rbLtAZS7DKQB5mLVdnxv2rzoqiJv2Wg4zy8cze"
+    },
+    {
+      "commitIdentifier": "de45f840e5db4bcb63e15235c9ca8e13",
+      "previousCommitIdentifier": "0fe4ccb48327d505cf3da853331ca21a",
+      "createdAtTimestamp": 1795319064676,
+      "data": {
+        "inputs": [
+          {
+            "mergesWith": {
+              "commitIdentifier": "b69422c98e468a81779c2db5d5b0b923",
+              "itemIndex": 0
+            },
+            "unlockingBytecode": "<uint8array: 514c9b63c0cd1976a914ed1888a7a879a2c7126b05160dc0ba3dbe8ce47788ac88c0d1bc20008eebd7502376715a8ffc87f6b6341cbe284c27237ea0204eaee167603ff95a88c0d302e803a2676352b275c3519dc4519d00cd1976a914ed1888a7a879a2c7126b05160dc0ba3dbe8ce47788ac8800d1008800cc02204e02f40194a26776a914a92edc15bc44cb308dde49fd11983d328a1dec6388ac6868>"
+          }
+        ]
+      },
+      "expiresAtTimestamp": 1795337064675,
+      "signature": "faf7a3874372cf6042c3c4adddd167ed40cf255c81cc6211e0121c3740d70dacf841364dfec023b836b464b766c91d261c59d982d6cd28d4e727477f5c5caa78",
+      "entityIdentifier": "tpubDFK2w8YtK6S1mxbDqaTt9kf9FfnCJFvzqNWqgwLecGbXhCV3pAcNZNF47ZKyGYHGxPuLxtgj9K541CeDqv51FpyjsEeEMs3xgwsMWkNTCG7"
+    }
+  ],
+  "result": {
+    "transactions": {
+      "fillTransaction": {
+        "transactionHash": "3956954fb7c6c6ccb6d7ac927327eade52df348897643c43d533b5150dc5c933",
+        "createdAtTimestamp": 1795319065578,
+        "createdByEntityIdentifier": "tpubDFK2w8YtK6S1mxbDqaTt9kf9FfnCJFvzqNWqgwLecGbXhCV3pAcNZNF47ZKyGYHGxPuLxtgj9K541CeDqv51FpyjsEeEMs3xgwsMWkNTCG7",
+        "createdBySignature": "c6ec765dc93b83bd74df8f80ac842607f84f9d3bada570a3c2c978349e6270ef21161da5568e7730b2b596542172cbec904cd38ae8b05de76ee5077cc782f47a",
+        "broadcastedAtTimestamp": 1795319067869,
+        "broadcastedByEntityIdentifier": "tpubDFK2w8YtK6S1mxbDqaTt9kf9FfnCJFvzqNWqgwLecGbXhCV3pAcNZNF47ZKyGYHGxPuLxtgj9K541CeDqv51FpyjsEeEMs3xgwsMWkNTCG7",
+        "broadcastedBySignature": "dc45fb43d55c9a19fb0269f18e99ed336fe2514730c92162c0d458de0f37d6b8ae5fb4d41783c6dcc1df3d0e456382ca359990c4b1f47cd2d6f3d13da5911476"
+      }
+    }
+  }
+}

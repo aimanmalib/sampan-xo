@@ -1584,3 +1584,38 @@ Facts only, newest step last. Times are UTC. Errors are quoted verbatim.
   `?network=chipnet`. New test `tests/build-with-xo-links.test.ts` also checks the `<txid>` pattern; it failed on
   the old line and passes on the new one. The existing Selene link test does not read BUILD-WITH-XO.md and only
   matches 64-hex txids, so it did not catch this.
+
+## 2026-11-22 03:35 to 03:50 UTC: run8, one fill paying one token unit short, refused by the chipnet node
+
+- Goal: show on chain that the Swap Intent covenant, not the XO engine, refuses an underpaid fill. Template and
+  covenant unchanged; engine 0.1.1-next.18230317763.
+- No helper read the redeem bytecode of an offer: the open invitation holds only the P2SH32 locking bytecode, and the
+  maker's public key is not in any invitation. Way out: the maker's engine builds the short fill (never sent) and
+  `redeemFromFill` reads the redeem from its input 0; the script checks that it hashes to the offer address.
+- 03:40 `send.ts taker <taker plain token address> tokens 1000 run8`: txid `7c8c5e71...e366` (the taker's plain
+  address held no tokens; the owner's held 600, fewer than 999).
+- 03:40 `run.ts open run8`: txid `6cebb159...7049`, 20000 sat for 1000 units. The engine printed, as on earlier runs,
+  `Failed to synchronize block headers, will retry later: Error: Server reported merkle root 8dbd0105...139c for
+  checkpoint #341199, expected bf0aebf5...dfed.` The open still completed.
+- 03:40 `fill-start`, then `fill-take-under` (the taker's commit sets the maker output's token amount to 999): rc 0.
+- 03:41 `fill-under-amount run8 --dry-run`: the engine built and signed the short fill without an error (built txid
+  `7c5211e5...f580`, output 0 1000 sat with 999 units). Local VM: 1000 units `true`; 999 units
+  `Unable to verify transaction: error in evaluating input index 0: Unsuccessful evaluation: completed with a
+  non-truthy value on top of the stack. Top stack item: "".` Not sent.
+- 03:41 first send attempt stopped before building:
+  `engine error: InvitationHistoryConflictError: Invitation "50068fc12ad9b6ca399da484e8963305" history conflict at
+  stored commit "a2dba68d314628f25feab2e1bdfb2e37", expected the updated invitation to keep every stored commit in
+  its stored position`. The dry run had stored the maker's signature commit. Fix: update and sign only when the
+  stored invitation lacks them, as `finishFill` does. Nothing was sent by that attempt.
+- 03:42 `fill-under-amount run8` sent `9b41d1ef...4803` once to chipnet.imaginary.cash:
+  `the transaction was rejected by network rules.` /
+  `mandatory-script-verify-flag-failed (Script evaluated without error but finished with a false/empty top stack element) (code 16)`.
+  `blockchain.transaction.get` right after: `No such mempool or blockchain transaction. Use gettransaction for wallet
+  transactions.` (code -5).
+- 03:43 to 03:44 `fill-start`, `fill-take`, `fill-finish run8`: valid fill `3956954f...c933`, 1000 units to the maker.
+- 03:44 to 03:46 https://chipnet.imaginary.cash/tx/: `7c8c5e71...` block 342341, `6cebb159...` block 342342,
+  `3956954f...` block 342343; `9b41d1ef...` shows `No such mempool or blockchain transaction`.
+- `tests/swap-fill-under.test.ts`, 4 tests, pass. Sabotage in a temporary copy: `enforceWantedAmount` set to an empty
+  script made the first test fail (1 failed, 3 passed); the copy was removed.
+- The taker's short-fill invitation (`run8-fill-taken-under.json`) is not kept, as for landing8: it never led to a
+  broadcast. Details: docs/rejected/run8-fill-under-amount.md.

@@ -73,6 +73,11 @@ run1 is an earlier open -> fill with the same template as run3. run1 to run4 and
 20 November; run7 used 0.1.1-next.18230317763, the `next` tag on 2026-11-21. The `Engine` column of
 [docs/CHIPNET-RUNS.md](docs/CHIPNET-RUNS.md) gives the version for every row. All runs are in the [README](README.md#runs-invitations-and-templates).
 
+One negative test (run8): a fill paying the maker 999 of the 1000 wanted units was built with libauth and sent once to
+chipnet. The node refused it (`mandatory-script-verify-flag-failed`) and it was never mined; the XO engine had built
+the same short payment without an error. The covenant, not the engine, refuses an underpaid fill:
+[docs/rejected/run8-fill-under-amount.md](docs/rejected/run8-fill-under-amount.md).
+
 ## Screenshots of the XO debug tool
 
 [docs/debug-tool/swap-intent/](docs/debug-tool/swap-intent/) holds each saved Swap Intent invitation opened with
