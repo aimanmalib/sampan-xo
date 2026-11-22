@@ -1,4 +1,4 @@
-<p align="center"><img src="https://raw.githubusercontent.com/aimanmalib/sampan/main/brand/logo-512.png" width="96" height="96" alt="Sampan logo: this repository holds the XO work of the Sampan project"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/aimanmalib/sampan/main/brand/logo-512.png" width="112" height="112" alt="Sampan logo: this repository holds the XO work of the Sampan project"></p>
 
 <h1 align="center">Swap Intent: an XO template for CashTokens swaps</h1>
 
